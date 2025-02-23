@@ -103,7 +103,7 @@ public class ExpoPlaybackModule: Module {
         var errorDescription: String? {
             switch self {
             case .invalidUrl:
-                returWn "Invalid URL provided"
+                return "Invalid URL provided"
             }
         }
     }
