@@ -1,73 +1,98 @@
-import { useEvent } from 'expo';
-import ExpoPlayback, { ExpoPlaybackView } from 'expo-playback';
-import { Button, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import * as ExpoPlayback from "expo-playback";
+import { useEffect, useState } from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
 
 export default function App() {
-  const onChangePayload = useEvent(ExpoPlayback, 'onChange');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  useEffect(() => {
+    // Example podcast URL and skip segments
+    const podcastUrl = require("./example2.1.mp3");
+    const skipSegments = [
+      { startTime: 30, endTime: 45 }, // Skip 30-45 seconds
+      { startTime: 120, endTime: 180 }, // Skip 2-3 minutes
+    ];
+
+    // Initialize player
+    ExpoPlayback.initializePlayer(podcastUrl, skipSegments);
+
+    // Listen for playback status updates
+    const statusSubscription = ExpoPlayback.addPlaybackStatusListener(
+      (status) => {
+        setIsPlaying(status.isPlaying);
+        setCurrentTime(status.currentTime);
+        setDuration(status.duration);
+      }
+    );
+
+    // Listen for skip segment events
+    const skipSubscription = ExpoPlayback.addSkipSegmentListener((event) => {
+      console.log(
+        `Skipping segment from ${event.startTime} to ${event.endTime}`
+      );
+    });
+
+    // Cleanup
+    return () => {
+      statusSubscription.remove();
+      skipSubscription.remove();
+      ExpoPlayback.cleanup();
+    };
+  }, []);
+
+  const togglePlayback = async () => {
+    if (isPlaying) {
+      await ExpoPlayback.pause();
+    } else {
+      await ExpoPlayback.play();
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.container}>
-        <Text style={styles.header}>Module API Example</Text>
-        <Group name="Constants">
-          <Text>{ExpoPlayback.PI}</Text>
-        </Group>
-        <Group name="Functions">
-          <Text>{ExpoPlayback.hello()}</Text>
-        </Group>
-        <Group name="Async functions">
-          <Button
-            title="Set value"
-            onPress={async () => {
-              await ExpoPlayback.setValueAsync('Hello from JS!');
-            }}
-          />
-        </Group>
-        <Group name="Events">
-          <Text>{onChangePayload?.value}</Text>
-        </Group>
-        <Group name="Views">
-          <ExpoPlaybackView
-            url="https://www.example.com"
-            onLoad={({ nativeEvent: { url } }) => console.log(`Loaded: ${url}`)}
-            style={styles.view}
-          />
-        </Group>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
+    <View style={styles.container}>
+      <Text style={styles.title}>Purecast Player</Text>
 
-function Group(props: { name: string; children: React.ReactNode }) {
-  return (
-    <View style={styles.group}>
-      <Text style={styles.groupHeader}>{props.name}</Text>
-      {props.children}
+      <View style={styles.timeContainer}>
+        <Text style={styles.timeText}>
+          {formatTime(currentTime)} / {formatTime(duration)}
+        </Text>
+      </View>
+
+      <View style={styles.controls}>
+        <Button title={isPlaying ? "Pause" : "Play"} onPress={togglePlayback} />
+      </View>
     </View>
   );
 }
 
-const styles = {
-  header: {
-    fontSize: 30,
-    margin: 20,
-  },
-  groupHeader: {
-    fontSize: 20,
-    marginBottom: 20,
-  },
-  group: {
-    margin: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-  },
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#eee',
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
-  view: {
-    flex: 1,
-    height: 200,
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
   },
-};
+  timeContainer: {
+    marginVertical: 20,
+  },
+  timeText: {
+    fontSize: 18,
+  },
+  controls: {
+    flexDirection: "row",
+    gap: 20,
+  },
+});
