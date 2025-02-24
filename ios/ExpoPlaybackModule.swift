@@ -25,7 +25,8 @@ public class ExpoPlaybackModule: Module {
         
         // Initialize player with skip segments
         AsyncFunction("initializePlayer") { (url: String, segments: [SkipSegment], promise: Promise) in
-            guard let audioUrl = URL(string: url) else {
+            print("I AM HERE")
+            guard let audioUrl = URL(string: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3") else {
                 promise.reject(PlaybackError.invalidUrl)
                 return
             }
@@ -33,21 +34,30 @@ public class ExpoPlaybackModule: Module {
             self.skipSegments = segments
             let playerItem = AVPlayerItem(url: audioUrl)
             self.player = AVPlayer(playerItem: playerItem)
+            do {
+                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch {
+                print("Failed to set audio session category. Error: \(error)")
+            }
+
             
             // Add periodic time observer
             let interval = CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
             self.timeObserverToken = self.player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
+                
                 guard let self = self else { return }
                 let currentTime = time.seconds
-                
+                print(currentTime)
                 // Check if current time is within any skip segment
                 for segment in self.skipSegments {
                     if currentTime >= segment.startTime && currentTime < segment.endTime {
                         // Emit event to JS and skip to end of segment
-                        self.sendEvent("onSkipSegmentReached", [
-                            "startTime": segment.startTime,
-                            "endTime": segment.endTime
-                        ])
+//                        self.sendEvent("onSkipSegmentReached", [
+//                            "startTime": segment.startTime,
+//                            "endTime": segment.endTime
+//                        ])
+                        print("skipidoooooo")
                         self.player?.seek(to: CMTime(seconds: segment.endTime, preferredTimescale: CMTimeScale(NSEC_PER_SEC)))
                         break
                     }

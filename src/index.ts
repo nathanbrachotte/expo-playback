@@ -10,6 +10,10 @@ export function initializePlayer(
   url: string,
   segments: SkipSegment[]
 ): Promise<void> {
+  if (typeof url !== "string")
+    throw new Error(
+      "A non-string was passed as URL - get your shit together m8!"
+    );
   return ExpoPlaybackModule.initializePlayer(url, segments);
 }
 

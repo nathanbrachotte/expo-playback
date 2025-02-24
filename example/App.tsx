@@ -1,3 +1,4 @@
+import * as FileSystem from "expo-file-system";
 import * as ExpoPlayback from "expo-playback";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
@@ -9,14 +10,45 @@ export default function App() {
 
   useEffect(() => {
     // Example podcast URL and skip segments
-    const podcastUrl = require("./example2.1.mp3");
+    const podcastUrl =
+      "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3";
+    const audioDirectory = FileSystem.documentDirectory + "audio/";
+
+    const ensureAudioDirectory = async () => {
+      try {
+        const dirInfo = await FileSystem.getInfoAsync(audioDirectory);
+
+        if (!dirInfo.exists) {
+          await FileSystem.makeDirectoryAsync(audioDirectory, {
+            intermediates: true,
+          });
+          console.log("Folder created successfully");
+        } else {
+          console.log("Folder already exists");
+        }
+      } catch (error) {
+        console.log("Error creating folder:", error);
+      }
+    };
+
+    const audioFile = audioDirectory + "podcast_1";
+
+    const run = async () => {
+      await ensureAudioDirectory();
+      console.log(await FileSystem.readDirectoryAsync(audioDirectory));
+      await FileSystem.downloadAsync(podcastUrl, audioFile);
+      console.log(await FileSystem.readDirectoryAsync(audioDirectory));
+    };
+    run();
+
     const skipSegments = [
-      { startTime: 30, endTime: 45 }, // Skip 30-45 seconds
+      { startTime: 10, endTime: 20 }, // Skip 30-45 seconds
+      { startTime: 30, endTime: 40 }, // Skip 30-45 seconds
       { startTime: 120, endTime: 180 }, // Skip 2-3 minutes
     ];
 
     // Initialize player
-    ExpoPlayback.initializePlayer(podcastUrl, skipSegments);
+    ExpoPlayback.initializePlayer(audioFile, skipSegments);
 
     // Listen for playback status updates
     const statusSubscription = ExpoPlayback.addPlaybackStatusListener(
