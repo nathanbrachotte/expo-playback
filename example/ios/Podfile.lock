@@ -38,11 +38,15 @@ PODS:
     - Yoga
   - ExpoPlayback (0.1.0):
     - ExpoModulesCore
+    - GRDB.swift
   - ExpoSQLite (15.1.2):
     - ExpoModulesCore
   - FBLazyVector (0.76.7)
   - fmt (9.1.0)
   - glog (0.3.5)
+  - GRDB.swift (6.24.1):
+    - GRDB.swift/standard (= 6.24.1)
+  - GRDB.swift/standard (6.24.1)
   - hermes-engine (0.76.7):
     - hermes-engine/Pre-built (= 0.76.7)
   - hermes-engine/Pre-built (0.76.7)
@@ -1629,6 +1633,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - GRDB.swift
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -1788,11 +1793,12 @@ SPEC CHECKSUMS:
   ExpoFont: 773955186469acc5108ff569712a2d243857475f
   ExpoKeepAwake: 2a5f15dd4964cba8002c9a36676319a3394c85c7
   ExpoModulesCore: 561a787bc626ab9bcfee2a688bd588bf2667405f
-  ExpoPlayback: 948cc8f8724641ff689ab5be63f05cd85fcd29be
+  ExpoPlayback: 6cc40c936d7d5d28f1654199ab8d6e6ffec098fd
   ExpoSQLite: 120519a7bc76d95265b7ace13ac18aea98c4f000
   FBLazyVector: ca8044c9df513671c85167838b4188791b6f37e1
   fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
+  GRDB.swift: 136dcb5d8dddca50aae3ba7d77475f79e7232cd8
   hermes-engine: eb4a80f6bf578536c58a44198ec93a30f6e69218
   RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648
   RCTDeprecation: 7691283dd69fed46f6653d376de6fa83aaad774c

@@ -26,6 +26,7 @@ public class ExpoPlaybackModule: Module {
         // Initialize player with skip segments
         AsyncFunction("initializePlayer") { (url: String, segments: [SkipSegment], promise: Promise) in
             print("I AM HERE")
+            test()
             guard let audioUrl = URL(string: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3") else {
                 promise.reject(PlaybackError.invalidUrl)
                 return
