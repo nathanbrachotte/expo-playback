@@ -28,7 +28,9 @@
   "author": "N8 <nathan.brachotte+github@gmail.com> (https://github.com/nathanbrachotte)",
   "license": "MIT",
   "homepage": "https://github.com/nathanbrachotte/expo-playback#readme",
-  "dependencies": {},
+  "dependencies": {
+    "expo-sqlite": "~15.1.2"
+  },
   "devDependencies": {
     "@types/react": "~18.3.12",
     "expo-module-scripts": "^4.0.3",

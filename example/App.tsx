@@ -3,6 +3,8 @@ import * as ExpoPlayback from "expo-playback";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 
+import { DrizzlePlayground } from "./components/DrizzlePlayground";
+
 export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -91,16 +93,15 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Purecast Player</Text>
-
       <View style={styles.timeContainer}>
         <Text style={styles.timeText}>
           {formatTime(currentTime)} / {formatTime(duration)}
         </Text>
       </View>
-
       <View style={styles.controls}>
         <Button title={isPlaying ? "Pause" : "Play"} onPress={togglePlayback} />
       </View>
+      <DrizzlePlayground />
     </View>
   );
 }
