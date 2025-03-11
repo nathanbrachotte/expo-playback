@@ -8,16 +8,17 @@ import { View, Text, Button } from "react-native";
 import * as schema from "../db/schema";
 import migrations from "../drizzle/migrations";
 
-const dbPath = FileSystem.documentDirectory + "purecast_main.sqlite";
+const dbPath = FileSystem.documentDirectory;
 console.log("🚀 ~ dbPath:", dbPath);
 console.log("🚀 ~ defaultDatabaseDirectory:", defaultDatabaseDirectory);
 
 const expo = openDatabaseSync(
-  "purecast_main.sqlite",
+  "purecast_main_db.sqlite",
   {
     enableChangeListener: true,
   },
-  dbPath
+  // @TODO handle this properly
+  dbPath!
 );
 
 const db = drizzle(expo);
