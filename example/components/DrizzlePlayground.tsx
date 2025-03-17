@@ -42,6 +42,7 @@ export function DrizzlePlayground() {
   };
 
   const { success, error } = useMigrations(db, migrations);
+  console.log("🚀 ~ DrizzlePlayground ~ success:", success);
   console.log("🚀 ~ DrizzlePlayground ~ error:", error);
 
   if (error) {
