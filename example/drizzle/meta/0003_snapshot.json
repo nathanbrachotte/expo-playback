@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "046b28e3-962b-44f4-a64f-ea322e745153",
-  "prevId": "1e7d0c45-7398-49b8-b3ad-6272066bd524",
+  "id": "8436f3b6-79a6-4f6c-8aba-c1ab0c75fb9f",
+  "prevId": "046b28e3-962b-44f4-a64f-ea322e745153",
   "tables": {
     "episode_metadata": {
       "name": "episode_metadata",
@@ -18,14 +18,15 @@
           "name": "playback",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
         },
         "is_finished": {
           "name": "is_finished",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false,
           "default": false
         },
@@ -34,7 +35,8 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": 0
         },
         "fileSize": {
           "name": "fileSize",
@@ -50,8 +52,12 @@
           "name": "episode_metadata_episode_id_episodes_id_fk",
           "tableFrom": "episode_metadata",
           "tableTo": "episodes",
-          "columnsFrom": ["episode_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "episode_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -68,7 +74,7 @@
           "type": "integer",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": true
         },
         "podcast_id": {
           "name": "podcast_id",
@@ -135,8 +141,12 @@
           "name": "episodes_podcast_id_podcasts_id_fk",
           "tableFrom": "episodes",
           "tableTo": "podcasts",
-          "columnsFrom": ["podcast_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "podcast_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

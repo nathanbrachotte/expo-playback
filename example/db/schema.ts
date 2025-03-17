@@ -21,7 +21,7 @@ export const podcasts = sqliteTable("podcasts", {
 
 // Only write from RN side
 export const episodes = sqliteTable("episodes", {
-  id: integer("id").primaryKey(),
+  id: integer("id").primaryKey({ autoIncrement: true }),
   podcastId: integer("podcast_id")
     .notNull()
     .references(() => podcasts.id),
@@ -38,10 +38,8 @@ export const episodeMetadata = sqliteTable("episode_metadata", {
   episodeId: integer("episode_id")
     .primaryKey()
     .references(() => episodes.id),
-  playback: integer("playback", { mode: "number" }).notNull(),
-  isFinished: integer("is_finished", { mode: "boolean" })
-    .notNull()
-    .default(false),
-  downloadProgress: integer("download_progress", { mode: "number" }),
+  playback: integer("playback", { mode: "number" }).default(0),
+  isFinished: integer("is_finished", { mode: "boolean" }).default(false),
+  downloadProgress: integer("download_progress", { mode: "number" }).default(0),
   fileSize: integer("fileSize", { mode: "number" }),
 });
