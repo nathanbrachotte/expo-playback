@@ -15,7 +15,6 @@ export const podcasts = sqliteTable("podcasts", {
   title: text("title").notNull(),
   description: text("description"),
   image: text("image"),
-  downloadUrl: text("download_url"),
   ...sharedKeys,
 });
 
@@ -30,6 +29,7 @@ export const episodes = sqliteTable("episodes", {
   image: text("image"),
   publishedAt: integer("published_at", { mode: "timestamp" }).notNull(),
   duration: integer("duration").notNull(),
+  downloadUrl: text("download_url").notNull(),
   ...sharedKeys,
 });
 
@@ -41,5 +41,6 @@ export const episodeMetadata = sqliteTable("episode_metadata", {
   playback: integer("playback", { mode: "number" }).default(0),
   isFinished: integer("is_finished", { mode: "boolean" }).default(false),
   downloadProgress: integer("download_progress", { mode: "number" }).default(0),
-  fileSize: integer("fileSize", { mode: "number" }),
+  fileSize: integer("file_size", { mode: "number" }),
+  filePath: text("file_path"),
 });

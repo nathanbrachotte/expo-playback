@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "8436f3b6-79a6-4f6c-8aba-c1ab0c75fb9f",
-  "prevId": "046b28e3-962b-44f4-a64f-ea322e745153",
+  "id": "dc7ee851-7bf3-4f32-b070-844be4e2ec36",
+  "prevId": "8436f3b6-79a6-4f6c-8aba-c1ab0c75fb9f",
   "tables": {
     "episode_metadata": {
       "name": "episode_metadata",
@@ -38,9 +38,16 @@
           "autoincrement": false,
           "default": 0
         },
-        "fileSize": {
-          "name": "fileSize",
+        "file_size": {
+          "name": "file_size",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "file_path": {
+          "name": "file_path",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -52,8 +59,12 @@
           "name": "episode_metadata_episode_id_episodes_id_fk",
           "tableFrom": "episode_metadata",
           "tableTo": "episodes",
-          "columnsFrom": ["episode_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "episode_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -114,6 +125,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "download_url": {
+          "name": "download_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "integer",
@@ -137,8 +155,12 @@
           "name": "episodes_podcast_id_podcasts_id_fk",
           "tableFrom": "episodes",
           "tableTo": "podcasts",
-          "columnsFrom": ["podcast_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "podcast_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -178,13 +200,6 @@
           "notNull": false,
           "autoincrement": false
         },
-        "download_url": {
-          "name": "download_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "created_at": {
           "name": "created_at",
           "type": "integer",
@@ -214,7 +229,9 @@
   "_meta": {
     "schemas": {},
     "tables": {},
-    "columns": {}
+    "columns": {
+      "\"episode_metadata\".\"fileSize\"": "\"episode_metadata\".\"file_size\""
+    }
   },
   "internal": {
     "indexes": {}
