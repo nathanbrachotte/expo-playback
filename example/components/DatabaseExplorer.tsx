@@ -2,8 +2,15 @@ import { useLiveQuery, drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import * as FileSystem from "expo-file-system";
 import { openDatabaseSync } from "expo-sqlite";
-import React from "react";
-import { View, Text, Button, ScrollView, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Button,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+} from "react-native";
 
 import * as schema from "../db/schema";
 import migrations from "../drizzle/migrations";
@@ -19,7 +26,20 @@ const expo = openDatabaseSync(
 
 const db = drizzle(expo);
 
+interface iTunesPodcast {
+  collectionId: number;
+  collectionName: string;
+  artistName: string;
+  description: string;
+  artworkUrl600: string;
+  feedUrl: string;
+}
+
 export function DatabaseExplorer() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<iTunesPodcast[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
   const { data: podcasts } = useLiveQuery(db.select().from(schema.podcasts));
   const { data: episodes } = useLiveQuery(db.select().from(schema.episodes));
   const { data: episodeMetadata } = useLiveQuery(
@@ -27,6 +47,34 @@ export function DatabaseExplorer() {
   );
 
   const { success, error } = useMigrations(db, migrations);
+
+  const searchPodcasts = async () => {
+    if (!searchTerm.trim()) return;
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(
+        `https://itunes.apple.com/search?media=podcast&term=${encodeURIComponent(
+          searchTerm
+        )}&country=DE`
+      );
+      const data = await response.json();
+      setSearchResults(data.results);
+    } catch (error) {
+      console.error("Error searching podcasts:", error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const addPodcastFromSearch = async (podcast: iTunesPodcast) => {
+    await db.insert(schema.podcasts).values({
+      title: podcast.collectionName,
+      description: podcast.description || "No description available",
+      image: podcast.artworkUrl600,
+      downloadUrl: podcast.feedUrl,
+    });
+  };
 
   const addMockPodcast = async () => {
     await db.insert(schema.podcasts).values({
@@ -88,6 +136,37 @@ export function DatabaseExplorer() {
 
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.searchSection}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search podcasts..."
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          onSubmitEditing={searchPodcasts}
+        />
+        <Button
+          title={isSearching ? "Searching..." : "Search"}
+          onPress={searchPodcasts}
+          disabled={isSearching}
+        />
+      </View>
+
+      {searchResults.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Search Results</Text>
+          {searchResults.map((podcast) => (
+            <View key={podcast.collectionId} style={styles.searchResult}>
+              <Text style={styles.podcastTitle}>{podcast.collectionName}</Text>
+              <Text style={styles.podcastArtist}>{podcast.artistName}</Text>
+              <Button
+                title="Add to Database"
+                onPress={() => addPodcastFromSearch(podcast)}
+              />
+            </View>
+          ))}
+        </View>
+      )}
+
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Podcasts</Text>
         <Button title="Add Mock Podcast" onPress={addMockPodcast} />
@@ -116,6 +195,18 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  searchSection: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 16,
+  },
+  searchInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 4,
+    padding: 8,
+  },
   section: {
     marginBottom: 24,
     padding: 16,
@@ -132,4 +223,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "monospace",
   },
+  searchResult: {
+    backgroundColor: "white",
+    padding: 12,
+    borderRadius: 4,
+    marginBottom: 8,
+  },
+  podcastTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  podcastArtist: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 8,
+  },
 });
+
+// https://itunes.apple.com/search?media=podcast&term=fest%20und%20flauschig&country=DE
