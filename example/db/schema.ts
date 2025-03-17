@@ -10,11 +10,6 @@ export const sharedKeys = {
     .default(sql`CURRENT_TIMESTAMP`),
 };
 
-export const users = sqliteTable("users", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull(),
-});
-
 export const podcasts = sqliteTable("podcasts", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),

@@ -3,7 +3,7 @@ import * as ExpoPlayback from "expo-playback";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 
-import { DrizzlePlayground } from "./components/DrizzlePlayground";
+import { DatabaseExplorer } from "./components/DatabaseExplorer";
 
 export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -101,7 +101,10 @@ export default function App() {
       <View style={styles.controls}>
         <Button title={isPlaying ? "Pause" : "Play"} onPress={togglePlayback} />
       </View>
-      <DrizzlePlayground />
+      <View style={styles.databaseSection}>
+        <Text style={styles.sectionTitle}>Database Explorer</Text>
+        <DatabaseExplorer />
+      </View>
     </View>
   );
 }
@@ -109,8 +112,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     padding: 20,
   },
   title: {
@@ -127,5 +128,14 @@ const styles = StyleSheet.create({
   controls: {
     flexDirection: "row",
     gap: 20,
+    marginBottom: 20,
+  },
+  databaseSection: {
+    flex: 1,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
 });
