@@ -4,7 +4,7 @@ import { openDatabaseSync } from "expo-sqlite";
 
 import * as schema from "../db/schema";
 
-// For it to string since we have a check below
+// Force it to string since we have a check below
 export const DB_PATH = FileSystem.documentDirectory!;
 export const DB_NAME = "purecast_main_db.sqlite";
 
