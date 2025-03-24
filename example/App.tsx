@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 
 import { DatabaseExplorer } from "./components/DatabaseExplorer";
+import { resetDatabase } from "./db/utils";
 
 export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
     // Example podcast URL and skip segments
@@ -84,6 +86,18 @@ export default function App() {
     }
   };
 
+  const handleResetDatabase = async () => {
+    try {
+      setIsResetting(true);
+      await resetDatabase();
+      console.log("Database reset successfully");
+    } catch (error) {
+      console.error("Failed to reset database:", error);
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
@@ -100,6 +114,11 @@ export default function App() {
       </View>
       <View style={styles.controls}>
         <Button title={isPlaying ? "Pause" : "Play"} onPress={togglePlayback} />
+        <Button
+          title={isResetting ? "Resetting..." : "Reset DB"}
+          onPress={handleResetDatabase}
+          disabled={isResetting}
+        />
       </View>
       <View style={styles.databaseSection}>
         <Text style={styles.sectionTitle}>Database Explorer</Text>

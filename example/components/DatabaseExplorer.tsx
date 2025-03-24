@@ -1,7 +1,5 @@
-import { useLiveQuery, drizzle } from "drizzle-orm/expo-sqlite";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import * as FileSystem from "expo-file-system";
-import { openDatabaseSync } from "expo-sqlite";
 import React, { useState } from "react";
 import {
   View,
@@ -12,19 +10,8 @@ import {
   TextInput,
 } from "react-native";
 
-import * as schema from "../db/schema";
+import { db, schema } from "../db/client";
 import migrations from "../drizzle/migrations";
-
-const dbPath = FileSystem.documentDirectory;
-const expo = openDatabaseSync(
-  "purecast_main_db.sqlite",
-  {
-    enableChangeListener: true,
-  },
-  dbPath!
-);
-
-const db = drizzle(expo);
 
 interface iTunesPodcast {
   collectionId: number;
@@ -72,8 +59,7 @@ export function DatabaseExplorer() {
       title: podcast.collectionName,
       description: podcast.description || "No description available",
       image: podcast.artworkUrl600,
-      downloadUrl: podcast.feedUrl,
-    });
+    } satisfies typeof schema.podcasts.$inferInsert);
   };
 
   const addMockPodcast = async () => {
@@ -81,8 +67,7 @@ export function DatabaseExplorer() {
       title: "Test Podcast " + Math.random().toString(36).substring(7),
       description: "This is a test podcast description",
       image: "https://example.com/test-image.jpg",
-      downloadUrl: "https://example.com/test-audio.mp3",
-    });
+    } satisfies typeof schema.podcasts.$inferInsert);
   };
 
   const addMockEpisode = async () => {
@@ -100,7 +85,8 @@ export function DatabaseExplorer() {
       image: "https://example.com/test-episode-image.jpg",
       publishedAt: new Date(),
       duration: Math.floor(Math.random() * 3600), // Random duration up to 1 hour
-    });
+      downloadUrl: "https://example.com/test-audio.mp3",
+    } satisfies typeof schema.episodes.$inferInsert);
   };
 
   const addMockEpisodeMetadata = async () => {
