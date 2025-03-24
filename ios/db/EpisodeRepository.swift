@@ -63,7 +63,7 @@ class EpisodeRepository {
                     description: row[description],
                     image: row[image],
                     publishedAt: row[publishedAt],
-                    downloadUrl: row[downloadUrl]
+                    downloadUrl: row[downloadUrl],
                     duration: row[duration]
                 )
                 result.append(episode)

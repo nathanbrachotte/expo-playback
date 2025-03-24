@@ -6,7 +6,7 @@ struct EpisodeMetadata {
     let isFinished: Bool
     let downloadProgress: Int64
     let fileSize: Int64?
-    let filePath: String
+    let filePath: String?
 }
 
 class EpisodeMetadataRepository {
@@ -18,7 +18,7 @@ class EpisodeMetadataRepository {
     private let isFinished = Expression<Bool>("is_finished")
     private let downloadProgress = Expression<Int64>("download_progress")
     private let fileSize = Expression<Int64?>("file_size")
-    private let filePath = Expression<Int64?>("file_path")
+    private let filePath = Expression<String?>("file_path")
 
     func getMetadataForEpisode(episodeIdValue: Int64) -> EpisodeMetadata? {
         guard let db = db else { return nil }
