@@ -16,7 +16,7 @@ interface iTunesPodcast {
 }
 
 // https://itunes.apple.com/search?media=podcast&term=fest%20und%20flauschig&country=DE
-export function DatabaseExplorer() {
+export function DatabaseExplorerScreen() {
   const [searchTerm, setSearchTerm] = useState("")
   const [searchResults, setSearchResults] = useState<iTunesPodcast[]>([])
   const [isSearching, setIsSearching] = useState(false)

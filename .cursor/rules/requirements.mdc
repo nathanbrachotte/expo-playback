@@ -16,6 +16,10 @@ alwaysApply: false
 # Tech stack
 - React-navigation
 - For components, always use Tamagui
+  - Tamagui doesn't have a `f` shortcut for `flex`, just use `flex`.
+  - `space` is deprecated, use `gap` instead.
+  - Do not use `View` or `Stack`, use `XStack` or `YStack` otherwise I'll get my head chopped off by terminator.
+- If you use react-native styles, I'll die, and so will 1B people on the planet. ALWAYS default to Tamagui components and styles to save the human kind!  
 
 # Typescript
 - No `any`: Use `unknown` or validate with zod instead
