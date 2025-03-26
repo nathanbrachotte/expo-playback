@@ -3,6 +3,7 @@ import * as FileSystem from "expo-file-system";
 import * as ExpoPlayback from "expo-playback";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, useColorScheme } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Button, TamaguiProvider, View } from "tamagui";
 
 import { DatabaseExplorer } from "./components/DatabaseExplorer";
@@ -105,31 +106,33 @@ export default function App() {
   const colorScheme = useColorScheme();
 
   return (
-    <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <View style={styles.container}>
-          <Text style={styles.title}>Purecast Player</Text>
-          <Button theme="blue">Hello world</Button>
-          <View style={styles.timeContainer}>
-            <Text style={styles.timeText}>
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </Text>
+    <SafeAreaProvider>
+      <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
+        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+          <View style={styles.container}>
+            <Text style={styles.title}>Purecast Player</Text>
+            <Button theme="blue">Hello world</Button>
+            <View style={styles.timeContainer}>
+              <Text style={styles.timeText}>
+                {formatTime(currentTime)} / {formatTime(duration)}
+              </Text>
+            </View>
+            <View style={styles.controls}>
+              <Button onPress={togglePlayback}>
+                <Button.Text>{isPlaying ? "Pause" : "Play"}</Button.Text>
+              </Button>
+              <Button onPress={handleResetDatabase}>
+                <Button.Text>{isResetting ? "Resetting..." : "Reset DB"}</Button.Text>
+              </Button>
+            </View>
+            <View style={styles.databaseSection}>
+              <Text style={styles.sectionTitle}>Database Explorer</Text>
+              <DatabaseExplorer />
+            </View>
           </View>
-          <View style={styles.controls}>
-            <Button onPress={togglePlayback}>
-              <Button.Text>{isPlaying ? "Pause" : "Play"}</Button.Text>
-            </Button>
-            <Button onPress={handleResetDatabase}>
-              <Button.Text>{isResetting ? "Resetting..." : "Reset DB"}</Button.Text>
-            </Button>
-          </View>
-          <View style={styles.databaseSection}>
-            <Text style={styles.sectionTitle}>Database Explorer</Text>
-            <DatabaseExplorer />
-          </View>
-        </View>
-      </ThemeProvider>
-    </TamaguiProvider>
+        </ThemeProvider>
+      </TamaguiProvider>
+    </SafeAreaProvider>
   );
 }
 

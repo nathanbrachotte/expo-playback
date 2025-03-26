@@ -1,0 +1,14 @@
+---
+description: All the requirements needed to build the app. Use it all the time for context.
+globs: 
+alwaysApply: false
+---
+
+# What are we building
+- We're building a Podcast App in React Native
+- The main app is in ./example
+- There is a native module that handle playback for the audio
+
+# Features
+- When users play a podcast episode, the app auto-skips the ads and any other non-wanted segment
+- Users can save search their favorite podcasts, save the ones they listen to regularly, download them, etc.
