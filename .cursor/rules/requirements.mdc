@@ -6,9 +6,16 @@ alwaysApply: false
 
 # What are we building
 - We're building a Podcast App in React Native
-- The main app is in ./example
+- The main app is in ./example. When installing package for the react-native app make sure to use the package.json in this folder.
 - There is a native module that handle playback for the audio
 
 # Features
 - When users play a podcast episode, the app auto-skips the ads and any other non-wanted segment
 - Users can save search their favorite podcasts, save the ones they listen to regularly, download them, etc.
+
+# Tech stack
+- React-navigation
+- For components, always use Tamagui
+
+# Typescript
+- No `any`: Use `unknown` or validate with zod instead
