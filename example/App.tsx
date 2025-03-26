@@ -1,10 +1,13 @@
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import * as FileSystem from "expo-file-system";
 import * as ExpoPlayback from "expo-playback";
 import { useEffect, useState } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, useColorScheme } from "react-native";
+import { Button, TamaguiProvider, View } from "tamagui";
 
 import { DatabaseExplorer } from "./components/DatabaseExplorer";
 import { resetDatabase } from "./db/utils";
+import { tamaguiConfig } from "./tamagui.config";
 
 export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -14,8 +17,7 @@ export default function App() {
 
   useEffect(() => {
     // Example podcast URL and skip segments
-    const podcastUrl =
-      "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3";
+    const podcastUrl = "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3";
     const audioDirectory = FileSystem.documentDirectory + "audio/";
 
     const ensureAudioDirectory = async () => {
@@ -55,19 +57,15 @@ export default function App() {
     ExpoPlayback.initializePlayer(audioFile, skipSegments);
 
     // Listen for playback status updates
-    const statusSubscription = ExpoPlayback.addPlaybackStatusListener(
-      (status) => {
-        setIsPlaying(status.isPlaying);
-        setCurrentTime(status.currentTime);
-        setDuration(status.duration);
-      }
-    );
+    const statusSubscription = ExpoPlayback.addPlaybackStatusListener((status) => {
+      setIsPlaying(status.isPlaying);
+      setCurrentTime(status.currentTime);
+      setDuration(status.duration);
+    });
 
     // Listen for skip segment events
     const skipSubscription = ExpoPlayback.addSkipSegmentListener((event) => {
-      console.log(
-        `Skipping segment from ${event.startTime} to ${event.endTime}`
-      );
+      console.log(`Skipping segment from ${event.startTime} to ${event.endTime}`);
     });
 
     // Cleanup
@@ -104,27 +102,34 @@ export default function App() {
     return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
+  const colorScheme = useColorScheme();
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Purecast Player</Text>
-      <View style={styles.timeContainer}>
-        <Text style={styles.timeText}>
-          {formatTime(currentTime)} / {formatTime(duration)}
-        </Text>
-      </View>
-      <View style={styles.controls}>
-        <Button title={isPlaying ? "Pause" : "Play"} onPress={togglePlayback} />
-        <Button
-          title={isResetting ? "Resetting..." : "Reset DB"}
-          onPress={handleResetDatabase}
-          disabled={isResetting}
-        />
-      </View>
-      <View style={styles.databaseSection}>
-        <Text style={styles.sectionTitle}>Database Explorer</Text>
-        <DatabaseExplorer />
-      </View>
-    </View>
+    <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <View style={styles.container}>
+          <Text style={styles.title}>Purecast Player</Text>
+          <Button theme="blue">Hello world</Button>
+          <View style={styles.timeContainer}>
+            <Text style={styles.timeText}>
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </Text>
+          </View>
+          <View style={styles.controls}>
+            <Button onPress={togglePlayback}>
+              <Button.Text>{isPlaying ? "Pause" : "Play"}</Button.Text>
+            </Button>
+            <Button onPress={handleResetDatabase}>
+              <Button.Text>{isResetting ? "Resetting..." : "Reset DB"}</Button.Text>
+            </Button>
+          </View>
+          <View style={styles.databaseSection}>
+            <Text style={styles.sectionTitle}>Database Explorer</Text>
+            <DatabaseExplorer />
+          </View>
+        </View>
+      </ThemeProvider>
+    </TamaguiProvider>
   );
 }
 
