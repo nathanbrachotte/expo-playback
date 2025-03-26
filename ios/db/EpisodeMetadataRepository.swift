@@ -41,4 +41,38 @@ class EpisodeMetadataRepository {
         
         return nil
     }
+
+    func createOrUpdateMetadata(_ metadata: EpisodeMetadata) -> EpisodeMetadata? {
+        guard let db = db else { return nil }
+        
+        do {
+            let query = episodeMetadata.filter(episodeId == metadata.episodeId)
+            
+            // Check if record exists
+            if try db.pluck(query) != nil {
+                // Update existing record
+                try db.run(query.update(
+                    playback <- metadata.playback,
+                    isFinished <- metadata.isFinished,
+                    downloadProgress <- metadata.downloadProgress,
+                    fileSize <- metadata.fileSize,
+                    filePath <- metadata.filePath
+                ))
+            } else {
+                // Insert new record
+                try db.run(episodeMetadata.insert(
+                    episodeId <- metadata.episodeId,
+                    playback <- metadata.playback,
+                    isFinished <- metadata.isFinished,
+                    downloadProgress <- metadata.downloadProgress,
+                    fileSize <- metadata.fileSize,
+                    filePath <- metadata.filePath
+                ))
+            }
+            return metadata
+        } catch {
+            print("❌ Error creating/updating metadata for episode \(metadata.episodeId): \(error)")
+            return nil
+        }
+    }
 }

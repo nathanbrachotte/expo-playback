@@ -2,12 +2,12 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
   Button,
   ScrollView,
   StyleSheet,
+  Text,
   TextInput,
+  View,
 } from "react-native";
 
 import { db, schema } from "../db/client";
@@ -67,6 +67,8 @@ export function DatabaseExplorer() {
       title: "Test Podcast " + Math.random().toString(36).substring(7),
       description: "This is a test podcast description",
       image: "https://example.com/test-image.jpg",
+      createdAt: new Date(),
+      updatedAt: new Date(),
     } satisfies typeof schema.podcasts.$inferInsert);
   };
 
@@ -84,6 +86,8 @@ export function DatabaseExplorer() {
       description: "This is a test episode description",
       image: "https://example.com/test-episode-image.jpg",
       publishedAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
       duration: Math.floor(Math.random() * 3600), // Random duration up to 1 hour
       downloadUrl: "https://example.com/test-audio.mp3",
     } satisfies typeof schema.episodes.$inferInsert);

@@ -5,7 +5,6 @@ struct Podcast {
     let title: String
     let description: String?
     let image: String?
-    let downloadUrl: String?
     let createdAt: Int64
     let updatedAt: Int64
 }
@@ -18,7 +17,6 @@ class PodcastRepository {
     private let title = Expression<String>("title")
     private let description = Expression<String?>("description")
     private let image = Expression<String?>("image")
-    private let downloadUrl = Expression<String?>("download_url")
     private let createdAt = Expression<Int64>("created_at")
     private let updatedAt = Expression<Int64>("updated_at")
 
@@ -33,7 +31,6 @@ class PodcastRepository {
                     title: row[title],
                     description: row[description],
                     image: row[image],
-                    downloadUrl: row[downloadUrl],
                     createdAt: row[createdAt],
                     updatedAt: row[updatedAt]
                 )

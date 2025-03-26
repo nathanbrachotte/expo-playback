@@ -7,13 +7,13 @@ struct Episode {
     let description: String
     let image: String?
     let publishedAt: Int64
-    let downloadUrl: String?
+    let downloadUrl: String
     let duration: Int64
 }
 
 class EpisodeRepository {
     private let db = SQLiteManager.shared.getDB()
-    
+
     private let episodes = Table("episodes")
     private let id = Expression<Int64>("id")
     private let podcastId = Expression<Int64>("podcast_id")
@@ -21,7 +21,7 @@ class EpisodeRepository {
     private let description = Expression<String>("description")
     private let image = Expression<String?>("image")
     private let publishedAt = Expression<Int64>("published_at")
-    private let downloadUrl = Expression<String?>("download_url")
+    private let downloadUrl = Expression<String>("download_url")
     private let duration = Expression<Int64>("duration")
 
     func getAllEpisodes() -> [Episode] {
@@ -45,7 +45,7 @@ class EpisodeRepository {
         } catch {
             print("❌ Error fetching episodes: \(error)")
         }
-        
+
         return result
     }
 
@@ -71,7 +71,7 @@ class EpisodeRepository {
         } catch {
             print("❌ Error fetching episodes for podcast \(podcastIdValue): \(error)")
         }
-        
+
         return result
     }
 }
