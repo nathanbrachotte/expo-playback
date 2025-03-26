@@ -4,6 +4,8 @@ import React, { useState } from "react"
 import { Button, Input, ScrollView, YStack, XStack, Text, Card } from "tamagui"
 
 import { db, schema } from "../db/client"
+import { TableName } from "../db/schema"
+import { useNativeSaveLiveQuery } from "../db/useNativeSaveLiveQuery"
 import migrations from "../drizzle/migrations"
 
 interface iTunesPodcast {
@@ -16,6 +18,8 @@ interface iTunesPodcast {
 }
 
 // https://itunes.apple.com/search?media=podcast&term=fest%20und%20flauschig&country=DE
+const tableNames: TableName[] = ["episode_metadata"]
+
 export function DatabaseExplorer() {
   const [searchTerm, setSearchTerm] = useState("")
   const [searchResults, setSearchResults] = useState<iTunesPodcast[]>([])
@@ -23,7 +27,7 @@ export function DatabaseExplorer() {
 
   const { data: podcasts } = useLiveQuery(db.select().from(schema.podcasts))
   const { data: episodes } = useLiveQuery(db.select().from(schema.episodes))
-  const { data: episodeMetadata } = useLiveQuery(db.select().from(schema.episodeMetadata))
+  const { data: episodeMetadata } = useNativeSaveLiveQuery(db.select().from(schema.episodeMetadata), tableNames)
 
   const { success, error } = useMigrations(db, migrations)
 

@@ -37,7 +37,7 @@ export function addPlaybackStatusListener(listener: (event: PlaybackStatus) => v
 }
 
 export function addSqLiteTableUpdatedListener(listener: (event: SqLiteTableUpdatedEvent) => void) {
-  return ExpoPlaybackModule.addListener("onSqLiteTableUpdated", listener)
+  return ExpoPlaybackModule.addListener("onSqLiteTableUpdate", listener)
 }
 
 export function addSkipSegmentListener(listener: (event: SkipSegmentEvent) => void) {

@@ -4,11 +4,13 @@ import { SQLiteRelationalQuery } from "drizzle-orm/sqlite-core/query-builders/qu
 import { addSqLiteTableUpdatedListener } from "expo-playback"
 import { useEffect, useState } from "react"
 
+import { TableName } from "./schema"
+
 export const useNativeSaveLiveQuery = <
   T extends Pick<AnySQLiteSelect, "_" | "then"> | SQLiteRelationalQuery<"sync", unknown>,
 >(
   query: T,
-  tableNames: string[],
+  tableNames: TableName[],
   deps?: unknown[],
 ) => {
   const [tableUpdateEnforcer, setTableUpdateEnforcer] = useState({})

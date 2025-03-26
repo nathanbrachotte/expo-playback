@@ -40,7 +40,7 @@ public class ExpoPlaybackModule: Module {
         Name("ExpoPlayback")
 
         // Events that will be emitted to JavaScript
-        Events("onPlaybackStatusUpdate", "onSkipSegmentReached")
+        Events("onPlaybackStatusUpdate", "onSkipSegmentReached", "onSqLiteTableUpdate")
 
         // Initialize player with skip segments
         AsyncFunction("initializePlayer") {
@@ -72,7 +72,7 @@ public class ExpoPlaybackModule: Module {
 
                 guard let self = self else { return }
                 let currentTime = time.seconds
-                print(currentTime)
+
                 // Check if current time is within any skip segment
                 for segment in self.skipSegments {
                     if currentTime >= segment.startTime && currentTime < segment.endTime {
@@ -106,13 +106,16 @@ public class ExpoPlaybackModule: Module {
                             fileSize: metadata.fileSize,
                             filePath: metadata.filePath
                         )
+                        
                         metadataRepo.createOrUpdateMetadata(metadata)
+                        
+                        self.sendEvent(
+                            "onSqLiteTableUpdate",
+                            [
+                                "table": "episode_metadata"
+                            ])
                     }
-                    self.sendEvent(
-                        "onSqLiteTableUpdated",
-                        [
-                            "table": "episode_metadata"
-                        ])
+
                 case .failure:
                     break
                 }

@@ -10,6 +10,9 @@ export const sharedKeys = {
     .default(sql`CURRENT_TIMESTAMP`),
 }
 
+export const TABLE_NAMES = ["podcasts", "episodes", "episode_metadata"] as const
+export type TableName = (typeof TABLE_NAMES)[number]
+
 export const podcasts = sqliteTable("podcasts", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),

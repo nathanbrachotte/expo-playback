@@ -6,7 +6,7 @@ export interface SkipSegment {
 }
 
 export interface SqLiteTableUpdatedEvent {
-  table: string
+  table: "episode_metadata"
 }
 
 export interface PlaybackStatus {
@@ -21,7 +21,7 @@ export interface SkipSegmentEvent {
 }
 
 declare class ExpoPlaybackModule extends NativeModule<{
-  onSqLiteTableUpdated: (event: SqLiteTableUpdatedEvent) => void
+  onSqLiteTableUpdate: (event: SqLiteTableUpdatedEvent) => void
   onPlaybackStatusUpdate: (event: PlaybackStatus) => void
   onSkipSegmentReached: (event: SkipSegmentEvent) => void
 }> {
