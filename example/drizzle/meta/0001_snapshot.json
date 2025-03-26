@@ -50,12 +50,8 @@
           "name": "episode_metadata_episode_id_episodes_id_fk",
           "tableFrom": "episode_metadata",
           "tableTo": "episodes",
-          "columnsFrom": [
-            "episode_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["episode_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -139,12 +135,8 @@
           "name": "episodes_podcast_id_podcasts_id_fk",
           "tableFrom": "episodes",
           "tableTo": "podcasts",
-          "columnsFrom": [
-            "podcast_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["podcast_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

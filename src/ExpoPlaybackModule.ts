@@ -1,31 +1,36 @@
-import { requireNativeModule, NativeModule } from "expo-modules-core";
+import { requireNativeModule, NativeModule } from "expo-modules-core"
 
 export interface SkipSegment {
-  startTime: number;
-  endTime: number;
+  startTime: number
+  endTime: number
+}
+
+export interface SqLiteTableUpdatedEvent {
+  table: string
 }
 
 export interface PlaybackStatus {
-  isPlaying: boolean;
-  currentTime: number;
-  duration: number;
+  isPlaying: boolean
+  currentTime: number
+  duration: number
 }
 
 export interface SkipSegmentEvent {
-  startTime: number;
-  endTime: number;
+  startTime: number
+  endTime: number
 }
 
 declare class ExpoPlaybackModule extends NativeModule<{
-  onPlaybackStatusUpdate: (event: PlaybackStatus) => void;
-  onSkipSegmentReached: (event: SkipSegmentEvent) => void;
+  onSqLiteTableUpdated: (event: SqLiteTableUpdatedEvent) => void
+  onPlaybackStatusUpdate: (event: PlaybackStatus) => void
+  onSkipSegmentReached: (event: SkipSegmentEvent) => void
 }> {
-  initializePlayer(url: string, segments: SkipSegment[]): Promise<void>;
-  play(): Promise<void>;
-  pause(): Promise<void>;
-  seekTo(position: number): Promise<void>;
-  updateSkipSegments(segments: SkipSegment[]): void;
-  cleanup(): void;
+  initializePlayer(url: string, segments: SkipSegment[]): Promise<void>
+  play(): Promise<void>
+  pause(): Promise<void>
+  seekTo(position: number): Promise<void>
+  updateSkipSegments(segments: SkipSegment[]): void
+  cleanup(): void
 }
 
-export default requireNativeModule<ExpoPlaybackModule>("ExpoPlayback");
+export default requireNativeModule<ExpoPlaybackModule>("ExpoPlayback")

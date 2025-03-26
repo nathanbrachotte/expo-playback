@@ -1,14 +1,7 @@
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import React, { useState } from "react";
-import {
-  Button,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Button, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { db, schema } from "../db/client";
 import migrations from "../drizzle/migrations";
@@ -29,9 +22,7 @@ export function DatabaseExplorer() {
 
   const { data: podcasts } = useLiveQuery(db.select().from(schema.podcasts));
   const { data: episodes } = useLiveQuery(db.select().from(schema.episodes));
-  const { data: episodeMetadata } = useLiveQuery(
-    db.select().from(schema.episodeMetadata)
-  );
+  const { data: episodeMetadata } = useLiveQuery(db.select().from(schema.episodeMetadata));
 
   const { success, error } = useMigrations(db, migrations);
 
@@ -148,10 +139,7 @@ export function DatabaseExplorer() {
             <View key={podcast.collectionId} style={styles.searchResult}>
               <Text style={styles.podcastTitle}>{podcast.collectionName}</Text>
               <Text style={styles.podcastArtist}>{podcast.artistName}</Text>
-              <Button
-                title="Add to Database"
-                onPress={() => addPodcastFromSearch(podcast)}
-              />
+              <Button title="Add to Database" onPress={() => addPodcastFromSearch(podcast)} />
             </View>
           ))}
         </View>
@@ -172,9 +160,7 @@ export function DatabaseExplorer() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Episode Metadata</Text>
         <Button title="Add Mock Metadata" onPress={addMockEpisodeMetadata} />
-        <Text style={styles.dataText}>
-          {JSON.stringify(episodeMetadata, null, 2)}
-        </Text>
+        <Text style={styles.dataText}>{JSON.stringify(episodeMetadata, null, 2)}</Text>
       </View>
     </ScrollView>
   );
