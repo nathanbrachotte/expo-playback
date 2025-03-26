@@ -1,109 +1,109 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import * as FileSystem from "expo-file-system";
-import * as ExpoPlayback from "expo-playback";
-import { useEffect, useState } from "react";
-import { StyleSheet, Text, useColorScheme } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Button, TamaguiProvider, View } from "tamagui";
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native"
+import * as FileSystem from "expo-file-system"
+import * as ExpoPlayback from "expo-playback"
+import { useEffect, useState } from "react"
+import { StyleSheet, Text, useColorScheme } from "react-native"
+import { SafeAreaProvider } from "react-native-safe-area-context"
+import { Button, TamaguiProvider, View } from "tamagui"
 
-import { DatabaseExplorer } from "./components/DatabaseExplorer";
-import { resetDatabase } from "./db/utils";
-import { tamaguiConfig } from "./tamagui.config";
+import { DatabaseExplorer } from "./components/DatabaseExplorer"
+import { resetDatabase } from "./db/utils"
+import { tamaguiConfig } from "./tamagui.config"
 
 export default function App() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isResetting, setIsResetting] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [isResetting, setIsResetting] = useState(false)
 
   useEffect(() => {
     // Example podcast URL and skip segments
-    const podcastUrl = "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3";
-    const audioDirectory = FileSystem.documentDirectory + "audio/";
+    const podcastUrl = "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3"
+    const audioDirectory = FileSystem.documentDirectory + "audio/"
 
     const ensureAudioDirectory = async () => {
       try {
-        const dirInfo = await FileSystem.getInfoAsync(audioDirectory);
+        const dirInfo = await FileSystem.getInfoAsync(audioDirectory)
 
         if (!dirInfo.exists) {
           await FileSystem.makeDirectoryAsync(audioDirectory, {
             intermediates: true,
-          });
-          console.log("Folder created successfully");
+          })
+          console.log("Folder created successfully")
         } else {
-          console.log("Folder already exists");
+          console.log("Folder already exists")
         }
       } catch (error) {
-        console.log("Error creating folder:", error);
+        console.log("Error creating folder:", error)
       }
-    };
+    }
 
-    const audioFile = audioDirectory + "podcast_1";
+    const audioFile = audioDirectory + "podcast_1"
 
     const run = async () => {
-      await ensureAudioDirectory();
-      console.log(await FileSystem.readDirectoryAsync(audioDirectory));
-      await FileSystem.downloadAsync(podcastUrl, audioFile);
-      console.log(await FileSystem.readDirectoryAsync(audioDirectory));
-    };
-    run();
+      await ensureAudioDirectory()
+      console.log(await FileSystem.readDirectoryAsync(audioDirectory))
+      await FileSystem.downloadAsync(podcastUrl, audioFile)
+      console.log(await FileSystem.readDirectoryAsync(audioDirectory))
+    }
+    run()
 
     const skipSegments = [
       { startTime: 10, endTime: 20 }, // Skip 30-45 seconds
       { startTime: 30, endTime: 40 }, // Skip 30-45 seconds
       { startTime: 120, endTime: 180 }, // Skip 2-3 minutes
-    ];
+    ]
 
     // Initialize player
-    ExpoPlayback.initializePlayer(audioFile, skipSegments);
+    ExpoPlayback.initializePlayer(audioFile, skipSegments)
 
     // Listen for playback status updates
     const statusSubscription = ExpoPlayback.addPlaybackStatusListener((status) => {
-      setIsPlaying(status.isPlaying);
-      setCurrentTime(status.currentTime);
-      setDuration(status.duration);
-    });
+      setIsPlaying(status.isPlaying)
+      setCurrentTime(status.currentTime)
+      setDuration(status.duration)
+    })
 
     // Listen for skip segment events
     const skipSubscription = ExpoPlayback.addSkipSegmentListener((event) => {
-      console.log(`Skipping segment from ${event.startTime} to ${event.endTime}`);
-    });
+      console.log(`Skipping segment from ${event.startTime} to ${event.endTime}`)
+    })
 
     // Cleanup
     return () => {
-      statusSubscription.remove();
-      skipSubscription.remove();
-      ExpoPlayback.cleanup();
-    };
-  }, []);
+      statusSubscription.remove()
+      skipSubscription.remove()
+      ExpoPlayback.cleanup()
+    }
+  }, [])
 
   const togglePlayback = async () => {
     if (isPlaying) {
-      await ExpoPlayback.pause();
+      await ExpoPlayback.pause()
     } else {
-      await ExpoPlayback.play();
+      await ExpoPlayback.play()
     }
-  };
+  }
 
   const handleResetDatabase = async () => {
     try {
-      setIsResetting(true);
-      await resetDatabase();
-      console.log("Database reset successfully");
+      setIsResetting(true)
+      await resetDatabase()
+      console.log("Database reset successfully")
     } catch (error) {
-      console.error("Failed to reset database:", error);
+      console.error("Failed to reset database:", error)
     } finally {
-      setIsResetting(false);
+      setIsResetting(false)
     }
-  };
+  }
 
   const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = Math.floor(seconds % 60)
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+  }
 
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme()
 
   return (
     <SafeAreaProvider>
@@ -133,7 +133,7 @@ export default function App() {
         </ThemeProvider>
       </TamaguiProvider>
     </SafeAreaProvider>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -165,4 +165,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-});
+})

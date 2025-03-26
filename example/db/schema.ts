@@ -1,5 +1,5 @@
-import { sql } from "drizzle-orm";
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm"
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core"
 
 export const sharedKeys = {
   createdAt: integer("created_at", { mode: "timestamp" })
@@ -8,7 +8,7 @@ export const sharedKeys = {
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
-};
+}
 
 export const podcasts = sqliteTable("podcasts", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -16,7 +16,7 @@ export const podcasts = sqliteTable("podcasts", {
   description: text("description"),
   image: text("image"),
   ...sharedKeys,
-});
+})
 
 // Only write from RN side
 export const episodes = sqliteTable("episodes", {
@@ -31,7 +31,7 @@ export const episodes = sqliteTable("episodes", {
   duration: integer("duration").notNull(),
   downloadUrl: text("download_url").notNull(),
   ...sharedKeys,
-});
+})
 
 // Everything that the native thread is going to write to
 export const episodeMetadata = sqliteTable("episode_metadata", {
@@ -43,4 +43,4 @@ export const episodeMetadata = sqliteTable("episode_metadata", {
   downloadProgress: integer("download_progress", { mode: "number" }).default(0),
   fileSize: integer("file_size", { mode: "number" }),
   filePath: text("file_path"),
-});
+})

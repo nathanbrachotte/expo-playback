@@ -1,21 +1,21 @@
-import { deleteDatabaseSync } from "expo-sqlite";
+import { deleteDatabaseSync } from "expo-sqlite"
 
-import { db, DB_NAME, DB_PATH } from "./client";
+import { db, DB_NAME, DB_PATH } from "./client"
 
 export const resetDatabase = async () => {
   try {
     // Ensure database is closed before deletion
     try {
-      await db.$client.closeAsync();
+      await db.$client.closeAsync()
     } catch (closeError) {
-      console.warn("Warning: Error while closing database:", closeError);
+      console.warn("Warning: Error while closing database:", closeError)
       // Continue with deletion even if close fails
     }
 
     // Delete the existing database
-    deleteDatabaseSync(DB_NAME, DB_PATH);
+    deleteDatabaseSync(DB_NAME, DB_PATH)
   } catch (error) {
-    console.error("Error resetting database:", error);
-    throw error;
+    console.error("Error resetting database:", error)
+    throw error
   }
-};
+}

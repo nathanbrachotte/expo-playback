@@ -3,3 +3,4 @@ singleQuote: false
 tabWidth: 2
 quoteProps: "consistent"
 printWidth: 120
+trailingComma: "all" # Valid values: "none" | "es5" | "all"

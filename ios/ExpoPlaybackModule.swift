@@ -108,6 +108,11 @@ public class ExpoPlaybackModule: Module {
                         )
                         metadataRepo.createOrUpdateMetadata(metadata)
                     }
+                    self.sendEvent(
+                        "onSqLiteTableUpdated",
+                        [
+                            "table": "episode_metadata"
+                        ])
                 case .failure:
                     break
                 }

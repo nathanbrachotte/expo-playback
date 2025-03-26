@@ -1,57 +1,55 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import React, { useState } from "react";
-import { Button, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite"
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator"
+import React, { useState } from "react"
+import { Button, ScrollView, StyleSheet, Text, TextInput, View } from "react-native"
 
-import { db, schema } from "../db/client";
-import migrations from "../drizzle/migrations";
+import { db, schema } from "../db/client"
+import migrations from "../drizzle/migrations"
 
 interface iTunesPodcast {
-  collectionId: number;
-  collectionName: string;
-  artistName: string;
-  description: string;
-  artworkUrl600: string;
-  feedUrl: string;
+  collectionId: number
+  collectionName: string
+  artistName: string
+  description: string
+  artworkUrl600: string
+  feedUrl: string
 }
 
 export function DatabaseExplorer() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<iTunesPodcast[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("")
+  const [searchResults, setSearchResults] = useState<iTunesPodcast[]>([])
+  const [isSearching, setIsSearching] = useState(false)
 
-  const { data: podcasts } = useLiveQuery(db.select().from(schema.podcasts));
-  const { data: episodes } = useLiveQuery(db.select().from(schema.episodes));
-  const { data: episodeMetadata } = useLiveQuery(db.select().from(schema.episodeMetadata));
+  const { data: podcasts } = useLiveQuery(db.select().from(schema.podcasts))
+  const { data: episodes } = useLiveQuery(db.select().from(schema.episodes))
+  const { data: episodeMetadata } = useLiveQuery(db.select().from(schema.episodeMetadata))
 
-  const { success, error } = useMigrations(db, migrations);
+  const { success, error } = useMigrations(db, migrations)
 
   const searchPodcasts = async () => {
-    if (!searchTerm.trim()) return;
+    if (!searchTerm.trim()) return
 
-    setIsSearching(true);
+    setIsSearching(true)
     try {
       const response = await fetch(
-        `https://itunes.apple.com/search?media=podcast&term=${encodeURIComponent(
-          searchTerm
-        )}&country=DE`
-      );
-      const data = await response.json();
-      setSearchResults(data.results);
+        `https://itunes.apple.com/search?media=podcast&term=${encodeURIComponent(searchTerm)}&country=DE`,
+      )
+      const data = await response.json()
+      setSearchResults(data.results)
     } catch (error) {
-      console.error("Error searching podcasts:", error);
+      console.error("Error searching podcasts:", error)
     } finally {
-      setIsSearching(false);
+      setIsSearching(false)
     }
-  };
+  }
 
   const addPodcastFromSearch = async (podcast: iTunesPodcast) => {
     await db.insert(schema.podcasts).values({
       title: podcast.collectionName,
       description: podcast.description || "No description available",
       image: podcast.artworkUrl600,
-    } satisfies typeof schema.podcasts.$inferInsert);
-  };
+    } satisfies typeof schema.podcasts.$inferInsert)
+  }
 
   const addMockPodcast = async () => {
     await db.insert(schema.podcasts).values({
@@ -60,15 +58,15 @@ export function DatabaseExplorer() {
       image: "https://example.com/test-image.jpg",
       createdAt: new Date(),
       updatedAt: new Date(),
-    } satisfies typeof schema.podcasts.$inferInsert);
-  };
+    } satisfies typeof schema.podcasts.$inferInsert)
+  }
 
   const addMockEpisode = async () => {
     if (!podcasts?.length) {
-      console.log("No podcasts available to link episode to");
-      return;
+      console.log("No podcasts available to link episode to")
+      return
     }
-    const randomPodcast = podcasts[Math.floor(Math.random() * podcasts.length)];
+    const randomPodcast = podcasts[Math.floor(Math.random() * podcasts.length)]
 
     await db.insert(schema.episodes).values({
       id: Math.floor(Math.random() * 1000000), // Random ID since it's not auto-increment
@@ -81,15 +79,15 @@ export function DatabaseExplorer() {
       updatedAt: new Date(),
       duration: Math.floor(Math.random() * 3600), // Random duration up to 1 hour
       downloadUrl: "https://example.com/test-audio.mp3",
-    } satisfies typeof schema.episodes.$inferInsert);
-  };
+    } satisfies typeof schema.episodes.$inferInsert)
+  }
 
   const addMockEpisodeMetadata = async () => {
     if (!episodes?.length) {
-      console.log("No episodes available to add metadata to");
-      return;
+      console.log("No episodes available to add metadata to")
+      return
     }
-    const randomEpisode = episodes[Math.floor(Math.random() * episodes.length)];
+    const randomEpisode = episodes[Math.floor(Math.random() * episodes.length)]
 
     await db.insert(schema.episodeMetadata).values({
       episodeId: randomEpisode.id,
@@ -97,22 +95,22 @@ export function DatabaseExplorer() {
       isFinished: Math.random() > 0.5,
       downloadProgress: Math.floor(Math.random() * 100),
       fileSize: Math.floor(Math.random() * 10000000), // Random file size up to 10MB
-    });
-  };
+    })
+  }
 
   if (error) {
     return (
       <View style={styles.container}>
         <Text>Migration error: {error.message}</Text>
       </View>
-    );
+    )
   }
   if (!success) {
     return (
       <View style={styles.container}>
         <Text>Migration is in progress...</Text>
       </View>
-    );
+    )
   }
 
   return (
@@ -125,11 +123,7 @@ export function DatabaseExplorer() {
           onChangeText={setSearchTerm}
           onSubmitEditing={searchPodcasts}
         />
-        <Button
-          title={isSearching ? "Searching..." : "Search"}
-          onPress={searchPodcasts}
-          disabled={isSearching}
-        />
+        <Button title={isSearching ? "Searching..." : "Search"} onPress={searchPodcasts} disabled={isSearching} />
       </View>
 
       {searchResults.length > 0 && (
@@ -163,7 +157,7 @@ export function DatabaseExplorer() {
         <Text style={styles.dataText}>{JSON.stringify(episodeMetadata, null, 2)}</Text>
       </View>
     </ScrollView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -214,6 +208,6 @@ const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 8,
   },
-});
+})
 
 // https://itunes.apple.com/search?media=podcast&term=fest%20und%20flauschig&country=DE
