@@ -127,7 +127,7 @@ export function Player({
   }
 
   return (
-    <YStack p="$4" borderTopWidth={1} borderColor="$borderColor">
+    <YStack p="$4" borderTopWidth={1} borderColor="$borderColor" bg="$color5">
       {/* Episode Info */}
       <XStack>
         {/* Album Art Placeholder */}
@@ -171,39 +171,22 @@ export function Player({
       </YStack>
 
       {/* Controls */}
-      <XStack mt="$3" mb="$1">
+      <XStack mt="$3" mb="$1" justifyContent="center" alignItems="center">
         <YStack flex={1} />
-        <Button
-          size="$3"
-          // icon={<SkipBack size="$1" />}
-          onPress={skipBackward}
-          disabled={isLoading}
-        >
-          <Button.Text>Back</Button.Text>
-        </Button>
+        <Button size="$3" icon={<SkipBack size={16} />} onPress={skipBackward} disabled={isLoading} />
 
         <YStack mx="$4">
           <Button
             size="$6"
             circular
             theme="blue"
-            // icon={isPlaying ? <Pause size="$2.5" /> : <Play size="$2.5" />}
+            icon={isPlaying ? <Pause size={24} /> : <Play size={24} />}
             onPress={togglePlayPause}
             disabled={isLoading}
-          >
-            <Button.Text>{isPlaying ? "Pause" : "Play"}</Button.Text>
-          </Button>
+          />
         </YStack>
 
-        <Button
-          size="$3"
-          circular
-          // icon={<SkipForward size="$1" />}
-          onPress={skipForward}
-          disabled={isLoading}
-        >
-          <Button.Text>Forward</Button.Text>
-        </Button>
+        <Button size="$3" icon={<SkipForward size={16} />} onPress={skipForward} disabled={isLoading} />
         <YStack flex={1} />
       </XStack>
 

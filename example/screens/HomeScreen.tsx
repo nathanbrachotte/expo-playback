@@ -6,10 +6,11 @@ import { useState } from "react"
 import { FlatList, Image, StyleSheet, Pressable, View } from "react-native"
 import { Button, H1, YStack, Text, XStack, Card } from "tamagui"
 
+import { Layout } from "../components/Layout"
+import { Player } from "../components/Player"
 import { db } from "../db/client"
 import { episodes, podcasts } from "../db/schema"
 import { RootStackParamList } from "../types/navigation"
-import { Player } from "../components/Player"
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">
 
@@ -120,7 +121,7 @@ export function HomeScreen() {
   }
 
   return (
-    <YStack flex={1} gap="$4" p="$4">
+    <Layout>
       <H1>Purecast</H1>
       <YStack gap="$2" height={60}>
         <XStack gap="$2">
@@ -137,7 +138,7 @@ export function HomeScreen() {
         Recent Episodes
       </Text>
 
-      <View style={[styles.flex1, selectedEpisode ? styles.contentWithPlayer : null]}>
+      <View style={{ flex: 1 }}>
         {isLoading ? (
           <Text>Loading episodes...</Text>
         ) : !episodesWithPodcasts || episodesWithPodcasts.length === 0 ? (
@@ -165,37 +166,20 @@ export function HomeScreen() {
           />
         )}
       </View>
-
-      {selectedEpisode && (
-        <View style={styles.playerContainer}>
-          <Player
-            audioUrl={selectedEpisode.episode.downloadUrl}
-            episodeTitle={selectedEpisode.episode.title}
-            podcastTitle={selectedEpisode.podcast.title}
-            skipSegments={[
-              { startTime: 10, endTime: 20 },
-              { startTime: 30, endTime: 40 },
-            ]}
-          />
-        </View>
-      )}
-    </YStack>
+      <Player />
+    </Layout>
   )
 }
 
 const styles = StyleSheet.create({
-  flex1: {
-    flex: 1,
-  },
-  contentWithPlayer: {
-    paddingBottom: 8,
-  },
   centered: {
     justifyContent: "center",
     alignItems: "center",
   },
   playerContainer: {
+    marginTop: 8,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
+    paddingTop: 8,
   },
 })

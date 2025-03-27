@@ -1,9 +1,12 @@
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator"
 import React, { useState } from "react"
-import { Button, Input, ScrollView, YStack, XStack, Text, Card } from "tamagui"
+import { Button, Input, YStack, XStack, Text, Card, ScrollView } from "tamagui"
 
+import { Layout } from "../components/Layout"
 import { db, schema } from "../db/client"
+import { TableName } from "../db/schema"
+import { useNativeSaveLiveQuery } from "../db/useNativeSaveLiveQuery"
 import migrations from "../drizzle/migrations"
 
 interface iTunesPodcast {
@@ -14,6 +17,7 @@ interface iTunesPodcast {
   artworkUrl600: string
   feedUrl: string
 }
+const tableNames: TableName[] = ["episode_metadata"]
 
 // https://itunes.apple.com/search?media=podcast&term=fest%20und%20flauschig&country=DE
 export function DatabaseExplorerScreen() {
@@ -23,7 +27,7 @@ export function DatabaseExplorerScreen() {
 
   const { data: podcasts } = useLiveQuery(db.select().from(schema.podcasts))
   const { data: episodes } = useLiveQuery(db.select().from(schema.episodes))
-  const { data: episodeMetadata } = useLiveQuery(db.select().from(schema.episodeMetadata))
+  const { data: episodeMetadata } = useNativeSaveLiveQuery(db.select().from(schema.episodeMetadata), tableNames)
 
   const { success, error } = useMigrations(db, migrations)
 
@@ -101,21 +105,25 @@ export function DatabaseExplorerScreen() {
 
   if (error) {
     return (
-      <YStack p="$4">
-        <Text color="$red10">Migration error: {error.message}</Text>
-      </YStack>
+      <Layout>
+        <YStack p="$4">
+          <Text color="$red10">Migration error: {error.message}</Text>
+        </YStack>
+      </Layout>
     )
   }
   if (!success) {
     return (
-      <YStack p="$4">
-        <Text>Migration is in progress...</Text>
-      </YStack>
+      <Layout>
+        <YStack p="$4">
+          <Text>Migration is in progress...</Text>
+        </YStack>
+      </Layout>
     )
   }
 
   return (
-    <ScrollView>
+    <Layout>
       <YStack p="$4" gap="$4">
         <Text fontSize="$7" fontWeight="bold">
           Database Explorer
@@ -134,53 +142,53 @@ export function DatabaseExplorerScreen() {
           </Button>
         </XStack>
 
-        {searchResults.length > 0 && (
-          <YStack gap="$3">
-            <Text fontSize="$6" fontWeight="bold">
-              Search Results
-            </Text>
-            {searchResults.map((podcast) => (
-              <Card key={podcast.collectionId} p="$4" gap="$2">
-                <Text fontSize="$5" fontWeight="bold">
-                  {podcast.collectionName}
-                </Text>
-                <Text fontSize="$4" color="$color">
-                  {podcast.artistName}
-                </Text>
-                <Button onPress={() => addPodcastFromSearch(podcast)}>Add to Database</Button>
-              </Card>
-            ))}
+        <ScrollView>
+          {searchResults.length > 0 && (
+            <YStack gap="$3">
+              <Text fontSize="$6" fontWeight="bold">
+                Search Results
+              </Text>
+              {searchResults.map((podcast) => (
+                <Card key={podcast.collectionId} p="$4" gap="$2">
+                  <Text fontSize="$5" fontWeight="bold">
+                    {podcast.collectionName}
+                  </Text>
+                  <Text fontSize="$4" color="$color">
+                    {podcast.artistName}
+                  </Text>
+                  <Button onPress={() => addPodcastFromSearch(podcast)}>Add to Database</Button>
+                </Card>
+              ))}
+            </YStack>
+          )}
+
+          <YStack gap="$4">
+            <Card p="$4" gap="$3">
+              <Text fontSize="$6" fontWeight="bold">
+                Podcasts
+              </Text>
+              <Button onPress={addMockPodcast}>Add Mock Podcast</Button>
+              <Text fontSize="$2">{JSON.stringify(podcasts, null, 2)}</Text>
+            </Card>
+
+            <Card p="$4" gap="$3">
+              <Text fontSize="$6" fontWeight="bold">
+                Episodes
+              </Text>
+              <Button onPress={addMockEpisode}>Add Mock Episode</Button>
+              <Text fontSize="$2">{JSON.stringify(episodes, null, 2)}</Text>
+            </Card>
+
+            <Card p="$4" gap="$3">
+              <Text fontSize="$6" fontWeight="bold">
+                Episode Metadata
+              </Text>
+              <Button onPress={addMockEpisodeMetadata}>Add Mock Metadata</Button>
+              <Text fontSize="$2">{JSON.stringify(episodeMetadata, null, 2)}</Text>
+            </Card>
           </YStack>
-        )}
-
-        <YStack gap="$4">
-          <Card p="$4" gap="$3">
-            <Text fontSize="$6" fontWeight="bold">
-              Podcasts
-            </Text>
-            <Button onPress={addMockPodcast}>Add Mock Podcast</Button>
-            <Text fontSize="$2">{JSON.stringify(podcasts, null, 2)}</Text>
-          </Card>
-
-          <Card p="$4" gap="$3">
-            <Text fontSize="$6" fontWeight="bold">
-              Episodes
-            </Text>
-            <Button onPress={addMockEpisode}>Add Mock Episode</Button>
-            <Text fontSize="$2">{JSON.stringify(episodes, null, 2)}</Text>
-          </Card>
-
-          <Card p="$4" gap="$3">
-            <Text fontSize="$6" fontWeight="bold">
-              Episode Metadata
-            </Text>
-            <Button onPress={addMockEpisodeMetadata}>Add Mock Metadata</Button>
-            <Text fontSize="$2">{JSON.stringify(episodeMetadata, null, 2)}</Text>
-          </Card>
-        </YStack>
+        </ScrollView>
       </YStack>
-    </ScrollView>
+    </Layout>
   )
 }
-
-// https://itunes.apple.com/search?media=podcast&term=fest%20und%20flauschig&country=DE
