@@ -2,7 +2,7 @@ import { Headphones } from "@tamagui/lucide-icons"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { H4, Input, Paragraph, ScrollView, YStack, Button, XStack, Spinner } from "tamagui"
-import { Toast, ToastProvider } from "@tamagui/toast"
+import { Toast } from "@tamagui/toast"
 
 import { Layout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
@@ -11,7 +11,7 @@ import { useSavePodcast } from "../clients/podcast.mutations"
 import { SearchResult, PodcastSearchResult } from "../types/podcast"
 
 export function PodcastSearchScreen() {
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("Floodcast")
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState("")
 

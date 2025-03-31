@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { Bookmark } from "@tamagui/lucide-icons"
+import { Bookmark, Plus } from "@tamagui/lucide-icons"
 import { Card, H4, Paragraph, XStack, YStack, Button, Spinner, Image } from "tamagui"
 
 import { RootStackParamList } from "../types/navigation"
@@ -44,7 +44,7 @@ export function PodcastCard({ id, title, author, description, artworkUrl100, onS
           <Button
             size="$3"
             circular
-            icon={isSaving ? () => <Spinner /> : () => <Bookmark size={16} />}
+            icon={isSaving ? () => <Spinner /> : () => <Plus size={16} />}
             onPress={onSave}
             disabled={isSaving}
           />

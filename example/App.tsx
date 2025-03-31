@@ -4,6 +4,7 @@ import { ToastProvider } from "@tamagui/toast"
 import { useColorScheme } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { TamaguiProvider } from "tamagui"
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
 
 import { DatabaseExplorerScreen } from "./screens/DatabaseExplorerScreen"
 import { HomeScreen } from "./screens/HomeScreen"
@@ -12,8 +13,7 @@ import { PodcastSearchScreen } from "./screens/PodcastSearchScreen"
 // import config from "./tamagui.config"
 import config, { tamaguiConfig } from "./tamagui.config"
 import { RootStackParamList } from "./types/navigation"
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
-
+import { PortalProvider } from "@tamagui/portal"
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const queryClient = new QueryClient()
 
@@ -28,18 +28,20 @@ export default function App() {
         // defaultTheme={colorScheme!}
         defaultTheme="dark"
       >
-        <NavigationContainer theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <PortalProvider>
           <ToastProvider>
             <QueryClientProvider client={queryClient}>
-              <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Home" component={HomeScreen} />
-                <Stack.Screen name="PodcastSearch" component={PodcastSearchScreen} />
-                <Stack.Screen name="Podcast" component={PodcastScreen} />
-                <Stack.Screen name="DatabaseExplorer" component={DatabaseExplorerScreen} />
-              </Stack.Navigator>
+              <NavigationContainer theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+                <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="Home" component={HomeScreen} />
+                  <Stack.Screen name="PodcastSearch" component={PodcastSearchScreen} />
+                  <Stack.Screen name="Podcast" component={PodcastScreen} />
+                  <Stack.Screen name="DatabaseExplorer" component={DatabaseExplorerScreen} />
+                </Stack.Navigator>
+              </NavigationContainer>
             </QueryClientProvider>
           </ToastProvider>
-        </NavigationContainer>
+        </PortalProvider>
       </TamaguiProvider>
     </SafeAreaProvider>
   )
