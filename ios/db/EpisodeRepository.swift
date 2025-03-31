@@ -78,4 +78,26 @@ class EpisodeRepository {
 
         return result
     }
+    
+    func getEpisodeById(episodeIdValue: Int64) -> Episode? {
+        guard let db = db else { return nil }
+        do {
+            let query = episodes.filter(id == episodeIdValue)
+            guard let row = try db.prepare(query).makeIterator().next() else {return nil}
+            return Episode(
+                    id: row[id],
+                    podcastId: row[podcastId],
+                    title: row[title],
+                    description: row[description],
+                    image: row[image],
+                    publishedAt: row[publishedAt],
+                    shouldDownload: row[shouldDownload],
+                    downloadUrl: row[downloadUrl],
+                    duration: row[duration]
+                )
+        } catch {
+            print("❌ Error fetching episodes for podcast: \(error)")
+        }
+        return nil
+    }
 }

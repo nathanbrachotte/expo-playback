@@ -1,5 +1,6 @@
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator"
+import * as ExpoPlayback from "expo-playback"
 import React, { useState } from "react"
 import { Button, Input, YStack, XStack, Text, Card, ScrollView } from "tamagui"
 
@@ -81,9 +82,10 @@ export function DatabaseExplorerScreen() {
       image: "https://example.com/test-episode-image.jpg",
       publishedAt: new Date(),
       createdAt: new Date(),
+      shouldDownload: true,
       updatedAt: new Date(),
       duration: Math.floor(Math.random() * 3600), // Random duration up to 1 hour
-      downloadUrl: "https://example.com/test-audio.mp3",
+      downloadUrl: "https://file-examples.com/storage/fe6c3da4a667eaec4b5b466/2017/11/file_example_MP3_2MG.mp3",
     } satisfies typeof schema.episodes.$inferInsert)
   }
 
@@ -101,6 +103,17 @@ export function DatabaseExplorerScreen() {
       downloadProgress: Math.floor(Math.random() * 100),
       fileSize: Math.floor(Math.random() * 10000000), // Random file size up to 10MB
     })
+  }
+
+  const resetDatabase = async () => {
+    try {
+      // Delete all data from tables in reverse order of dependencies
+      await db.delete(schema.episodeMetadata)
+      await db.delete(schema.episodes)
+      await db.delete(schema.podcasts)
+    } catch (error) {
+      console.error("Error resetting database:", error)
+    }
   }
 
   if (error) {
@@ -125,9 +138,17 @@ export function DatabaseExplorerScreen() {
   return (
     <Layout>
       <YStack p="$4" gap="$4">
-        <Text fontSize="$7" fontWeight="bold">
-          Database Explorer
-        </Text>
+        <XStack justifyContent="space-between" alignItems="center">
+          <Text fontSize="$7" fontWeight="bold">
+            Database Explorer
+          </Text>
+          <XStack gap="$2">
+            <Button onPress={() => ExpoPlayback.startBackgroundDownloads()}>Start Downloads</Button>
+            <Button onPress={resetDatabase} theme="red">
+              Reset Database
+            </Button>
+          </XStack>
+        </XStack>
 
         <XStack gap="$3">
           <Input

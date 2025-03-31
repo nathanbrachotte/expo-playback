@@ -42,6 +42,7 @@ class EpisodeMetadataRepository {
         return nil
     }
 
+    @discardableResult
     func createOrUpdateMetadata(_ metadata: EpisodeMetadata) -> EpisodeMetadata? {
         guard let db = db else { return nil }
         

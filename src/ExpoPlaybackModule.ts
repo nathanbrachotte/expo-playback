@@ -28,6 +28,7 @@ declare class ExpoPlaybackModule extends NativeModule<{
   initializePlayer(url: string, segments: SkipSegment[]): Promise<void>
   play(): Promise<void>
   pause(): Promise<void>
+  startBackgroundDownloads(): void
   seekTo(position: number): Promise<void>
   updateSkipSegments(segments: SkipSegment[]): void
   cleanup(): void

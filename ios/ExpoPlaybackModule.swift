@@ -30,6 +30,10 @@ public class ExpoPlaybackModule: Module {
         return .success(firstEpisode)
     }
 
+    private func startBackgroundDownloads() {
+        EpisodeDownloader().scheduleNextDownload()
+    }
+
     // Each module class must implement the definition function. The definition consists of components
     // that describes the module's functionality and behavior.
     // See https://docs.expo.dev/modules/module-api for more details about available components.
@@ -106,9 +110,9 @@ public class ExpoPlaybackModule: Module {
                             fileSize: metadata.fileSize,
                             filePath: metadata.filePath
                         )
-                        
+
                         metadataRepo.createOrUpdateMetadata(metadata)
-                        
+
                         self.sendEvent(
                             "onSqLiteTableUpdate",
                             [
@@ -161,6 +165,10 @@ public class ExpoPlaybackModule: Module {
                 self.player?.play()
                 promise.resolve()
             }
+        }
+
+        Function("startBackgroundDownloads") { () in
+            startBackgroundDownloads()
         }
 
         AsyncFunction("pause") { (promise: Promise) in
