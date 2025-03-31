@@ -3329,7 +3329,7 @@
   resolved "https://registry.npmjs.org/@tamagui/timer/-/timer-1.125.32.tgz#328ed9a99e394febb2975f3c2f514c6a0bfbd083"
   integrity sha512-jMBvd6yjMdD2dT4vum4mSzVQYnbzy6Clvc7ly+6ZzaWIHz1XpPk6FWAIYWiXXCaF1zKmeJpxpOl58/Z27MFbFQ==
 
-"@tamagui/toast@^1.125.31":
+"@tamagui/toast@^1.125.32":
   version "1.125.32"
   resolved "https://registry.npmjs.org/@tamagui/toast/-/toast-1.125.32.tgz#47b504443384955e980d3c7687e96338fae1c64e"
   integrity sha512-2/xUxdvQW5qg7+gSUlD05EYxcIueB/ae3EA3gA46rDNmGJTCtAwd8F4M8bapRKysrXx5tuEBokcxAlLKo54LOg==
@@ -4136,6 +4136,14 @@ buffer@^5.4.3:
   dependencies:
     base64-js "^1.3.1"
     ieee754 "^1.1.13"
+
+burnt@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.npmjs.org/burnt/-/burnt-0.13.0.tgz#e234e2281fa264815e670b5ded52901e02cab359"
+  integrity sha512-LjlQa7CLkGWUdz08YUIaGCJ8BLXib31/ztKqowgwqd7UH283A/kmdCj+1PYAQwDQEMPNmvSUfFHrjXbcwZibFQ==
+  dependencies:
+    sf-symbols-typescript "^1.0.0"
+    sonner "^2.0.1"
 
 bytes@3.1.2:
   version "3.1.2"
@@ -7185,6 +7193,13 @@ react-devtools-core@^5.3.1:
     shell-quote "^1.6.1"
     ws "^7"
 
+react-dom@^19.1.0:
+  version "19.1.0"
+  resolved "https://registry.npmjs.org/react-dom/-/react-dom-19.1.0.tgz#133558deca37fa1d682708df8904b25186793623"
+  integrity sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==
+  dependencies:
+    scheduler "^0.26.0"
+
 react-freeze@^1.0.0, react-freeze@^1.0.3:
   version "1.0.4"
   resolved "https://registry.npmjs.org/react-freeze/-/react-freeze-1.0.4.tgz#cbbea2762b0368b05cbe407ddc9d518c57c6f3ad"
@@ -7539,6 +7554,11 @@ scheduler@0.24.0-canary-efb381bbf-20230505:
   dependencies:
     loose-envify "^1.1.0"
 
+scheduler@^0.26.0:
+  version "0.26.0"
+  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.26.0.tgz#4ce8a8c2a2095f13ea11bf9a445be50c555d6337"
+  integrity sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==
+
 selfsigned@^2.4.1:
   version "2.4.1"
   resolved "https://registry.npmjs.org/selfsigned/-/selfsigned-2.4.1.tgz#560d90565442a3ed35b674034cec4e95dceb4ae0"
@@ -7633,6 +7653,11 @@ setprototypeof@1.2.0:
   resolved "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
+sf-symbols-typescript@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/sf-symbols-typescript/-/sf-symbols-typescript-1.0.0.tgz#94e9210bf27e7583f9749a0d07bd4f4937ea488f"
+  integrity sha512-DkS7q3nN68dEMb4E18HFPDAvyrjDZK9YAQQF2QxeFu9gp2xRDXFMF8qLJ1EmQ/qeEGQmop4lmMM1WtYJTIcCMw==
+
 shallow-clone@^3.0.0:
   version "3.0.1"
   resolved "https://registry.npmjs.org/shallow-clone/-/shallow-clone-3.0.1.tgz#8f2981ad92531f55035b01fb230769a40e02efa3"
@@ -7723,6 +7748,11 @@ slugify@^1.3.4, slugify@^1.6.6:
   version "1.6.6"
   resolved "https://registry.npmjs.org/slugify/-/slugify-1.6.6.tgz#2d4ac0eacb47add6af9e04d3be79319cbcc7924b"
   integrity sha512-h+z7HKHYXj6wJU+AnS/+IH8Uh9fdcX1Lrhg1/VMdf9PwoBQXFcXiAdsy2tSK0P6gKwJLXp02r90ahUCqHk9rrw==
+
+sonner@^2.0.1:
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/sonner/-/sonner-2.0.2.tgz#d31316f5b93ecfbfa6c32c0ef4b856a651f5b167"
+  integrity sha512-xOeXErZ4blqQd11ZnlDmoRmg+ctUJBkTU8H+HVh9rnWi9Ke28xiL39r4iCTeDX31ODTe/s1MaiaY333dUzLCtA==
 
 source-map-js@^1.2.1:
   version "1.2.1"
