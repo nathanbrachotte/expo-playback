@@ -32,6 +32,7 @@ export const episodes = sqliteTable("episodes", {
   image: text("image"),
   publishedAt: integer("published_at", { mode: "timestamp" }).notNull(),
   duration: integer("duration").notNull(),
+  shouldDownload: integer("should_download", { mode: "boolean" }).default(false),
   downloadUrl: text("download_url").notNull(),
   ...sharedKeys,
 })

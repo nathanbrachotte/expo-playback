@@ -7,6 +7,7 @@ struct Episode {
     let description: String
     let image: String?
     let publishedAt: Int64
+    let shouldDownload: Bool
     let downloadUrl: String
     let duration: Int64
 }
@@ -21,6 +22,7 @@ class EpisodeRepository {
     private let description = Expression<String>("description")
     private let image = Expression<String?>("image")
     private let publishedAt = Expression<Int64>("published_at")
+    private let shouldDownload = Expression<Bool>("should_download")
     private let downloadUrl = Expression<String>("download_url")
     private let duration = Expression<Int64>("duration")
 
@@ -37,6 +39,7 @@ class EpisodeRepository {
                     description: row[description],
                     image: row[image],
                     publishedAt: row[publishedAt],
+                    shouldDownload: row[shouldDownload],
                     downloadUrl: row[downloadUrl],
                     duration: row[duration]
                 )
@@ -63,6 +66,7 @@ class EpisodeRepository {
                     description: row[description],
                     image: row[image],
                     publishedAt: row[publishedAt],
+                    shouldDownload: row[shouldDownload],
                     downloadUrl: row[downloadUrl],
                     duration: row[duration]
                 )

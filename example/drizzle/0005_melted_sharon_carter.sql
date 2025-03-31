@@ -1,0 +1,1 @@
+ALTER TABLE `episodes` ADD `should_download` integer DEFAULT false;
