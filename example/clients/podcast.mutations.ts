@@ -1,24 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
+import { db, schema } from "../db/client"
 import { SearchResult } from "../types/podcast"
 
-// This would typically come from your database service
-interface SavedPodcast extends SearchResult {
-  savedAt: string
-}
-
-// In a real app, this would be your database service
-const savePodcastToStorage = async (podcast: SearchResult): Promise<SavedPodcast> => {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  // In a real app, this would be your database call
-  const savedPodcast: SavedPodcast = {
-    ...podcast,
-    savedAt: new Date().toISOString(),
-  }
-
-  return savedPodcast
+const savePodcastToStorage = async (podcast: SearchResult) => {
+  await db.insert(schema.podcasts).values({
+    title: podcast.title,
+    description: "",
+    image: podcast.artworkUrl100,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  } satisfies typeof schema.podcasts.$inferInsert)
 }
 
 export function useSavePodcast() {

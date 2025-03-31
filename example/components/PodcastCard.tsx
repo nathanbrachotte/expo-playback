@@ -11,7 +11,7 @@ interface PodcastCardProps {
   id: string
   title: string
   author: string
-  description: string
+  description?: string
   artworkUrl100?: string
   onSave: () => void
   isSaving?: boolean
@@ -37,9 +37,11 @@ export function PodcastCard({ id, title, author, description, artworkUrl100, onS
           <YStack flex={1} gap="$1">
             <H4>{title}</H4>
             <Paragraph>{author}</Paragraph>
-            <Paragraph size="$2" color="$gray11">
-              {description}
-            </Paragraph>
+            {description ? (
+              <Paragraph size="$2" color="$gray11">
+                {description}
+              </Paragraph>
+            ) : null}
           </YStack>
           <Button
             size="$3"

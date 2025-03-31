@@ -2,7 +2,7 @@ import { Headphones } from "@tamagui/lucide-icons"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { H4, Input, Paragraph, ScrollView, YStack, Button, XStack, Spinner } from "tamagui"
-import { Toast } from "@tamagui/toast"
+import { Toast, useToastController } from "@tamagui/toast"
 
 import { Layout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
@@ -12,8 +12,6 @@ import { SearchResult, PodcastSearchResult } from "../types/podcast"
 
 export function PodcastSearchScreen() {
   const [searchQuery, setSearchQuery] = useState("Floodcast")
-  const [showToast, setShowToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState("")
 
   const {
     data: searchResults,
@@ -31,23 +29,22 @@ export function PodcastSearchScreen() {
         id: item.trackId?.toString() || item.collectionId?.toString() || Math.random().toString(),
         title: item.trackName || item.collectionName || "Unknown Title",
         author: item.artistName || "Unknown Author",
-        description: "Tap to view podcast details",
         artworkUrl100: item.artworkUrl100,
       }))
     },
   })
 
   const savePodcast = useSavePodcast()
+  const toastController = useToastController()
 
   const handleSavePodcast = async (podcast: SearchResult) => {
     try {
-      await savePodcast.mutateAsync(podcast)
-      setToastMessage("Podcast saved successfully!")
-      setShowToast(true)
+      const res = await savePodcast.mutateAsync(podcast)
+      console.log("res", res)
+      toastController.show("Podcast saved successfully!")
     } catch (error) {
       console.error("Failed to save podcast:", error)
-      setToastMessage("Failed to save podcast. Please try again.")
-      setShowToast(true)
+      toastController.show("Failed to save podcast. Please try again.")
     }
   }
 
@@ -74,13 +71,13 @@ export function PodcastSearchScreen() {
         </Button>
       </XStack>
       {error && (
-        <Paragraph color="$red10" mt="$2">
+        <Paragraph color="$red10" marginTop="$2">
           Failed to fetch podcasts. Please try again.
         </Paragraph>
       )}
 
-      <ScrollView showsVerticalScrollIndicator={false} mt="$3" alwaysBounceVertical={false}>
-        <YStack gap="$3">
+      <ScrollView showsVerticalScrollIndicator={false} alwaysBounceVertical={false}>
+        <YStack gap="$3" mt="$3">
           {(!searchResults || searchResults.length === 0) && !isLoading && !error && (
             <YStack flex={1} alignItems="center" justifyContent="center" py="$10" gap="$4">
               <Headphones size={64} color="$blue10" />
@@ -100,7 +97,6 @@ export function PodcastSearchScreen() {
               id={result.id}
               title={result.title}
               author={result.author}
-              description={result.description}
               artworkUrl100={result.artworkUrl100}
               onSave={() => handleSavePodcast(result)}
               isSaving={savePodcast.isPending}
@@ -108,12 +104,6 @@ export function PodcastSearchScreen() {
           ))}
         </YStack>
       </ScrollView>
-
-      {showToast && (
-        <Toast open={showToast} onOpenChange={setShowToast} duration={3000} animation="quick">
-          <Toast.Title>{toastMessage}</Toast.Title>
-        </Toast>
-      )}
     </Layout>
   )
 }

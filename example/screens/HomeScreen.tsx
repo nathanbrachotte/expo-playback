@@ -4,7 +4,7 @@ import { desc, sql } from "drizzle-orm"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { useState } from "react"
 import { FlatList, Image, StyleSheet, Pressable, View } from "react-native"
-import { Button, H1, YStack, Text, XStack, Card, H2 } from "tamagui"
+import { Button, H1, YStack, Text, XStack, Card, H2, H4 } from "tamagui"
 
 import { PurecastLogo } from "../assets/PurecastLogo"
 import { Layout } from "../components/Layout"
@@ -13,6 +13,7 @@ import { db } from "../db/client"
 import { episodes, podcasts } from "../db/schema"
 import { RootStackParamList } from "../types/navigation"
 import { Plus, Search } from "@tamagui/lucide-icons"
+import { PodcastCard } from "../components/PodcastCard"
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">
 
@@ -110,6 +111,8 @@ export function HomeScreen() {
       .orderBy(desc(episodes.publishedAt)),
   )
 
+  const { data: podcastList } = useLiveQuery(db.select().from(podcasts))
+
   const isLoading = !episodesWithPodcasts
 
   const handleEpisodePress = (item: any) => {
@@ -139,17 +142,35 @@ export function HomeScreen() {
       <Button size="$3" onPress={() => navigation.navigate("DatabaseExplorer")}>
         Database Explorer
       </Button>
-      <Text fontWeight="bold" fontSize="$5" mt="$2">
-        Recent Episodes
-      </Text>
+      <H4>All my podcasts</H4>
+      {podcastList?.length ? (
+        <FlatList
+          data={podcastList}
+          keyExtractor={(item) => item.id.toString()}
+          horizontal
+          renderItem={({ item }) => (
+            <PodcastCard
+              id={item.id.toString()}
+              title={item.title}
+              author={item.description || ""}
+              onSave={() => {}}
+              artworkUrl100={item.image || ""}
+              isSaving={false}
+            />
+          )}
+        />
+      ) : (
+        <Text>No podcasts found</Text>
+      )}
 
+      <H4>Recent Episodes</H4>
       <View style={{ flex: 1 }}>
         {isLoading ? (
           <Text>Loading episodes...</Text>
         ) : !episodesWithPodcasts || episodesWithPodcasts.length === 0 ? (
           <YStack flex={1} style={styles.centered} gap="$4">
             <Text>No episodes found</Text>
-            <Button size="$4" onPress={() => navigation.navigate("PodcastResearch")}>
+            <Button size="$4" onPress={() => navigation.navigate("PodcastSearch")}>
               Add Podcasts
             </Button>
           </YStack>
@@ -171,7 +192,7 @@ export function HomeScreen() {
           />
         )}
       </View>
-      <Player />
+      {/* <Player /> */}
     </Layout>
   )
 }
