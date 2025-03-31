@@ -1,7 +1,7 @@
 ---
-description: All the requirements needed to build the app. Use it all the time for context.
+description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 
 # What are we building
@@ -14,7 +14,10 @@ alwaysApply: false
 - Users can save search their favorite podcasts, save the ones they listen to regularly, download them, etc.
 
 # Tech stack
-- React-navigation
+- Use react-navigation for React-Native navigation.
+- Use @tanstack/react-query for fetching data. For both queries and mutations.
+
+# Style
 - For components, always use Tamagui
   - Tamagui doesn't have a `f` shortcut for `flex`, just use `flex`.
   - `space` is deprecated, use `gap` instead.
@@ -23,3 +26,7 @@ alwaysApply: false
 
 # Typescript
 - No `any`: Use `unknown` or validate with zod instead
+
+# Business Logic
+- Always make use of the early return pattern.
+- For reusable components, make sure the use the IoC (Inversion of Control) pattern.

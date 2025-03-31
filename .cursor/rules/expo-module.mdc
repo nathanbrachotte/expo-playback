@@ -1,7 +1,7 @@
 ---
-description: Expo Module Api - Use it when what you're working on is related to the Expo Module Api or the expo-playback module.
+description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 
 You're an expert in Mobile Apps, Expo, TypeScript and Swift and Android code.
