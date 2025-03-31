@@ -23,6 +23,8 @@
     "@tamagui/react-native-media-driver": "^1.125.31",
     "@tamagui/shorthands": "^1.125.31",
     "@tamagui/themes": "^1.125.31",
+    "@tamagui/toast": "^1.125.31",
+    "@tanstack/react-query": "^5.71.1",
     "babel-plugin-inline-import": "^3.0.0",
     "drizzle-orm": "^0.40.0",
     "expo": "~52.0.37",

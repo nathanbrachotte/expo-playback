@@ -6,10 +6,11 @@ import { TamaguiProvider } from "tamagui"
 
 import { DatabaseExplorerScreen } from "./screens/DatabaseExplorerScreen"
 import { HomeScreen } from "./screens/HomeScreen"
-import { PodcastResearchScreen } from "./screens/PodcastResearchScreen"
+import { PodcastSearchScreen } from "./screens/PodcastSearchScreen"
 // import config from "./tamagui.config"
 import config, { tamaguiConfig } from "./tamagui.config"
 import { RootStackParamList } from "./types/navigation"
+import { PodcastScreen } from "./screens/PodcastScreen"
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -21,12 +22,14 @@ export default function App() {
       <TamaguiProvider
         config={tamaguiConfig}
         // config={config}
-        defaultTheme={colorScheme!}
+        // defaultTheme={colorScheme!}
+        defaultTheme="dark"
       >
         <NavigationContainer theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
           <Stack.Navigator initialRouteName="Home">
             <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="PodcastResearch" component={PodcastResearchScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="PodcastSearch" component={PodcastSearchScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Podcast" component={PodcastScreen} options={{ headerShown: false }} />
             <Stack.Screen name="DatabaseExplorer" component={DatabaseExplorerScreen} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>

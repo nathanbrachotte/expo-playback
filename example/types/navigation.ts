@@ -1,5 +1,12 @@
 export type RootStackParamList = {
   Home: undefined
-  PodcastResearch: undefined
+  PodcastSearch: undefined
+  Podcast: { id: string }
   DatabaseExplorer: undefined
+}
+
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
 }

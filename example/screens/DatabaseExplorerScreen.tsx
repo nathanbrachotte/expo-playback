@@ -168,7 +168,7 @@ export function DatabaseExplorerScreen() {
                 Podcasts
               </Text>
               <Button onPress={addMockPodcast}>Add Mock Podcast</Button>
-              <Text fontSize="$2">{JSON.stringify(podcasts, null, 2)}</Text>
+              <Text fontSize="$4">{JSON.stringify(podcasts, null, 2)}</Text>
             </Card>
 
             <Card p="$4" gap="$3">
@@ -176,7 +176,7 @@ export function DatabaseExplorerScreen() {
                 Episodes
               </Text>
               <Button onPress={addMockEpisode}>Add Mock Episode</Button>
-              <Text fontSize="$2">{JSON.stringify(episodes, null, 2)}</Text>
+              <Text fontSize="$4">{JSON.stringify(episodes, null, 2)}</Text>
             </Card>
 
             <Card p="$4" gap="$3">
@@ -184,7 +184,7 @@ export function DatabaseExplorerScreen() {
                 Episode Metadata
               </Text>
               <Button onPress={addMockEpisodeMetadata}>Add Mock Metadata</Button>
-              <Text fontSize="$2">{JSON.stringify(episodeMetadata, null, 2)}</Text>
+              <Text fontSize="$4">{JSON.stringify(episodeMetadata, null, 2)}</Text>
             </Card>
           </YStack>
         </ScrollView>

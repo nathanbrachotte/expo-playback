@@ -4,13 +4,15 @@ import { desc, sql } from "drizzle-orm"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { useState } from "react"
 import { FlatList, Image, StyleSheet, Pressable, View } from "react-native"
-import { Button, H1, YStack, Text, XStack, Card } from "tamagui"
+import { Button, H1, YStack, Text, XStack, Card, H2 } from "tamagui"
 
+import { PurecastLogo } from "../assets/PurecastLogo"
 import { Layout } from "../components/Layout"
 import { Player } from "../components/Player"
 import { db } from "../db/client"
 import { episodes, podcasts } from "../db/schema"
 import { RootStackParamList } from "../types/navigation"
+import { Plus, Search } from "@tamagui/lucide-icons"
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">
 
@@ -121,19 +123,22 @@ export function HomeScreen() {
   }
 
   return (
-    <Layout>
-      <H1>Purecast</H1>
-      <YStack gap="$2" height={60}>
-        <XStack gap="$2">
-          <Button size="$3" flex={1} onPress={() => navigation.navigate("PodcastResearch")}>
-            Search Podcasts
-          </Button>
-          <Button size="$3" flex={1} onPress={() => navigation.navigate("DatabaseExplorer")}>
-            Database Explorer
-          </Button>
+    <Layout
+      header={
+        <XStack justifyContent="center" alignItems="center" gap="$2">
+          <H2>Purecast</H2>
+          <PurecastLogo height={35} width={35} />
         </XStack>
-      </YStack>
-
+      }
+      actionSection={
+        <XStack flex={1} justifyContent="flex-end">
+          <Button icon={<Search />} size="$3" onPress={() => navigation.navigate("PodcastSearch")} />
+        </XStack>
+      }
+    >
+      <Button size="$3" onPress={() => navigation.navigate("DatabaseExplorer")}>
+        Database Explorer
+      </Button>
       <Text fontWeight="bold" fontSize="$5" mt="$2">
         Recent Episodes
       </Text>
