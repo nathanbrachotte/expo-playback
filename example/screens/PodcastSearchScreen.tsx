@@ -2,7 +2,7 @@ import { Headphones } from "@tamagui/lucide-icons"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { H4, Input, Paragraph, ScrollView, YStack, Button, XStack, Spinner } from "tamagui"
-import { Toast, useToastController } from "@tamagui/toast"
+import { Toast, useToastController, useToastState } from "@tamagui/toast"
 
 import { Layout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
@@ -41,10 +41,16 @@ export function PodcastSearchScreen() {
     try {
       const res = await savePodcast.mutateAsync(podcast)
       console.log("res", res)
-      toastController.show("Podcast saved successfully!")
+      toastController.show("Podcast Added!", {
+        message: `${podcast.title} has been added to your library.`,
+        duration: 3000,
+      })
     } catch (error) {
       console.error("Failed to save podcast:", error)
-      toastController.show("Failed to save podcast. Please try again.")
+      toastController.show("Failed to Save", {
+        message: "There was an error saving the podcast. Please try again.",
+        duration: 3000,
+      })
     }
   }
 

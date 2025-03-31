@@ -1,19 +1,19 @@
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { Search } from "@tamagui/lucide-icons"
+import { Toast, ToastViewport, useToastController, useToastState } from "@tamagui/toast"
 import { desc, sql } from "drizzle-orm"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { useState } from "react"
 import { FlatList, Image, StyleSheet, Pressable, View } from "react-native"
-import { Button, H1, YStack, Text, XStack, Card, H2, H4 } from "tamagui"
+import { Button, YStack, Text, XStack, Card, H2, H4 } from "tamagui"
 
 import { PurecastLogo } from "../assets/PurecastLogo"
 import { Layout } from "../components/Layout"
-import { Player } from "../components/Player"
+import { PodcastCard } from "../components/PodcastCard"
 import { db } from "../db/client"
 import { episodes, podcasts } from "../db/schema"
 import { RootStackParamList } from "../types/navigation"
-import { Plus, Search } from "@tamagui/lucide-icons"
-import { PodcastCard } from "../components/PodcastCard"
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">
 

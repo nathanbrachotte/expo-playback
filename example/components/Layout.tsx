@@ -1,6 +1,7 @@
 import { useNavigation, useNavigationState } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { ChevronLeft } from "@tamagui/lucide-icons"
+import { ToastViewport } from "@tamagui/toast"
 import { SafeAreaView } from "react-native"
 import { styled, YStack, XStack, Button, AnimatePresence } from "tamagui"
 
@@ -57,6 +58,7 @@ export function Layout({
       <YStack flex={1} gap="$2" py="$1" px="$2">
         {children}
       </YStack>
+      <ToastViewport flexDirection="column" bottom={0} left={0} right={0} />
     </CustomSafeAreaView>
   )
 }
