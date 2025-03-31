@@ -2,7 +2,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator"
 import * as ExpoPlayback from "expo-playback"
 import React, { useState } from "react"
-import { Button, Input, YStack, XStack, Text, Card, ScrollView } from "tamagui"
+import { Button, Input, YStack, XStack, Text, Card, ScrollView, H4 } from "tamagui"
 
 import { Layout } from "../components/Layout"
 import { db, schema } from "../db/client"
@@ -136,18 +136,13 @@ export function DatabaseExplorerScreen() {
   }
 
   return (
-    <Layout>
+    <Layout header={<H4 fontWeight="bold">Database Explorer</H4>}>
       <YStack p="$4" gap="$4">
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$7" fontWeight="bold">
-            Database Explorer
-          </Text>
-          <XStack gap="$2">
-            <Button onPress={() => ExpoPlayback.startBackgroundDownloads()}>Start Downloads</Button>
-            <Button onPress={resetDatabase} theme="red">
-              Reset Database
-            </Button>
-          </XStack>
+        <XStack gap="$2">
+          <Button onPress={() => ExpoPlayback.startBackgroundDownloads()}>Start Downloads</Button>
+          <Button onPress={resetDatabase} theme="red">
+            Reset Database
+          </Button>
         </XStack>
 
         <XStack gap="$3">

@@ -5,7 +5,6 @@ import { SafeAreaView } from "react-native"
 import { styled, YStack, XStack, Button, AnimatePresence } from "tamagui"
 
 import { RootStackParamList } from "../types/navigation"
-import { PurecastLogo } from "../assets/PurecastLogo"
 
 const CustomSafeAreaView = styled(SafeAreaView, {
   variants: {} as const,
