@@ -8,7 +8,7 @@ import { searchPodcasts } from "../clients/podcast"
 import { useSavePodcast } from "../clients/podcast.mutations"
 import { Layout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
-import { PodcastSearchResult, SearchResult } from "../types/podcast"
+import { PodcastSearchResult } from "../types/podcast"
 
 export function PodcastSearchScreen() {
   const [searchQuery, setSearchQuery] = useState("Floodcast")
@@ -77,14 +77,10 @@ export function PodcastSearchScreen() {
           {isSearching ? "" : "Search"}
         </Button>
       </XStack>
-      {error && (
-        <Paragraph color="$red10" marginTop="$2">
-          Failed to fetch podcasts. Please try again.
-        </Paragraph>
-      )}
+      {error && <Paragraph marginTop="$2">Failed to fetch podcasts. Please try again.</Paragraph>}
 
       <ScrollView showsVerticalScrollIndicator={false} alwaysBounceVertical={false}>
-        <YStack gap="$3" mt="$3" p="$1" bg="$red1">
+        <YStack gap="$3" mt="$3" p="$1">
           {(!searchResults || searchResults.length === 0) && !isLoading && !error && (
             <YStack flex={1} alignItems="center" justifyContent="center" py="$10" gap="$4">
               <Headphones size={64} color="$blue10" />

@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/native"
 import { Search } from "@tamagui/lucide-icons"
+import { useToastController } from "@tamagui/toast"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import React from "react"
 import { Button, Text, XStack, H2, H4, YStack, H3, ScrollView } from "tamagui"
@@ -24,7 +25,7 @@ function PodcastsList() {
           title={podcast.title}
           author={podcast.author}
           description={podcast.description}
-          cover={podcast.cover}
+          cover={podcast.image}
           mr="$3"
         />
       ))}
@@ -45,6 +46,12 @@ export function PodcastsSection() {
 export function HomeScreen() {
   const navigation = useNavigation<HomeScreenNavigationProp>()
 
+  const toastController = useToastController()
+
+  const showToast = () => {
+    toastController.show("Hey", {})
+  }
+
   return (
     <Layout
       header={
@@ -55,6 +62,7 @@ export function HomeScreen() {
       }
       actionSection={
         <XStack flex={1} justifyContent="flex-end">
+          <Button onPress={showToast}>Show toast</Button>
           <Button icon={<Search />} size="$3" onPress={() => navigation.navigate("PodcastSearch")} />
         </XStack>
       }
@@ -64,6 +72,7 @@ export function HomeScreen() {
       </Button>
       <PodcastsSection />
       <AllEpisodesList />
+      <Button onPress={showToast}>Show toast</Button>
       {/* <Player /> */}
     </Layout>
   )
