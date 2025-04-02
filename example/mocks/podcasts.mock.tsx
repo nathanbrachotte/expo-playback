@@ -1,3 +1,5 @@
+import { PodcastSearchResult, PodcastSearchResponse } from "../types/podcast"
+
 export const PODCASTS_SEARCH_RESPONSE_MOCK = {
   resultCount: 3,
   results: [
@@ -22,8 +24,8 @@ export const PODCASTS_SEARCH_RESPONSE_MOCK = {
       country: "DEU",
       currency: "EUR",
       feedUrl: "https://feeds.acast.com/public/shows/5ffe3facad3e633276e9ea57",
-      genreIds: [Array],
-      genres: [Array],
+      genreIds: ["funId"],
+      genres: ["fun"],
       kind: "podcast",
       primaryGenreName: "Comedy",
       releaseDate: "2025-03-31T02:01:00Z",
@@ -58,8 +60,8 @@ export const PODCASTS_SEARCH_RESPONSE_MOCK = {
       country: "DEU",
       currency: "EUR",
       feedUrl: "https://anchor.fm/s/3ca2e810/podcast/rss",
-      genreIds: [Array],
-      genres: [Array],
+      genreIds: ["funId"],
+      genres: ["fun"],
       kind: "podcast",
       primaryGenreName: "Comedy-Fiction",
       releaseDate: "2020-10-31T05:36:00Z",
@@ -94,8 +96,8 @@ export const PODCASTS_SEARCH_RESPONSE_MOCK = {
       country: "DEU",
       currency: "EUR",
       feedUrl: "https://anchor.fm/s/696644f0/podcast/rss",
-      genreIds: [Array],
-      genres: [Array],
+      genreIds: ["funId"],
+      genres: ["fun"],
       kind: "podcast",
       primaryGenreName: "Comedy",
       releaseDate: "2021-09-14T13:45:00Z",
@@ -109,5 +111,5 @@ export const PODCASTS_SEARCH_RESPONSE_MOCK = {
       trackViewUrl: "https://podcasts.apple.com/de/podcast/floodcast/id1585379234?uo=4",
       wrapperType: "track",
     },
-  ],
-}
+  ] satisfies PodcastSearchResult[],
+} satisfies PodcastSearchResponse

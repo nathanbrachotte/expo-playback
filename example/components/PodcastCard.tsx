@@ -1,23 +1,22 @@
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { Bookmark, Plus } from "@tamagui/lucide-icons"
+import { Plus } from "@tamagui/lucide-icons"
 import { Card, H4, Paragraph, XStack, YStack, Button, Spinner, Image } from "tamagui"
 
 import { RootStackParamList } from "../types/navigation"
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
-interface PodcastCardProps {
+type PodcastCardProps = {
   id: string
   title: string
-  author: string
-  description?: string
-  artworkUrl100?: string
-  onSave: () => void
-  isSaving?: boolean
-}
+  author?: string | null
+  description?: string | null
+  cover?: string | null
+  Actions?: React.ReactElement
+} & React.ComponentProps<typeof Card>
 
-export function PodcastCard({ id, title, author, description, artworkUrl100, onSave, isSaving }: PodcastCardProps) {
+export function PodcastCard({ id, title, author, description, cover, Actions, ...props }: PodcastCardProps) {
   const navigation = useNavigation<NavigationProp>()
 
   return (
@@ -28,12 +27,11 @@ export function PodcastCard({ id, title, author, description, artworkUrl100, onS
       hoverStyle={{ scale: 0.925 }}
       pressStyle={{ scale: 0.875 }}
       onPress={() => navigation.navigate("Podcast", { id })}
+      {...props}
     >
       <Card.Header padded>
         <XStack gap="$3">
-          {artworkUrl100 && (
-            <Image source={{ uri: artworkUrl100 }} width={60} height={60} borderRadius="$4" resizeMode="cover" />
-          )}
+          {cover && <Image source={{ uri: cover }} width={60} height={60} borderRadius="$4" resizeMode="cover" />}
           <YStack flex={1} gap="$1">
             <H4>{title}</H4>
             <Paragraph>{author}</Paragraph>
@@ -43,13 +41,7 @@ export function PodcastCard({ id, title, author, description, artworkUrl100, onS
               </Paragraph>
             ) : null}
           </YStack>
-          <Button
-            size="$3"
-            circular
-            icon={isSaving ? () => <Spinner /> : () => <Plus size={16} />}
-            onPress={onSave}
-            disabled={isSaving}
-          />
+          {Actions}
         </XStack>
       </Card.Header>
     </Card>

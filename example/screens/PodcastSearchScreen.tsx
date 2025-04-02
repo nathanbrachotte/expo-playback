@@ -1,14 +1,14 @@
-import { Headphones } from "@tamagui/lucide-icons"
+import { Headphones, Plus } from "@tamagui/lucide-icons"
+import { useToastController } from "@tamagui/toast"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { H4, Input, Paragraph, ScrollView, YStack, Button, XStack, Spinner } from "tamagui"
-import { Toast, useToastController, useToastState } from "@tamagui/toast"
 
-import { Layout } from "../components/Layout"
-import { PodcastCard } from "../components/PodcastCard"
 import { searchPodcasts } from "../clients/podcast"
 import { useSavePodcast } from "../clients/podcast.mutations"
-import { SearchResult, PodcastSearchResult } from "../types/podcast"
+import { Layout } from "../components/Layout"
+import { PodcastCard } from "../components/PodcastCard"
+import { PodcastSearchResult, SearchResult } from "../types/podcast"
 
 export function PodcastSearchScreen() {
   const [searchQuery, setSearchQuery] = useState("Floodcast")
@@ -26,10 +26,11 @@ export function PodcastSearchScreen() {
     select: (data) => {
       if (!data?.results) return []
       return data.results.map((item: PodcastSearchResult) => ({
-        id: item.trackId?.toString() || item.collectionId?.toString() || Math.random().toString(),
-        title: item.trackName || item.collectionName || "Unknown Title",
-        author: item.artistName || "Unknown Author",
-        artworkUrl100: item.artworkUrl100,
+        ...item,
+        // id: item.trackId?.toString() || item.collectionId?.toString() || Math.random().toString(),
+        // title: item.trackName || item.collectionName || "Unknown Title",
+        // author: item.artistName || "Unknown Author",
+        // artworkUrl100: item.artworkUrl100,
       }))
     },
   })
@@ -37,12 +38,12 @@ export function PodcastSearchScreen() {
   const savePodcast = useSavePodcast()
   const toastController = useToastController()
 
-  const handleSavePodcast = async (podcast: SearchResult) => {
+  const handleSavePodcast = async (podcast: PodcastSearchResult) => {
     try {
       const res = await savePodcast.mutateAsync(podcast)
-      console.log("res", res)
+
       toastController.show("Podcast Added!", {
-        message: `${podcast.title} has been added to your library.`,
+        message: `${res.lastInsertRowId} has been added to your library.`,
         duration: 3000,
       })
     } catch (error) {
@@ -83,7 +84,7 @@ export function PodcastSearchScreen() {
       )}
 
       <ScrollView showsVerticalScrollIndicator={false} alwaysBounceVertical={false}>
-        <YStack gap="$3" mt="$3">
+        <YStack gap="$3" mt="$3" p="$1" bg="$red1">
           {(!searchResults || searchResults.length === 0) && !isLoading && !error && (
             <YStack flex={1} alignItems="center" justifyContent="center" py="$10" gap="$4">
               <Headphones size={64} color="$blue10" />
@@ -97,15 +98,22 @@ export function PodcastSearchScreen() {
               </YStack>
             </YStack>
           )}
-          {searchResults?.map((result: SearchResult) => (
+          {searchResults?.map((result) => (
             <PodcastCard
-              key={result.id}
-              id={result.id}
-              title={result.title}
-              author={result.author}
-              artworkUrl100={result.artworkUrl100}
-              onSave={() => handleSavePodcast(result)}
-              isSaving={savePodcast.isPending}
+              key={result.trackId}
+              id={result.trackId.toString()}
+              title={result.trackName}
+              author={result.artistName}
+              cover={result.artworkUrl100}
+              Actions={
+                <Button
+                  size="$3"
+                  circular
+                  icon={isLoading ? () => <Spinner /> : () => <Plus size={16} />}
+                  onPress={() => handleSavePodcast(result)}
+                  disabled={isLoading}
+                />
+              }
             />
           ))}
         </YStack>
