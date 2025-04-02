@@ -7,6 +7,7 @@ import { useColorScheme } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { TamaguiProvider, YStack } from "tamagui"
 
+import { MigrationsWrapper } from "./components/MigrationsWrapper"
 import { DatabaseExplorerScreen } from "./screens/DatabaseExplorerScreen"
 import { HomeScreen } from "./screens/HomeScreen"
 import { PodcastScreen } from "./screens/PodcastScreen"
@@ -55,17 +56,19 @@ export default function App() {
       >
         <PortalProvider>
           <ToastProvider>
-            <QueryClientProvider client={queryClient}>
-              <NavigationContainer theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-                <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="Home" component={HomeScreen} />
-                  <Stack.Screen name="PodcastSearch" component={PodcastSearchScreen} />
-                  <Stack.Screen name="Podcast" component={PodcastScreen} />
-                  <Stack.Screen name="DatabaseExplorer" component={DatabaseExplorerScreen} />
-                </Stack.Navigator>
-                <SuccessToast />
-              </NavigationContainer>
-            </QueryClientProvider>
+            <MigrationsWrapper>
+              <QueryClientProvider client={queryClient}>
+                <NavigationContainer theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+                  <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="Home" component={HomeScreen} />
+                    <Stack.Screen name="PodcastSearch" component={PodcastSearchScreen} />
+                    <Stack.Screen name="Podcast" component={PodcastScreen} />
+                    <Stack.Screen name="DatabaseExplorer" component={DatabaseExplorerScreen} />
+                  </Stack.Navigator>
+                  <SuccessToast />
+                </NavigationContainer>
+              </QueryClientProvider>
+            </MigrationsWrapper>
           </ToastProvider>
         </PortalProvider>
       </TamaguiProvider>

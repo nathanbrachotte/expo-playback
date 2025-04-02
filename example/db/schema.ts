@@ -14,10 +14,13 @@ export const TABLE_NAMES = ["podcasts", "episodes", "episode_metadata"] as const
 export type TableName = (typeof TABLE_NAMES)[number]
 
 export const podcasts = sqliteTable("podcasts", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  title: text("title").notNull(),
+  id: integer("id").primaryKey({
+    autoIncrement: true,
+  }),
+  author: text("author"),
   description: text("description"),
   image: text("image"),
+  title: text("title").notNull(),
   ...sharedKeys,
 })
 

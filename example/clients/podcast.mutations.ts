@@ -1,14 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { db, schema } from "../db/client"
-import { SearchResult } from "../types/podcast"
+import { PodcastSearchResult } from "../types/podcast"
 
-const savePodcastToStorage = async (podcast: SearchResult) => {
-  await db.insert(schema.podcasts).values({
-    title: podcast.title,
+const savePodcastToStorage = async (podcast: PodcastSearchResult) => {
+  return await db.insert(schema.podcasts).values({
+    author: podcast.artistName,
+    createdAt: new Date(),
     description: "",
     image: podcast.artworkUrl100,
-    createdAt: new Date(),
+    title: podcast.trackName,
     updatedAt: new Date(),
   } satisfies typeof schema.podcasts.$inferInsert)
 }

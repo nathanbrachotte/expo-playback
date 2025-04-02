@@ -1,3 +1,5 @@
+import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+
 export type RootStackParamList = {
   Home: undefined
   PodcastSearch: undefined
@@ -10,3 +12,5 @@ declare global {
     interface RootParamList extends RootStackParamList {}
   }
 }
+
+export type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">

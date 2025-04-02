@@ -1,8 +1,14 @@
+import { PODCASTS_SEARCH_RESPONSE_MOCK } from "../mocks/podcasts.mock"
 import { PodcastSearchResult, PodcastSearchResponse } from "../types/podcast"
 
 const ITUNES_API_BASE_URL = "https://itunes.apple.com"
+const TEST_MODE = false
 
 export async function searchPodcasts(query: string): Promise<PodcastSearchResponse> {
+  if (TEST_MODE) {
+    return PODCASTS_SEARCH_RESPONSE_MOCK
+  }
+
   const encodedQuery = encodeURIComponent(query.trim())
   const response = await fetch(`${ITUNES_API_BASE_URL}/search?media=podcast&term=${encodedQuery}&country=DE`)
 
