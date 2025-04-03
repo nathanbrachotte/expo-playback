@@ -3,18 +3,18 @@ import { Search } from "@tamagui/lucide-icons"
 import { useToastController } from "@tamagui/toast"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import React from "react"
-import { Button, Text, XStack, H2, H4, YStack, H3, ScrollView } from "tamagui"
+import { Button, Text, XStack, H2, YStack, H3, ScrollView } from "tamagui"
 
 import { PurecastLogo } from "../assets/PurecastLogo"
-import { AllEpisodesList } from "../components/AllEpisodesList"
+import { AllEpisodesSection } from "../components/AllEpisodesSection"
 import { Layout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { db } from "../db/client"
-import { podcasts } from "../db/schema"
+import { podcastsTable } from "../db/schema"
 import { HomeScreenNavigationProp } from "../types/navigation"
 
 function PodcastsList() {
-  const { data: podcastList } = useLiveQuery(db.select().from(podcasts))
+  const { data: podcastList } = useLiveQuery(db.select().from(podcastsTable))
 
   return (
     <ScrollView horizontal>
@@ -33,7 +33,7 @@ function PodcastsList() {
   )
 }
 export function PodcastsSection() {
-  const { data: podcastList } = useLiveQuery(db.select().from(podcasts))
+  const { data: podcastList } = useLiveQuery(db.select().from(podcastsTable))
 
   return (
     <YStack p="$2">
@@ -62,7 +62,6 @@ export function HomeScreen() {
       }
       actionSection={
         <XStack flex={1} justifyContent="flex-end">
-          <Button onPress={showToast}>Show toast</Button>
           <Button icon={<Search />} size="$3" onPress={() => navigation.navigate("PodcastSearch")} />
         </XStack>
       }
@@ -71,7 +70,8 @@ export function HomeScreen() {
         Database Explorer
       </Button>
       <PodcastsSection />
-      <AllEpisodesList />
+      <AllEpisodesSection />
+
       <Button onPress={showToast}>Show toast</Button>
       {/* <Player /> */}
     </Layout>

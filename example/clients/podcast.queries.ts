@@ -6,7 +6,7 @@ export function useSavedPodcasts() {
   return useQuery({
     queryKey: ["savedPodcasts"],
     queryFn: async () => {
-      const podcasts = await db.select().from(schema.podcasts)
+      const podcasts = await db.select().from(schema.podcastsTable)
       return podcasts
     },
   })

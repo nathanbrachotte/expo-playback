@@ -4,14 +4,14 @@ import { db, schema } from "../db/client"
 import { PodcastSearchResult } from "../types/podcast"
 
 const savePodcastToStorage = async (podcast: PodcastSearchResult) => {
-  return await db.insert(schema.podcasts).values({
+  return await db.insert(schema.podcastsTable).values({
     author: podcast.artistName,
     createdAt: new Date(),
     description: "",
     image: podcast.artworkUrl100,
     title: podcast.trackName,
     updatedAt: new Date(),
-  } satisfies typeof schema.podcasts.$inferInsert)
+  } satisfies typeof schema.podcastsTable.$inferInsert)
 }
 
 export function useSavePodcast() {

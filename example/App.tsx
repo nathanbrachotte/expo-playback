@@ -1,20 +1,21 @@
 import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { PortalProvider } from "@tamagui/portal"
-import { ToastProvider, useToastState, Toast } from "@tamagui/toast"
+import { ToastProvider } from "@tamagui/toast"
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
 import { useColorScheme } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
-import { TamaguiProvider, YStack } from "tamagui"
+import { TamaguiProvider } from "tamagui"
 
 import { MigrationsWrapper } from "./components/MigrationsWrapper"
 import { ToastWrapper } from "./components/ToastWrapper"
 import { DatabaseExplorerScreen } from "./screens/DatabaseExplorerScreen"
+import { EpisodeScreen } from "./screens/EpisodeScreen"
 import { HomeScreen } from "./screens/HomeScreen"
 import { PodcastScreen } from "./screens/PodcastScreen"
 import { PodcastSearchScreen } from "./screens/PodcastSearchScreen"
 // import config from "./tamagui.config"
-import config, { tamaguiConfig } from "./tamagui.config"
+import { tamaguiConfig } from "./tamagui.config"
 import { RootStackParamList } from "./types/navigation"
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -41,6 +42,7 @@ export default function App() {
                       <Stack.Screen name="Home" component={HomeScreen} />
                       <Stack.Screen name="PodcastSearch" component={PodcastSearchScreen} />
                       <Stack.Screen name="Podcast" component={PodcastScreen} />
+                      <Stack.Screen name="Episode" component={EpisodeScreen} />
                       <Stack.Screen name="DatabaseExplorer" component={DatabaseExplorerScreen} />
                     </Stack.Navigator>
                   </NavigationContainer>

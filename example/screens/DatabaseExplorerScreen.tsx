@@ -20,51 +20,21 @@ interface iTunesPodcast {
 }
 const tableNames: TableName[] = ["episode_metadata"]
 
-// https://itunes.apple.com/search?media=podcast&term=fest%20und%20flauschig&country=DE
 export function DatabaseExplorerScreen() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [searchResults, setSearchResults] = useState<iTunesPodcast[]>([])
-  const [isSearching, setIsSearching] = useState(false)
-
-  const { data: podcasts } = useLiveQuery(db.select().from(schema.podcasts))
-  const { data: episodes } = useLiveQuery(db.select().from(schema.episodes))
-  const { data: episodeMetadata } = useNativeSaveLiveQuery(db.select().from(schema.episodeMetadata), tableNames)
+  const { data: podcasts } = useLiveQuery(db.select().from(schema.podcastsTable))
+  const { data: episodes } = useLiveQuery(db.select().from(schema.episodesTable))
+  const { data: episodeMetadata } = useNativeSaveLiveQuery(db.select().from(schema.episodeMetadatasTable), tableNames)
 
   const { success, error } = useMigrations(db, migrations)
 
-  const searchPodcasts = async () => {
-    if (!searchTerm.trim()) return
-
-    setIsSearching(true)
-    try {
-      const response = await fetch(
-        `https://itunes.apple.com/search?media=podcast&term=${encodeURIComponent(searchTerm)}&country=DE`,
-      )
-      const data = await response.json()
-      setSearchResults(data.results)
-    } catch (error) {
-      console.error("Error searching podcasts:", error)
-    } finally {
-      setIsSearching(false)
-    }
-  }
-
-  const addPodcastFromSearch = async (podcast: iTunesPodcast) => {
-    await db.insert(schema.podcasts).values({
-      title: podcast.collectionName,
-      description: podcast.description || "No description available",
-      image: podcast.artworkUrl600,
-    } satisfies typeof schema.podcasts.$inferInsert)
-  }
-
   const addMockPodcast = async () => {
-    await db.insert(schema.podcasts).values({
+    await db.insert(schema.podcastsTable).values({
       title: "Test Podcast " + Math.random().toString(36).substring(7),
       description: "This is a test podcast description",
       image: "https://example.com/test-image.jpg",
       createdAt: new Date(),
       updatedAt: new Date(),
-    } satisfies typeof schema.podcasts.$inferInsert)
+    } satisfies typeof schema.podcastsTable.$inferInsert)
   }
 
   const addMockEpisode = async () => {
@@ -74,7 +44,7 @@ export function DatabaseExplorerScreen() {
     }
     const randomPodcast = podcasts[Math.floor(Math.random() * podcasts.length)]
 
-    await db.insert(schema.episodes).values({
+    await db.insert(schema.episodesTable).values({
       id: Math.floor(Math.random() * 1000000), // Random ID since it's not auto-increment
       podcastId: randomPodcast.id,
       title: "Test Episode " + Math.random().toString(36).substring(7),
@@ -86,7 +56,7 @@ export function DatabaseExplorerScreen() {
       updatedAt: new Date(),
       duration: Math.floor(Math.random() * 3600), // Random duration up to 1 hour
       downloadUrl: "https://file-examples.com/storage/fe6c3da4a667eaec4b5b466/2017/11/file_example_MP3_2MG.mp3",
-    } satisfies typeof schema.episodes.$inferInsert)
+    } satisfies typeof schema.episodesTable.$inferInsert)
   }
 
   const addMockEpisodeMetadata = async () => {
@@ -96,7 +66,7 @@ export function DatabaseExplorerScreen() {
     }
     const randomEpisode = episodes[Math.floor(Math.random() * episodes.length)]
 
-    await db.insert(schema.episodeMetadata).values({
+    await db.insert(schema.episodeMetadatasTable).values({
       episodeId: randomEpisode.id,
       playback: Math.floor(Math.random() * 100),
       isFinished: Math.random() > 0.5,
@@ -108,9 +78,9 @@ export function DatabaseExplorerScreen() {
   const resetDatabase = async () => {
     try {
       // Delete all data from tables in reverse order of dependencies
-      await db.delete(schema.episodeMetadata)
-      await db.delete(schema.episodes)
-      await db.delete(schema.podcasts)
+      await db.delete(schema.episodeMetadatasTable)
+      await db.delete(schema.episodesTable)
+      await db.delete(schema.podcastsTable)
     } catch (error) {
       console.error("Error resetting database:", error)
     }
@@ -144,46 +114,18 @@ export function DatabaseExplorerScreen() {
             Reset Database
           </Button>
         </XStack>
-
-        <XStack gap="$3">
-          <Input
-            flex={1}
-            placeholder="Search podcasts..."
-            value={searchTerm}
-            onChangeText={setSearchTerm}
-            onSubmitEditing={searchPodcasts}
-          />
-          <Button onPress={searchPodcasts} disabled={isSearching}>
-            {isSearching ? "Searching..." : "Search"}
-          </Button>
-        </XStack>
+        <YStack gap="$3">
+          <Button onPress={addMockPodcast}>Add Mock Podcast</Button>
+          <Button onPress={addMockEpisode}>Add Mock Episode</Button>
+          <Button onPress={addMockEpisodeMetadata}>Add Mock Metadata</Button>
+        </YStack>
 
         <ScrollView>
-          {searchResults.length > 0 && (
-            <YStack gap="$3">
-              <Text fontSize="$6" fontWeight="bold">
-                Search Results
-              </Text>
-              {searchResults.map((podcast) => (
-                <Card key={podcast.collectionId} p="$4" gap="$2">
-                  <Text fontSize="$5" fontWeight="bold">
-                    {podcast.collectionName}
-                  </Text>
-                  <Text fontSize="$4" color="$color">
-                    {podcast.artistName}
-                  </Text>
-                  <Button onPress={() => addPodcastFromSearch(podcast)}>Add to Database</Button>
-                </Card>
-              ))}
-            </YStack>
-          )}
-
           <YStack gap="$4">
             <Card p="$4" gap="$3">
               <Text fontSize="$6" fontWeight="bold">
                 Podcasts
               </Text>
-              <Button onPress={addMockPodcast}>Add Mock Podcast</Button>
               <Text fontSize="$4">{JSON.stringify(podcasts, null, 2)}</Text>
             </Card>
 
@@ -191,7 +133,6 @@ export function DatabaseExplorerScreen() {
               <Text fontSize="$6" fontWeight="bold">
                 Episodes
               </Text>
-              <Button onPress={addMockEpisode}>Add Mock Episode</Button>
               <Text fontSize="$4">{JSON.stringify(episodes, null, 2)}</Text>
             </Card>
 
@@ -199,7 +140,6 @@ export function DatabaseExplorerScreen() {
               <Text fontSize="$6" fontWeight="bold">
                 Episode Metadata
               </Text>
-              <Button onPress={addMockEpisodeMetadata}>Add Mock Metadata</Button>
               <Text fontSize="$4">{JSON.stringify(episodeMetadata, null, 2)}</Text>
             </Card>
           </YStack>

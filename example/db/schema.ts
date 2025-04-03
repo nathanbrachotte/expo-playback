@@ -13,7 +13,7 @@ export const sharedKeys = {
 export const TABLE_NAMES = ["podcasts", "episodes", "episode_metadata"] as const
 export type TableName = (typeof TABLE_NAMES)[number]
 
-export const podcasts = sqliteTable("podcasts", {
+export const podcastsTable = sqliteTable("podcasts", {
   id: integer("id").primaryKey({
     autoIncrement: true,
   }),
@@ -25,11 +25,11 @@ export const podcasts = sqliteTable("podcasts", {
 })
 
 // Only write from RN side
-export const episodes = sqliteTable("episodes", {
+export const episodesTable = sqliteTable("episodes", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   podcastId: integer("podcast_id")
     .notNull()
-    .references(() => podcasts.id),
+    .references(() => podcastsTable.id),
   title: text("title").notNull(),
   description: text("description").notNull(),
   image: text("image"),
@@ -41,10 +41,10 @@ export const episodes = sqliteTable("episodes", {
 })
 
 // Everything that the native thread is going to write to
-export const episodeMetadata = sqliteTable("episode_metadata", {
+export const episodeMetadatasTable = sqliteTable("episode_metadata", {
   episodeId: integer("episode_id")
     .primaryKey()
-    .references(() => episodes.id),
+    .references(() => episodesTable.id),
   playback: integer("playback", { mode: "number" }).default(0),
   isFinished: integer("is_finished", { mode: "boolean" }).default(false),
   downloadProgress: integer("download_progress", { mode: "number" }).default(0),
