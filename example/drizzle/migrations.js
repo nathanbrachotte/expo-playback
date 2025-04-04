@@ -8,6 +8,7 @@ import m0003 from "./0003_round_red_skull.sql"
 import m0004 from "./0004_naive_the_captain.sql"
 import m0005 from "./0005_melted_sharon_carter.sql"
 import m0006 from "./0006_short_cerise.sql"
+import m0007 from "./0007_low_kitty_pryde.sql"
 
 export default {
   journal,
@@ -19,5 +20,6 @@ export default {
     m0004,
     m0005,
     m0006,
+    m0007,
   },
 }

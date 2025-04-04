@@ -31,13 +31,6 @@
       "breakpoints": true
     },
     {
-      "idx": 3,
-      "version": "6",
-      "when": 1742243018823,
-      "tag": "0003_burly_phil_sheldon",
-      "breakpoints": true
-    },
-    {
       "idx": 4,
       "version": "6",
       "when": 1742844646711,
@@ -56,6 +49,13 @@
       "version": "6",
       "when": 1743634634040,
       "tag": "0006_short_cerise",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1743740368783,
+      "tag": "0007_low_kitty_pryde",
       "breakpoints": true
     }
   ]

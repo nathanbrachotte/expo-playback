@@ -1,0 +1,1 @@
+ALTER TABLE `podcasts` ADD `apple_id` integer;
