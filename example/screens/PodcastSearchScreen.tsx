@@ -1,11 +1,10 @@
 import { Headphones, Plus } from "@tamagui/lucide-icons"
 import { useToastController } from "@tamagui/toast"
-import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { H4, Input, Paragraph, ScrollView, YStack, Button, XStack, Spinner } from "tamagui"
 
-import { searchPodcasts } from "../clients/podcast"
 import { useSavePodcast } from "../clients/podcast.mutations"
+import { useSearchPodcasts } from "../clients/podcast.queries"
 import { Layout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { PodcastSearchResult } from "../types/podcast"
@@ -13,27 +12,7 @@ import { PodcastSearchResult } from "../types/podcast"
 export function PodcastSearchScreen() {
   const [searchQuery, setSearchQuery] = useState("Floodcast")
 
-  const {
-    data: searchResults,
-    error,
-    isLoading,
-    refetch,
-    isFetching,
-  } = useQuery({
-    queryKey: ["podcastSearch", searchQuery],
-    queryFn: () => searchPodcasts(searchQuery),
-    enabled: searchQuery.trim().length > 0,
-    select: (data) => {
-      if (!data?.results) return []
-      return data.results.map((item: PodcastSearchResult) => ({
-        ...item,
-        // id: item.trackId?.toString() || item.collectionId?.toString() || Math.random().toString(),
-        // title: item.trackName || item.collectionName || "Unknown Title",
-        // author: item.artistName || "Unknown Author",
-        // artworkUrl100: item.artworkUrl100,
-      }))
-    },
-  })
+  const { data: searchResults, error, isLoading, refetch, isFetching } = useSearchPodcasts(searchQuery)
 
   const savePodcast = useSavePodcast()
   const toastController = useToastController()
