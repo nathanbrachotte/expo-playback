@@ -3,8 +3,8 @@ import { useToastController } from "@tamagui/toast"
 import { useState } from "react"
 import { H4, Input, Paragraph, ScrollView, YStack, Button, XStack, Spinner } from "tamagui"
 
-import { useSavePodcast } from "../clients/podcast.mutations"
-import { useSearchPodcasts } from "../clients/podcast.queries"
+import { useSavePodcastMutation } from "../clients/podcast.mutations"
+import { useSearchPodcastsQuery as useSearchPodcastsQuery } from "../clients/podcast.queries"
 import { Layout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { PodcastSearchResult } from "../types/podcast"
@@ -12,9 +12,9 @@ import { PodcastSearchResult } from "../types/podcast"
 export function PodcastSearchScreen() {
   const [searchQuery, setSearchQuery] = useState("Floodcast")
 
-  const { data: searchResults, error, isLoading, refetch, isFetching } = useSearchPodcasts(searchQuery)
+  const { data: searchResults, error, isLoading, refetch, isFetching } = useSearchPodcastsQuery(searchQuery)
+  const savePodcast = useSavePodcastMutation()
 
-  const savePodcast = useSavePodcast()
   const toastController = useToastController()
 
   const handleSavePodcast = async (podcast: PodcastSearchResult) => {

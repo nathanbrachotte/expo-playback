@@ -14,7 +14,7 @@ const savePodcastToStorage = async (podcast: PodcastSearchResult) => {
   } satisfies typeof schema.podcastsTable.$inferInsert)
 }
 
-export function useSavePodcast() {
+export function useSavePodcastMutation() {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -26,7 +26,7 @@ export function useSavePodcast() {
   })
 }
 
-export function useRemovePodcast() {
+export function useRemovePodcastMutation() {
   const queryClient = useQueryClient()
 
   return useMutation({

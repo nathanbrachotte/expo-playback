@@ -1,8 +1,19 @@
+import { useQuery } from "@tanstack/react-query"
 import { desc, sql } from "drizzle-orm"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 
-import { db } from "../db/client"
+import { db, schema } from "../db/client"
 import { episodesTable, podcastsTable } from "../db/schema"
+
+export function useSavedPodcastsQuery() {
+  return useQuery({
+    queryKey: ["savedPodcasts"],
+    queryFn: async () => {
+      const podcasts = await db.select().from(schema.podcastsTable)
+      return podcasts
+    },
+  })
+}
 
 // Join episodes with podcasts to get podcast title, and order by published_at desc
 export const useAllEpisodesQuery = (podcastId: number) => {

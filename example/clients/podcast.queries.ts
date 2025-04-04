@@ -1,27 +1,16 @@
 import { useQuery } from "@tanstack/react-query"
 
 import { fetchEpisodes, fetchPodcast } from "./podcast.fetch"
-import { db, schema } from "../db/client"
 import { PodcastSearchResult } from "../types/podcast"
 
-export function useSavedPodcasts() {
-  return useQuery({
-    queryKey: ["savedPodcasts"],
-    queryFn: async () => {
-      const podcasts = await db.select().from(schema.podcastsTable)
-      return podcasts
-    },
-  })
-}
-
-export function useFetchEpisodes(id: string) {
+export function useFetchEpisodesQuery(id: string) {
   return useQuery({
     queryKey: ["episodes", id],
     queryFn: () => fetchEpisodes(id),
   })
 }
 
-export function useSearchPodcasts(searchQuery: string) {
+export function useSearchPodcastsQuery(searchQuery: string) {
   return useQuery({
     queryKey: ["podcastSearch", searchQuery],
     queryFn: () => fetchPodcast(searchQuery),

@@ -4,7 +4,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { Image } from "react-native"
 import { H4, Paragraph, ScrollView, YStack, XStack } from "tamagui"
 
-import { useFetchEpisodes } from "../clients/podcast.queries"
+import { useFetchEpisodesQuery } from "../clients/podcast.queries"
 import { Layout } from "../components/Layout"
 import { db } from "../db/client"
 import { podcastsTable } from "../db/schema"
@@ -21,7 +21,7 @@ export function PodcastScreen() {
       .where(sql`id = ${id}`),
   )
 
-  const { data: episodes } = useFetchEpisodes(id)
+  const { data: episodes } = useFetchEpisodesQuery(id)
   console.log("🚀 ~ PodcastScreen ~ episodes:", episodes)
 
   // TODO: Replace query to just get one

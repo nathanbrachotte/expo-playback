@@ -8,8 +8,6 @@ import migrations from "../drizzle/migrations"
 export function MigrationsWrapper({ children }: PropsWithChildren) {
   const { success, error } = useMigrations(db, migrations)
   const lastSuccessRef = React.useRef(success)
-  console.log("🚀 ~ MigrationsWrapper ~ success:", success)
-  console.log("🚀 ~ MigrationsWrapper ~ error:", error)
   const toastController = useToastController()
 
   useEffect(() => {
