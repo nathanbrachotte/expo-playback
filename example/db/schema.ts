@@ -17,7 +17,7 @@ export const podcastsTable = sqliteTable("podcasts", {
   id: integer("id").primaryKey({
     autoIncrement: true,
   }),
-  appleId: integer("apple_id"),
+  appleId: integer("apple_id").notNull(),
   author: text("author"),
   description: text("description"),
   image: text("image"),

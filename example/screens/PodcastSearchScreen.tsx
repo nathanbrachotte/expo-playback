@@ -1,13 +1,14 @@
 import { Headphones, Plus } from "@tamagui/lucide-icons"
-import { useToastController } from "@tamagui/toast"
 import { useState } from "react"
 import { H4, Input, Paragraph, ScrollView, YStack, Button, XStack, Spinner } from "tamagui"
 
-import { useSavePodcastMutation } from "../clients/podcast.mutations"
-import { useSearchPodcastsQuery as useSearchPodcastsQuery } from "../clients/podcast.queries"
+import { fetchPodcastAndEpisodes } from "../clients/itunes.fetch"
+import { ToLocalEpisodeSchema, useSearchPodcastsQuery } from "../clients/itunes.queries"
+import { useSavePodcastMutation } from "../clients/podcast.local.mutations"
 import { Layout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
-import { PodcastSearchResult } from "../types/podcast"
+import { PURE_TOASTS } from "../components/toasts"
+import { SharedPodcastFields } from "../types/db"
 
 export function PodcastSearchScreen() {
   const [searchQuery, setSearchQuery] = useState("Floodcast")
@@ -15,21 +16,20 @@ export function PodcastSearchScreen() {
   const { data: searchResults, error, isLoading, refetch, isFetching } = useSearchPodcastsQuery(searchQuery)
   const savePodcast = useSavePodcastMutation()
 
-  const toastController = useToastController()
+  const handleSavePodcast = async (podcast: SharedPodcastFields) => {
+    const episodes = await fetchPodcastAndEpisodes(podcast.appleId.toString()).then((data) =>
+      data.results
+        .filter((episode) => episode.wrapperType === "podcastEpisode")
+        .map((episode) => ToLocalEpisodeSchema.parse(episode)),
+    )
 
-  const handleSavePodcast = async (podcast: PodcastSearchResult) => {
     try {
-      const res = await savePodcast.mutateAsync(podcast)
-
-      toastController.show("Podcast Added!", {
-        message: `${res.lastInsertRowId} has been added to your library.`,
-        duration: 3000,
-      })
+      await savePodcast.mutateAsync({ podcast, episodes })
+      PURE_TOASTS.success({ message: "Podcast Added!" })
     } catch (error) {
       console.error("Failed to save podcast:", error)
-      toastController.show("Failed to Save", {
-        message: "There was an error saving the podcast. Please try again.",
-        duration: 3000,
+      PURE_TOASTS.error({
+        message: "Failed to Save",
       })
     }
   }
@@ -75,11 +75,11 @@ export function PodcastSearchScreen() {
           )}
           {searchResults?.map((result) => (
             <PodcastCard
-              key={result.trackId}
-              id={result.trackId.toString()}
-              title={result.trackName}
-              author={result.artistName}
-              cover={result.artworkUrl100}
+              key={result.appleId}
+              id={result.appleId.toString()}
+              title={result.title}
+              author={result.author}
+              cover={result.image}
               Actions={
                 <Button
                   size="$3"

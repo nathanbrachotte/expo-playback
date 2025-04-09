@@ -16,7 +16,7 @@ export function useSavedPodcastsQuery() {
 }
 
 // Join episodes with podcasts to get podcast title, and order by published_at desc
-export const useAllEpisodesQuery = (podcastId: number) => {
+export const useAllEpisodesQuery = () => {
   return useLiveQuery(
     db
       .select({
@@ -28,6 +28,8 @@ export const useAllEpisodesQuery = (podcastId: number) => {
           publishedAt: episodesTable.publishedAt,
           duration: episodesTable.duration,
           downloadUrl: episodesTable.downloadUrl,
+          podcastId: episodesTable.podcastId,
+          shouldDownload: episodesTable.shouldDownload,
         },
         podcast: {
           title: podcastsTable.title,

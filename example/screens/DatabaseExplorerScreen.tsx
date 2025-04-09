@@ -1,8 +1,8 @@
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator"
 import * as ExpoPlayback from "expo-playback"
-import React, { useState } from "react"
-import { Button, Input, YStack, XStack, Text, Card, ScrollView, H4 } from "tamagui"
+import React from "react"
+import { Button, YStack, XStack, Text, Card, ScrollView, H4 } from "tamagui"
 
 import { Layout } from "../components/Layout"
 import { db, schema } from "../db/client"
@@ -10,14 +10,6 @@ import { TableName } from "../db/schema"
 import { useNativeSaveLiveQuery } from "../db/useNativeSaveLiveQuery"
 import migrations from "../drizzle/migrations"
 
-interface iTunesPodcast {
-  collectionId: number
-  collectionName: string
-  artistName: string
-  description: string
-  artworkUrl600: string
-  feedUrl: string
-}
 const tableNames: TableName[] = ["episode_metadata"]
 
 export function DatabaseExplorerScreen() {
@@ -32,6 +24,7 @@ export function DatabaseExplorerScreen() {
       title: "Test Podcast " + Math.random().toString(36).substring(7),
       description: "This is a test podcast description",
       image: "https://example.com/test-image.jpg",
+      appleId: Math.floor(Math.random() * 1000000),
       createdAt: new Date(),
       updatedAt: new Date(),
     } satisfies typeof schema.podcastsTable.$inferInsert)

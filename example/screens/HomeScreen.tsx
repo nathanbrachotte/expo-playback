@@ -1,6 +1,5 @@
 import { useNavigation } from "@react-navigation/native"
 import { Search } from "@tamagui/lucide-icons"
-import { useToastController } from "@tamagui/toast"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import React from "react"
 import { Button, Text, XStack, H2, YStack, H3, ScrollView } from "tamagui"
@@ -9,6 +8,7 @@ import { PurecastLogo } from "../assets/PurecastLogo"
 import { AllEpisodesSection } from "../components/AllEpisodesSection"
 import { Layout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
+import { PURE_TOASTS } from "../components/toasts"
 import { db } from "../db/client"
 import { podcastsTable } from "../db/schema"
 import { HomeScreenNavigationProp } from "../types/navigation"
@@ -46,12 +46,6 @@ export function PodcastsSection() {
 export function HomeScreen() {
   const navigation = useNavigation<HomeScreenNavigationProp>()
 
-  const toastController = useToastController()
-
-  const showToast = () => {
-    toastController.show("Hey", {})
-  }
-
   return (
     <Layout
       header={
@@ -72,7 +66,6 @@ export function HomeScreen() {
       <PodcastsSection />
       <AllEpisodesSection />
 
-      <Button onPress={showToast}>Show toast</Button>
       {/* <Player /> */}
     </Layout>
   )
