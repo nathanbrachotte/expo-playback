@@ -1,6 +1,6 @@
-import { EPISODES_RESPONSE_MOCK, PODCASTS_SEARCH_RESPONSE_MOCK } from "../utils/podcasts.mock"
-import { AppleEpisodeResponse, ApplePodcastResponse } from "../types/purecast.types"
 import { ToLocalPodcastSchema } from "./schemas"
+import { AppleEpisodeResponse, ApplePodcastResponse } from "../types/purecast.types"
+import { EPISODES_RESPONSE_MOCK, PODCASTS_SEARCH_RESPONSE_MOCK } from "../utils/podcasts.mock"
 
 const ITUNES_API_BASE_URL = "https://itunes.apple.com"
 const TEST_MODE = true

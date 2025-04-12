@@ -1,4 +1,4 @@
-import { useGetItunesEpisodeQuery, useGetItunesEpisodesQuery, useGetItunesPodcastQuery } from "./itunes.queries"
+import { useGetItunesEpisodeQuery, useGetItunesPodcastQuery } from "./itunes.queries"
 import { useGetLocalPodcastQuery, useGetLiveLocalEpisodeQuery } from "./local.queries"
 
 export function useGetPodcastByIdQuery(podcastId: string | null) {
@@ -21,12 +21,10 @@ export function useGetPodcastByIdQuery(podcastId: string | null) {
 export function useGetEpisodeByIdQuery(episodeId: string | null) {
   // This one uses LiveQuery so types are fucked
   const { data: localEpisode, error, updatedAt } = useGetLiveLocalEpisodeQuery({ id: episodeId })
-  console.log("🚀 ~ useGetEpisodeByIdQuery ~ updatedAt:", updatedAt)
   console.log("🚀 ~ useGetEpisodeByIdQuery ~ localEpisode:", localEpisode)
-  console.log("🚀 ~ useGetEpisodeByIdQuery ~ error:", error)
 
   //? We only fetch info if the episode is not already there locally
-  const isMissingLocally = localEpisode.length === 0
+  const isMissingLocally = localEpisode.length !== 1
 
   const { data: fetchedEpisode, isLoading: isAppleLoading } = useGetItunesEpisodeQuery(
     isMissingLocally ? episodeId : null,
@@ -34,15 +32,12 @@ export function useGetEpisodeByIdQuery(episodeId: string | null) {
   console.log("🚀 ~ useGetEpisodeByIdQuery ~ fetchedEpisode:", fetchedEpisode)
 
   const isLoading = isAppleLoading
-  console.log("🚀 ~ useGetEpisodeByIdQuery ~ isLoading:", isLoading)
 
-  console.log("🚀 ~ useGetEpisodeByIdQuery ~ localEpisode:", localEpisode)
-  console.log("🚀 ~ useGetEpisodeByIdQuery ~ fetchedEpisode:", fetchedEpisode)
   const foundEpisode = localEpisode[0] || fetchedEpisode
   console.log("🚀 ~ useGetEpisodeByIdQuery ~ foundEpisode:", foundEpisode)
 
   if (!foundEpisode) {
-    const error = isLoading ? null : Error("can't find episode")
+    const error = isLoading ? null : Error("useGetEpisodeByIdQuery - Can't find episode")
 
     return {
       error,

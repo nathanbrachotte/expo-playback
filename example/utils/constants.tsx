@@ -5,3 +5,5 @@ export const HALF_SPACE = "\u2009"
 
 export const DEVICE_WIDTH = Dimensions.get("window").width
 export const DEVICE_HEIGHT = Dimensions.get("window").height
+
+export const PURECAST_EMAIL = "hey+purecast@nathanbrachotte.dev"

@@ -2,14 +2,11 @@ import { useNavigation, useRoute } from "@react-navigation/native"
 import { Image } from "react-native"
 import { H4, Paragraph, ScrollView, YStack, XStack, Button, Spinner } from "tamagui"
 
-import { useGetItunesEpisodesQuery } from "../../clients/itunes.queries"
-import { useGetLiveLocalEpisodeQuery } from "../../clients/local.queries"
-import { PureSection } from "../../components/Sections/PureSection"
+import { useGetEpisodeByIdQuery } from "../../clients/both.queries"
 import { PureLayout } from "../../components/Layout"
+import { PureYStack } from "../../components/PureStack"
 import { SharedEpisodeFields } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
-import { useGetEpisodeByIdQuery } from "../../clients/both.queries"
-import { PureYStack } from "../../components/PureStack"
 
 function EpisodeDumbScreen({
   episode,
@@ -71,9 +68,6 @@ export function EpisodeScreen() {
   const { id } = route.params
 
   const { episode, podcast, isLoading } = useGetEpisodeByIdQuery(id)
-  console.log("🚀 ~ EpisodeScreen ~ episode:", episode)
-  console.log("🚀 ~ EpisodeScreen ~ isLoading:", isLoading)
-  console.log("🚀 ~ EpisodeScreen ~ podcast:", podcast)
 
   if (isLoading) {
     return <Spinner />

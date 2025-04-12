@@ -40,7 +40,6 @@ export function EpisodesList({
 }: {
   episodes: (SharedEpisodeFields & { podcastTitle?: Optional<string> })[]
 }) {
-  console.log("🚀 ~ episodes:", JSON.stringify(episodes, null, 2))
   const navigation = useNavigation()
 
   return (
@@ -59,7 +58,13 @@ export function EpisodesList({
             image={item.image}
             extraInfo={`${publishedAt} • ${duration}`}
             podcastTitle={item.podcastTitle}
-            onPress={() => navigation.navigate("Episode", { id: item.podcastId.toString() })}
+            onPress={() => {
+              if (!item.appleId) {
+                throw new Error("Found episode without an appleId")
+              }
+
+              navigation.navigate("Episode", { id: item.appleId })
+            }}
           />
         )
       }}

@@ -2,14 +2,13 @@ import { useRoute } from "@react-navigation/native"
 import { Image } from "react-native"
 import { H4, Paragraph, YStack, XStack, Spinner } from "tamagui"
 
-import { useGetItunesEpisodesQuery, useGetItunesPodcastQuery } from "../clients/itunes.queries"
-import { useGetLocalPodcastQuery } from "../clients/local.queries"
+import { useGetPodcastByIdQuery } from "../clients/both.queries"
+import { useGetItunesEpisodesQuery } from "../clients/itunes.queries"
 import { EpisodesList } from "../components/EpisodeList"
 import { PureLayout } from "../components/Layout"
 import { ErrorSection } from "../components/Sections/Error"
-import { PodcastScreenRouteProp } from "../types/navigation.types"
-import { useGetPodcastByIdQuery } from "../clients/both.queries"
 import { LoadingSection } from "../components/Sections/LoadingSection"
+import { PodcastScreenRouteProp } from "../types/navigation.types"
 
 export function EpisodesSection({ id }: { id: string }) {
   const {
@@ -24,7 +23,7 @@ export function EpisodesSection({ id }: { id: string }) {
   }
 
   if (!episodes) {
-    return <Paragraph>error bitch</Paragraph>
+    return <ErrorSection />
   }
 
   return <EpisodesList episodes={episodes || []} />

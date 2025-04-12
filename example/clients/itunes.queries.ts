@@ -41,17 +41,33 @@ export function useGetItunesEpisodesQuery(podcastId: string | null) {
 }
 
 export function useGetItunesEpisodeQuery(episodeId: string | null) {
+  console.log("🚀 ~ useGetItunesEpisodeQuery ~ episodeId:", episodeId)
   return useQuery({
     queryKey: ["episode", episodeId],
     // TODO: Use actual query
     queryFn: () => fetchPodcastAndEpisodes({ id: episodeId }),
     // queryFn: () => fetchSingleEpisode(episodeId),
     select: (data) => {
-      console.log("🚀 ~ useGetItunesEpisodeQuery ~ data:", JSON.stringify(data, null, 2))
-      // The query also returns the podcast's data
-      const parsedEpisode = ToLocalEpisodeSchema.safeParse(data.results[0])
-      console.log("🚀 ~ useGetItunesEpisodeQuery ~ parsedEpisode:", parsedEpisode)
-      return parsedEpisode
+      if (!episodeId) {
+        return null
+      }
+
+      const foundEpisode = data.results.find((episode) => episode.trackId.toString() === episodeId)
+      console.log("🚀 ~ useGetItunesEpisodeQuery ~ foundEpisode:", foundEpisode)
+
+      if (!foundEpisode) {
+        return null
+      }
+
+      const parsedEpisode = ToLocalEpisodeSchema.safeParse(foundEpisode)
+      if (!parsedEpisode.success) {
+        throw new Error("Error parsing found episode result")
+      }
+
+      return {
+        episode: parsedEpisode.data,
+        podcast: ToLocalPodcastSchema.parse(data.results.find((episode) => episode.wrapperType === "track")),
+      }
     },
     enabled: !!episodeId,
   })
