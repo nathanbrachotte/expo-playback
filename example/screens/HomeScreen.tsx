@@ -1,20 +1,17 @@
 import { useNavigation } from "@react-navigation/native"
-import { Search } from "@tamagui/lucide-icons"
-import { useLiveQuery } from "drizzle-orm/expo-sqlite"
+import { Cog, Plus, Search } from "@tamagui/lucide-icons"
 import React from "react"
-import { Button, Text, XStack, H2, YStack, H3, ScrollView } from "tamagui"
+import { Button, XStack, H2, ScrollView, Paragraph, YStack, H5 } from "tamagui"
 
 import { PurecastLogo } from "../assets/PurecastLogo"
-import { AllEpisodesSection } from "../components/AllEpisodesSection"
-import { Layout } from "../components/Layout"
+import { useLocalPodcastsQuery } from "../clients/local.queries"
+import { AllEpisodesList } from "../components/AllEpisodesSection"
+import { PureLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
-import { PURE_TOASTS } from "../components/toasts"
-import { db } from "../db/client"
-import { podcastsTable } from "../db/schema"
-import { HomeScreenNavigationProp } from "../types/navigation"
+import { PureSection } from "../components/Sections/PureSection"
 
 function PodcastsList() {
-  const { data: podcastList } = useLiveQuery(db.select().from(podcastsTable))
+  const { data: podcastList } = useLocalPodcastsQuery()
 
   return (
     <ScrollView horizontal>
@@ -26,28 +23,61 @@ function PodcastsList() {
           author={podcast.author}
           description={podcast.description}
           cover={podcast.image}
+          mt="$2"
           mr="$3"
         />
       ))}
     </ScrollView>
   )
 }
-export function PodcastsSection() {
-  const { data: podcastList } = useLiveQuery(db.select().from(podcastsTable))
+
+function PodcastsSection() {
+  return (
+    <PureSection.Wrapper>
+      <PureSection.Title>My podcasts</PureSection.Title>
+      <PodcastsList />
+    </PureSection.Wrapper>
+  )
+}
+
+function AllEpisodesSection() {
+  const { data: podcastList } = useLocalPodcastsQuery()
+
+  if (podcastList?.length === 0) {
+    return null
+  }
 
   return (
-    <YStack p="$2">
-      <H3 mb="$2">All my podcasts</H3>
-      {podcastList?.length ? <PodcastsList /> : <Text>No podcasts found</Text>}
+    <PureSection.Wrapper>
+      <PureSection.Title>Episodes</PureSection.Title>
+      <AllEpisodesList />
+    </PureSection.Wrapper>
+  )
+}
+
+export function EmptyState() {
+  const navigation = useNavigation()
+
+  return (
+    <YStack flex={1} p="$2" jc="center" ai="center">
+      <H2>Welcome!</H2>
+      <H5 textAlign="center">You seem to be new to Purecast.</H5>
+      <H5 textAlign="center"> Get started here ⬇️</H5>
+      <Button mt="$3" mb="$12" onPress={() => navigation.navigate("PodcastSearch")} icon={<Plus />}>
+        <Button.Text>Add new podcasts</Button.Text>
+      </Button>
     </YStack>
   )
 }
 
 export function HomeScreen() {
-  const navigation = useNavigation<HomeScreenNavigationProp>()
+  const navigation = useNavigation()
+  const { data: podcastList } = useLocalPodcastsQuery()
+
+  const hasSavedPodcasts = podcastList && podcastList?.length > 0
 
   return (
-    <Layout
+    <PureLayout
       header={
         <XStack justifyContent="center" alignItems="center" gap="$2">
           <H2>Purecast</H2>
@@ -55,18 +85,21 @@ export function HomeScreen() {
         </XStack>
       }
       actionSection={
-        <XStack flex={1} justifyContent="flex-end">
+        <XStack flex={1} justifyContent="flex-end" gap="$2">
           <Button icon={<Search />} size="$3" onPress={() => navigation.navigate("PodcastSearch")} />
+          <Button icon={<Cog />} size="$3" onPress={() => navigation.navigate("Settings")} />
         </XStack>
       }
     >
-      <Button size="$3" onPress={() => navigation.navigate("DatabaseExplorer")}>
-        Database Explorer
-      </Button>
-      <PodcastsSection />
-      <AllEpisodesSection />
-
+      {hasSavedPodcasts ? (
+        <>
+          <PodcastsSection />
+          <AllEpisodesSection />
+        </>
+      ) : (
+        <EmptyState />
+      )}
       {/* <Player /> */}
-    </Layout>
+    </PureLayout>
   )
 }

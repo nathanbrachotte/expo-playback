@@ -1,10 +1,7 @@
 import { useNavigation, useNavigationState } from "@react-navigation/native"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { ChevronLeft } from "@tamagui/lucide-icons"
 import { SafeAreaView } from "react-native"
 import { styled, YStack, XStack, Button, AnimatePresence } from "tamagui"
-
-import { RootStackParamList } from "../types/navigation"
 
 const CustomSafeAreaView = styled(SafeAreaView, {
   variants: {} as const,
@@ -14,16 +11,19 @@ const CustomSafeAreaView = styled(SafeAreaView, {
   flex: 1,
 })
 
-export function Layout({
+export function PureLayout({
   children,
   header,
   actionSection,
+  // wrapperStyle,
 }: {
   children: React.ReactNode
   header?: React.ReactNode
   actionSection?: React.ReactNode
+  // wrapperStyle?: ComponentProps<typeof YStack>
 }) {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const navigation = useNavigation()
+  // const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const isFirstScreen = useNavigationState((state) => state?.routes.length <= 1)
 
   return (
@@ -54,7 +54,7 @@ export function Layout({
         </XStack>
       </XStack>
 
-      <YStack flex={1} gap="$2" py="$1" px="$2">
+      <YStack flex={1} gap="$2" py="$1">
         {children}
       </YStack>
     </CustomSafeAreaView>

@@ -57,6 +57,13 @@
       "when": 1743740368783,
       "tag": "0007_low_kitty_pryde",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1744377798538,
+      "tag": "0008_striped_micromax",
+      "breakpoints": true
     }
   ]
 }

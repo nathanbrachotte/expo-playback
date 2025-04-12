@@ -1,47 +1,61 @@
 import { useRoute } from "@react-navigation/native"
-import { sql } from "drizzle-orm"
-import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { Image } from "react-native"
-import { H4, Paragraph, YStack, XStack } from "tamagui"
+import { H4, Paragraph, YStack, XStack, Spinner } from "tamagui"
 
-import { useFetchEpisodesQuery, useFetchPodcastQuery } from "../clients/itunes.queries"
+import { useGetItunesEpisodesQuery, useGetItunesPodcastQuery } from "../clients/itunes.queries"
+import { useGetLocalPodcastQuery } from "../clients/local.queries"
 import { EpisodesList } from "../components/EpisodeList"
-import { Layout } from "../components/Layout"
-import { db } from "../db/client"
-import { podcastsTable } from "../db/schema"
-import { PodcastScreenRouteProp } from "../types/navigation"
+import { PureLayout } from "../components/Layout"
+import { ErrorSection } from "../components/Sections/Error"
+import { PodcastScreenRouteProp } from "../types/navigation.types"
+import { useGetPodcastByIdQuery } from "../clients/both.queries"
+import { LoadingSection } from "../components/Sections/LoadingSection"
+
+export function EpisodesSection({ id }: { id: string }) {
+  const {
+    data: fetchedEpisodesResponse,
+    error: fetchedEpisodesError,
+    isLoading,
+  } = useGetItunesEpisodesQuery(id || null)
+  const episodes = fetchedEpisodesResponse?.episodes
+
+  if (isLoading) {
+    return <Spinner />
+  }
+
+  if (!episodes) {
+    return <Paragraph>error bitch</Paragraph>
+  }
+
+  return <EpisodesList episodes={episodes || []} />
+}
 
 export function PodcastScreen() {
   const route = useRoute<PodcastScreenRouteProp>()
+  // Could be the local id or the appleId
   const { id } = route.params
 
-  const { data: localPodcasts } = useLiveQuery(
-    db
-      .select()
-      .from(podcastsTable)
-      .where(sql`id = ${id}`),
-  )
+  const { podcast, isLoading } = useGetPodcastByIdQuery(id ?? null)
+  console.log("🚀 ~ PodcastScreen ~ podcast:", podcast)
 
-  const { data: fetchedPodcast, error: fetchedPodcastError } = useFetchPodcastQuery(id)
+  if (!id) {
+    return <ErrorSection />
+  }
 
-  // TODO: Replace query to just get one
-  const podcast = localPodcasts[0] || fetchedPodcast
-
-  const { data: fetchedEpisodesResponse, error: fetchedEpisodesError } = useFetchEpisodesQuery(
-    podcast?.appleId.toString() || null,
-  )
-  const episodes = fetchedEpisodesResponse?.results
+  if (isLoading) {
+    return <LoadingSection />
+  }
 
   if (!podcast) {
     return (
-      <Layout header={<H4>Podcast</H4>}>
+      <PureLayout header={<H4>Podcast</H4>}>
         <Paragraph>Podcast not found</Paragraph>
-      </Layout>
+      </PureLayout>
     )
   }
 
   return (
-    <Layout header={<H4>Podcast</H4>}>
+    <PureLayout header={<H4>Podcast</H4>}>
       <YStack gap="$4" p="$4">
         <XStack gap="$4" alignItems="center">
           {podcast.image ? (
@@ -70,8 +84,8 @@ export function PodcastScreen() {
             <Paragraph size="$4">{podcast.description}</Paragraph>
           </YStack>
         ) : null}
-        <EpisodesList episodes={episodes || []} />
       </YStack>
-    </Layout>
+      <EpisodesSection id={id} />
+    </PureLayout>
   )
 }

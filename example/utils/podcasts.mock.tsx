@@ -250,3 +250,45 @@ export const EPISODES_RESPONSE_MOCK = {
     },
   ],
 }
+
+export const SINGLE_EPISODE_RESPONSE_MOCK = {
+  resultCount: 1,
+  results: [
+    {
+      artistName: "FloodCast",
+      artworkUrl100:
+        "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/ee/3e/5b/ee3e5b9c-c278-aadf-89ad-822ba2819da3/mza_3496687179233588433.jpg/100x100bb.jpg",
+      artworkUrl30:
+        "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/ee/3e/5b/ee3e5b9c-c278-aadf-89ad-822ba2819da3/mza_3496687179233588433.jpg/30x30bb.jpg",
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/ee/3e/5b/ee3e5b9c-c278-aadf-89ad-822ba2819da3/mza_3496687179233588433.jpg/60x60bb.jpg",
+      artworkUrl600:
+        "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/ee/3e/5b/ee3e5b9c-c278-aadf-89ad-822ba2819da3/mza_3496687179233588433.jpg/600x600bb.jpg",
+      collectionCensoredName: "FloodCast",
+      collectionExplicitness: "notExplicit",
+      collectionHdPrice: 0,
+      collectionId: 1019768302,
+      collectionName: "FloodCast",
+      collectionPrice: 0,
+      collectionViewUrl: "https://podcasts.apple.com/us/podcast/floodcast/id1019768302?uo=4",
+      contentAdvisoryRating: "Clean",
+      country: "USA",
+      currency: "USD",
+      feedUrl: "https://feeds.acast.com/public/shows/5ffe3facad3e633276e9ea57",
+      genreIds: [],
+      genres: [],
+      kind: "podcast",
+      primaryGenreName: "Comedy",
+      releaseDate: "2025-03-31T02:01:00Z",
+      trackCensoredName: "FloodCast",
+      trackCount: 233,
+      trackExplicitness: "cleaned",
+      trackId: 1019768302,
+      trackName: "FloodCast",
+      trackPrice: 0,
+      trackTimeMillis: 5321,
+      trackViewUrl: "https://podcasts.apple.com/us/podcast/floodcast/id1019768302?uo=4",
+      wrapperType: "track",
+    },
+  ],
+}

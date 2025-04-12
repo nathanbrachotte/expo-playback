@@ -1,93 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
-import { z } from "zod"
 
-import { fetchPodcastAndEpisodes, fetchPodcast } from "./itunes.fetch"
-import { SharedEpisodeFields, SharedPodcastFields } from "../types/db"
-import { AppleEpisodeResponse } from "../utils/podcasts.types"
+import { fetchPodcastAndEpisodes, searchPodcast } from "./itunes.fetch"
+import { ToLocalEpisodeSchema, ToLocalPodcastSchema } from "./schemas"
+import { AppleEpisodeResponse } from "../types/purecast.types"
 
-export const ToLocalPodcastSchema = z
-  .object({
-    artistName: z.string(),
-    collectionName: z.string(),
-    trackId: z.number(),
-    artworkUrl100: z.string(),
-    feedUrl: z.string().optional(),
-    collectionId: z.number(),
-    collectionViewUrl: z.string(),
-    trackName: z.string(),
-    trackViewUrl: z.string(),
-    trackCount: z.number(),
-    primaryGenreName: z.string(),
-    releaseDate: z.string(),
-    country: z.string(),
-    kind: z.literal("podcast"),
-    currency: z.string(),
-    contentAdvisoryRating: z.string(),
-    collectionExplicitness: z.string(),
-    trackExplicitness: z.string(),
-    collectionPrice: z.number(),
-    trackPrice: z.number(),
-    trackTimeMillis: z.number().optional(),
-    wrapperType: z.literal("track"), //? WTF is that shit?
-  })
-  .transform(
-    (data) =>
-      ({
-        appleId: data.trackId,
-        author: data.artistName,
-        title: data.collectionName,
-        image: data.artworkUrl100,
-        description: "",
-      }) satisfies SharedPodcastFields,
-  )
-
-export const ToLocalEpisodeSchema = z
-  .object({
-    artistIds: z.array(z.string()).optional(),
-    artworkUrl160: z.string(),
-    artworkUrl60: z.string(),
-    artworkUrl600: z.string(),
-    closedCaptioning: z.string().optional(),
-    collectionId: z.number(),
-    collectionName: z.string(),
-    collectionViewUrl: z.string(),
-    contentAdvisoryRating: z.string(),
-    country: z.string(),
-    description: z.string(),
-    episodeContentType: z.string(),
-    episodeFileExtension: z.string(),
-    episodeGuid: z.string(),
-    episodeUrl: z.string(),
-    feedUrl: z.string(),
-    // TODO: Fix this
-    genres: z.any().optional(),
-    kind: z.literal("podcast-episode"),
-    previewUrl: z.string(),
-    releaseDate: z.string(),
-    shortDescription: z.string(),
-    trackId: z.number(),
-    trackName: z.string(),
-    trackTimeMillis: z.number(),
-    trackViewUrl: z.string(),
-    wrapperType: z.literal("podcastEpisode"),
-  })
-  .transform((data) => {
-    return {
-      title: data.trackName,
-      description: data.shortDescription,
-      image: data.artworkUrl600,
-      publishedAt: new Date(data.releaseDate),
-      duration: data.trackTimeMillis,
-      shouldDownload: false,
-      downloadUrl: data.episodeUrl,
-      podcastId: data.collectionId,
-    } satisfies SharedEpisodeFields
-  })
-
-export function useFetchPodcastQuery(id: string | null) {
+export function useGetItunesPodcastQuery(id: string | null) {
   return useQuery({
     queryKey: ["podcast", id],
-    queryFn: () => fetchPodcastAndEpisodes(id),
+    queryFn: () => fetchPodcastAndEpisodes({ id }),
     select: (data: AppleEpisodeResponse) => {
       // The query also returns the podcast's data
       const foundPodcast = data.results.find((episode) => episode.wrapperType === "track")
@@ -102,31 +22,49 @@ export function useFetchPodcastQuery(id: string | null) {
   })
 }
 
-export function useFetchEpisodesQuery(id: string | null) {
+export function useGetItunesEpisodesQuery(podcastId: string | null) {
   return useQuery({
-    queryKey: ["episodes", id],
-    queryFn: () => fetchPodcastAndEpisodes(id),
+    queryKey: ["episodes", podcastId],
+    queryFn: () => fetchPodcastAndEpisodes({ id: podcastId }),
     select: (data: AppleEpisodeResponse) => {
       // The query also returns the podcast's data
       return {
         ...data,
-        results: data.results
+        episodes: data.results
           .filter((episode) => episode.wrapperType === "podcastEpisode")
           .map((episode) => ToLocalEpisodeSchema.parse(episode)),
+        podcast: ToLocalPodcastSchema.parse(data.results.find((episode) => episode.wrapperType === "track")),
       }
     },
-    enabled: !!id,
+    enabled: !!podcastId,
   })
 }
 
-export function useSearchPodcastsQuery(searchQuery: string | null) {
+export function useGetItunesEpisodeQuery(episodeId: string | null) {
+  return useQuery({
+    queryKey: ["episode", episodeId],
+    // TODO: Use actual query
+    queryFn: () => fetchPodcastAndEpisodes({ id: episodeId }),
+    // queryFn: () => fetchSingleEpisode(episodeId),
+    select: (data) => {
+      console.log("🚀 ~ useGetItunesEpisodeQuery ~ data:", JSON.stringify(data, null, 2))
+      // The query also returns the podcast's data
+      const parsedEpisode = ToLocalEpisodeSchema.safeParse(data.results[0])
+      console.log("🚀 ~ useGetItunesEpisodeQuery ~ parsedEpisode:", parsedEpisode)
+      return parsedEpisode
+    },
+    enabled: !!episodeId,
+  })
+}
+
+export function useSearchItunesPodcastsQuery(searchQuery: string | null) {
   return useQuery({
     queryKey: ["podcastSearch", searchQuery],
-    queryFn: () => fetchPodcast(searchQuery),
-    enabled: !!searchQuery && searchQuery.trim().length > 0,
+    queryFn: () => searchPodcast(searchQuery),
     select: (data) => {
       if (!data?.results) return []
       return data.results.map((item) => ToLocalPodcastSchema.parse(item))
     },
+    enabled: !!searchQuery && searchQuery.trim().length > 0,
   })
 }

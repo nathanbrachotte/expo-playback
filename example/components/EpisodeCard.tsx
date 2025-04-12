@@ -1,6 +1,5 @@
 import React from "react"
-import { Pressable } from "react-native"
-import { YStack, Paragraph, Image, XStack, Card } from "tamagui"
+import { YStack, Paragraph, Image, XStack, Card, H5 } from "tamagui"
 
 import { Optional } from "../utils/types"
 
@@ -8,39 +7,47 @@ export type EpisodeCardProps = {
   title: string
   subtitle: Optional<string>
   image: Optional<string>
-  extraInfo: string
+  extraInfo: Optional<string>
   podcastTitle: Optional<string>
   onPress: VoidFunction
 }
 
 export const EpisodeCard = ({ title, subtitle, image, extraInfo, podcastTitle, onPress }: EpisodeCardProps) => {
   return (
-    <Pressable onPress={onPress}>
-      <Card size="$4" bordered marginVertical="$2" p="$4">
-        <XStack gap="$3">
-          {image && <Image source={{ uri: image }} style={{ width: 70, height: 70, borderRadius: 4 }} />}
-          <YStack flex={1}>
-            <Paragraph numberOfLines={1} fontWeight="bold">
-              {title}
+    <Card
+      bordered
+      animation="bouncy"
+      scale={0.9}
+      hoverStyle={{ scale: 0.925 }}
+      pressStyle={{ scale: 0.875 }}
+      size="$4"
+      marginVertical="$2"
+      p="$2"
+      onPress={onPress}
+      gap="$3"
+      flexDirection="row"
+    >
+      {image && <Image source={{ uri: image }} style={{ width: 70, height: 70, borderRadius: 4 }} />}
+      <YStack flex={1}>
+        {podcastTitle ? (
+          <Paragraph size="$4" numberOfLines={1}>
+            {podcastTitle}
+          </Paragraph>
+        ) : null}
+        <H5 numberOfLines={1}>{title}</H5>
+        {subtitle ? (
+          <Paragraph numberOfLines={2} opacity={0.6} fontSize="$1">
+            {subtitle}
+          </Paragraph>
+        ) : null}
+        {extraInfo ? (
+          <XStack>
+            <Paragraph fontSize="$1" opacity={0.5}>
+              {extraInfo}
             </Paragraph>
-            {podcastTitle && (
-              <Paragraph numberOfLines={1} opacity={0.7}>
-                {podcastTitle}
-              </Paragraph>
-            )}
-            {subtitle && (
-              <Paragraph numberOfLines={2} opacity={0.6} fontSize="$1">
-                {subtitle}
-              </Paragraph>
-            )}
-            <XStack mt="$2">
-              <Paragraph fontSize="$1" opacity={0.5}>
-                {extraInfo}
-              </Paragraph>
-            </XStack>
-          </YStack>
-        </XStack>
-      </Card>
-    </Pressable>
+          </XStack>
+        ) : null}
+      </YStack>
+    </Card>
   )
 }

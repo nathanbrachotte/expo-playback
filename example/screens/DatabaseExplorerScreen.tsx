@@ -4,7 +4,7 @@ import * as ExpoPlayback from "expo-playback"
 import React from "react"
 import { Button, YStack, XStack, Text, Card, ScrollView, H4 } from "tamagui"
 
-import { Layout } from "../components/Layout"
+import { PureLayout } from "../components/Layout"
 import { db, schema } from "../db/client"
 import { TableName } from "../db/schema"
 import { useNativeSaveLiveQuery } from "../db/useNativeSaveLiveQuery"
@@ -81,25 +81,25 @@ export function DatabaseExplorerScreen() {
 
   if (error) {
     return (
-      <Layout>
+      <PureLayout>
         <YStack p="$4">
           <Text color="$red10">Migration error: {error.message}</Text>
         </YStack>
-      </Layout>
+      </PureLayout>
     )
   }
   if (!success) {
     return (
-      <Layout>
+      <PureLayout>
         <YStack p="$4">
           <Text>Migration is in progress...</Text>
         </YStack>
-      </Layout>
+      </PureLayout>
     )
   }
 
   return (
-    <Layout header={<H4 fontWeight="bold">Database Explorer</H4>}>
+    <PureLayout header={<H4 fontWeight="bold">Database Explorer</H4>}>
       <YStack p="$4" gap="$4">
         <XStack gap="$2">
           <Button onPress={() => ExpoPlayback.startBackgroundDownloads()}>Start Downloads</Button>
@@ -138,6 +138,6 @@ export function DatabaseExplorerScreen() {
           </YStack>
         </ScrollView>
       </YStack>
-    </Layout>
+    </PureLayout>
   )
 }

@@ -3,21 +3,22 @@ import { useState } from "react"
 import { H4, Input, Paragraph, ScrollView, YStack, Button, XStack, Spinner } from "tamagui"
 
 import { fetchPodcastAndEpisodes } from "../clients/itunes.fetch"
-import { ToLocalEpisodeSchema, useSearchPodcastsQuery } from "../clients/itunes.queries"
-import { useSavePodcastMutation } from "../clients/podcast.local.mutations"
-import { Layout } from "../components/Layout"
+import { useSearchItunesPodcastsQuery } from "../clients/itunes.queries"
+import { useSavePodcastMutation } from "../clients/local.mutations"
+import { ToLocalEpisodeSchema } from "../clients/schemas"
+import { PureLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { PURE_TOASTS } from "../components/toasts"
-import { SharedPodcastFields } from "../types/db"
+import { SharedPodcastFields } from "../types/db.types"
 
 export function PodcastSearchScreen() {
   const [searchQuery, setSearchQuery] = useState("Floodcast")
 
-  const { data: searchResults, error, isLoading, refetch, isFetching } = useSearchPodcastsQuery(searchQuery)
+  const { data: searchResults, error, isLoading, refetch, isFetching } = useSearchItunesPodcastsQuery(searchQuery)
   const savePodcast = useSavePodcastMutation()
 
   const handleSavePodcast = async (podcast: SharedPodcastFields) => {
-    const episodes = await fetchPodcastAndEpisodes(podcast.appleId.toString()).then((data) =>
+    const episodes = await fetchPodcastAndEpisodes({ id: podcast.appleId.toString() }).then((data) =>
       data.results
         .filter((episode) => episode.wrapperType === "podcastEpisode")
         .map((episode) => ToLocalEpisodeSchema.parse(episode)),
@@ -37,18 +38,18 @@ export function PodcastSearchScreen() {
   const isSearching = isFetching || isLoading
 
   return (
-    <Layout header={<H4>Add Podcasts</H4>}>
-      <XStack gap="$3">
+    <PureLayout header={<H4>Add Podcasts</H4>}>
+      <XStack gap="$3" px="$2" mt="$2">
         <Input
           flex={1}
-          size="$4"
+          size="$5"
           placeholder="Search for podcasts..."
           value={searchQuery}
           onChangeText={setSearchQuery}
           autoCapitalize="none"
         />
         <Button
-          size="$4"
+          size="$5"
           onPress={() => refetch()}
           disabled={isSearching}
           icon={isSearching ? () => <Spinner /> : undefined}
@@ -60,7 +61,7 @@ export function PodcastSearchScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false} alwaysBounceVertical={false}>
         <YStack gap="$3" mt="$3" p="$1">
-          {(!searchResults || searchResults.length === 0) && !isLoading && !error && (
+          {(!searchResults || searchResults.resultCount === 0) && !isLoading && !error && (
             <YStack flex={1} alignItems="center" justifyContent="center" py="$10" gap="$4">
               <Headphones size={64} color="$blue10" />
               <YStack alignItems="center" gap="$2">
@@ -73,26 +74,31 @@ export function PodcastSearchScreen() {
               </YStack>
             </YStack>
           )}
-          {searchResults?.map((result) => (
-            <PodcastCard
-              key={result.appleId}
-              id={result.appleId.toString()}
-              title={result.title}
-              author={result.author}
-              cover={result.image}
-              Actions={
-                <Button
-                  size="$3"
-                  circular
-                  icon={isLoading ? () => <Spinner /> : () => <Plus size={16} />}
-                  onPress={() => handleSavePodcast(result)}
-                  disabled={isLoading}
-                />
-              }
-            />
-          ))}
+          {searchResults?.results?.map((result) => {
+            console.log("🚀 ~ {searchResults?.results?.map ~ result:", JSON.stringify(result, null, 2))
+            return (
+              <PodcastCard
+                key={result.appleId}
+                id={result.appleId.toString()}
+                title={result.title}
+                author={result.author}
+                cover={result.image}
+                Actions={
+                  <XStack>
+                    <Button
+                      // size="$3"
+                      circular
+                      icon={isLoading ? () => <Spinner /> : () => <Plus size={16} />}
+                      onPress={() => handleSavePodcast(result)}
+                      disabled={isLoading}
+                    />
+                  </XStack>
+                }
+              />
+            )
+          })}
         </YStack>
       </ScrollView>
-    </Layout>
+    </PureLayout>
   )
 }

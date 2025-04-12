@@ -3,8 +3,9 @@ import React from "react"
 import { FlatList } from "react-native"
 
 import { EpisodeCard } from "./EpisodeCard"
-import { SharedEpisodeFields } from "../types/db"
+import { SharedEpisodeFields } from "../types/db.types"
 import { Optional } from "../utils/types"
+import { z } from "zod"
 
 const formatDuration = (seconds: number) => {
   const minutes = Math.floor(seconds / 60)
@@ -22,27 +23,46 @@ const formatDate = (timestamp: number) => {
   return `${month} ${day}, ${year}`
 }
 
+// should i be proud or ashamed?
+const uniqueKeySchema = z
+  .object({
+    id: z.number().optional(),
+    appleId: z.union([z.string(), z.number()]).optional(),
+    publishedAt: z.date().optional(),
+  })
+  .transform((epi) => ({
+    uniqueKey:
+      epi.id?.toString() || epi.appleId?.toString() || epi.publishedAt?.getDate().toString() || "BIG BIG TROUBLE",
+  }))
+
 export function EpisodesList({
   episodes,
 }: {
   episodes: (SharedEpisodeFields & { podcastTitle?: Optional<string> })[]
 }) {
+  console.log("🚀 ~ episodes:", JSON.stringify(episodes, null, 2))
   const navigation = useNavigation()
 
   return (
     <FlatList
       data={episodes}
-      keyExtractor={(item) => item.podcastId.toString()}
-      renderItem={({ item }) => (
-        <EpisodeCard
-          title={item.title}
-          subtitle={item.description}
-          image={item.image}
-          extraInfo={`${formatDate(Number(item.publishedAt))} • ${formatDuration(item.duration)}`}
-          podcastTitle={item.podcastTitle}
-          onPress={() => navigation.navigate("Episode", { id: item.podcastId.toString(), episode: item })}
-        />
-      )}
+      keyExtractor={(item) => uniqueKeySchema.parse(item).uniqueKey}
+      renderItem={({ item }) => {
+        // TODO: Use date-fns to render this correctly
+        const publishedAt = formatDate(Number(item.publishedAt))
+        const duration = formatDuration(item.duration)
+
+        return (
+          <EpisodeCard
+            title={item.title}
+            subtitle={item.description}
+            image={item.image}
+            extraInfo={`${publishedAt} • ${duration}`}
+            podcastTitle={item.podcastTitle}
+            onPress={() => navigation.navigate("Episode", { id: item.podcastId.toString() })}
+          />
+        )
+      }}
       showsVerticalScrollIndicator={false}
     />
   )

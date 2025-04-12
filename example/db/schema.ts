@@ -14,9 +14,7 @@ export const TABLE_NAMES = ["podcasts", "episodes", "episode_metadata"] as const
 export type TableName = (typeof TABLE_NAMES)[number]
 
 export const podcastsTable = sqliteTable("podcasts", {
-  id: integer("id").primaryKey({
-    autoIncrement: true,
-  }),
+  id: integer("id").primaryKey(),
   appleId: integer("apple_id").notNull(),
   author: text("author"),
   description: text("description"),
@@ -38,6 +36,7 @@ export const episodesTable = sqliteTable("episodes", {
   duration: integer("duration").notNull(),
   shouldDownload: integer("should_download", { mode: "boolean" }).default(false),
   downloadUrl: text("download_url").notNull(),
+  appleId: text("apple_id"),
   ...sharedKeys,
 })
 
