@@ -19,6 +19,10 @@ export function useGetLocalPodcastQuery(id: string | null) {
   return useQuery({
     queryKey: ["savedPodcast", id],
     queryFn: async () => {
+      if (!id) {
+        return null
+      }
+
       const podcasts = await db
         // TODO: use get()? There's gotta be a way to get only one episode
         .select()
@@ -30,7 +34,11 @@ export function useGetLocalPodcastQuery(id: string | null) {
   })
 }
 
+// !FIXME: Return only one episode from SQL query
+// !FIXME: Types are so fucking fucked I hate this shit
+//!FIXME THAT LOCAL QUERY DOEST WORK
 export function useGetLiveLocalEpisodeQuery({ id }: { id: string | null }) {
+  console.log("🚀 ~ useGetLiveLocalEpisodeQuery ~ id:", id)
   return useLiveQuery(
     db
       .select({
@@ -43,8 +51,8 @@ export function useGetLiveLocalEpisodeQuery({ id }: { id: string | null }) {
         },
       })
       .from(episodesTable)
-      .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
-      .where(sql`id = ${id}`),
+      .where(sql`id = ${id}`)
+      .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`),
   )
 }
 

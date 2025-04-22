@@ -1,7 +1,7 @@
 import React from "react"
 import { YStack, Paragraph, Image, XStack, Card, H5 } from "tamagui"
 
-import { Optional } from "../utils/types"
+import { Optional } from "../utils/types.utils"
 
 export type EpisodeCardProps = {
   title: string
@@ -36,7 +36,7 @@ export const EpisodeCard = ({ title, subtitle, image, extraInfo, podcastTitle, o
         ) : null}
         <H5 numberOfLines={1}>{title}</H5>
         {subtitle ? (
-          <Paragraph numberOfLines={2} opacity={0.6} fontSize="$1">
+          <Paragraph numberOfLines={2} opacity={0.9} size="$1">
             {subtitle}
           </Paragraph>
         ) : null}

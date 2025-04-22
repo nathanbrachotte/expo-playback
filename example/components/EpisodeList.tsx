@@ -4,8 +4,10 @@ import { FlatList } from "react-native"
 
 import { EpisodeCard } from "./EpisodeCard"
 import { SharedEpisodeFields } from "../types/db.types"
-import { Optional } from "../utils/types"
+import { Optional } from "../utils/types.utils"
 import { z } from "zod"
+import { PureYStack } from "./PureStack"
+import { Paragraph } from "tamagui"
 
 const formatDuration = (seconds: number) => {
   const minutes = Math.floor(seconds / 60)
@@ -47,6 +49,7 @@ export function EpisodesList({
       data={episodes}
       keyExtractor={(item) => uniqueKeySchema.parse(item).uniqueKey}
       renderItem={({ item }) => {
+        console.log("🚀 ~ item:", item)
         // TODO: Use date-fns to render this correctly
         const publishedAt = formatDate(Number(item.publishedAt))
         const duration = formatDuration(item.duration)
@@ -63,11 +66,16 @@ export function EpisodesList({
                 throw new Error("Found episode without an appleId")
               }
 
-              navigation.navigate("Episode", { id: item.appleId })
+              navigation.navigate("Episode", { episodeId: item.appleId, podcastId: String(item.podcastId) })
             }}
           />
         )
       }}
+      // ListHeaderComponent={}
+      ListFooterComponent={
+        // !FIXME: Why is this needed?
+        <PureYStack height="$19" />
+      }
       showsVerticalScrollIndicator={false}
     />
   )

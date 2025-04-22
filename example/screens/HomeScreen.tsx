@@ -99,7 +99,6 @@ export function HomeScreen() {
       ) : (
         <EmptyState />
       )}
-      {/* <Player /> */}
     </PureLayout>
   )
 }

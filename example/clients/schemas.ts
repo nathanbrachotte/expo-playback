@@ -19,11 +19,11 @@ export const ToLocalPodcastSchema = z
     country: z.string(),
     kind: z.literal("podcast"),
     currency: z.string(),
-    contentAdvisoryRating: z.string(),
-    collectionExplicitness: z.string(),
-    trackExplicitness: z.string(),
-    collectionPrice: z.number(),
-    trackPrice: z.number(),
+    contentAdvisoryRating: z.string().optional(),
+    collectionExplicitness: z.string().optional(),
+    trackExplicitness: z.string().optional(),
+    collectionPrice: z.number().optional(),
+    trackPrice: z.number().optional(),
     trackTimeMillis: z.number().optional(),
     wrapperType: z.literal("track"), //? WTF is that shit?
   })

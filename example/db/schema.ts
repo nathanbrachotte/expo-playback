@@ -25,7 +25,7 @@ export const podcastsTable = sqliteTable("podcasts", {
 
 // Only write from RN side
 export const episodesTable = sqliteTable("episodes", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+  id: integer("id").primaryKey(),
   podcastId: integer("podcast_id")
     .notNull()
     .references(() => podcastsTable.id),

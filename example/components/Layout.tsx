@@ -2,6 +2,7 @@ import { useNavigation, useNavigationState } from "@react-navigation/native"
 import { ChevronLeft } from "@tamagui/lucide-icons"
 import { SafeAreaView } from "react-native"
 import { styled, YStack, XStack, Button, AnimatePresence } from "tamagui"
+import { Player } from "./Player/Player"
 
 const CustomSafeAreaView = styled(SafeAreaView, {
   variants: {} as const,
@@ -28,7 +29,7 @@ export function PureLayout({
 
   return (
     <CustomSafeAreaView>
-      <XStack justifyContent="space-between" alignItems="center" p="$2">
+      <XStack justifyContent="space-between" alignItems="center" px="$3" py="$2">
         <XStack flex={0.5} justifyContent="flex-start" minWidth={40}>
           <AnimatePresence>
             {!isFirstScreen && (
@@ -54,9 +55,10 @@ export function PureLayout({
         </XStack>
       </XStack>
 
-      <YStack flex={1} gap="$2" py="$1">
+      <YStack flex={1} gap="$2">
         {children}
       </YStack>
+      <Player />
     </CustomSafeAreaView>
   )
 }

@@ -9,8 +9,6 @@ import * as schema from "../db/schema"
 import migrations from "../drizzle/migrations"
 
 const dbPath = FileSystem.documentDirectory
-console.log("🚀 ~ dbPath:", dbPath)
-console.log("🚀 ~ defaultDatabaseDirectory:", defaultDatabaseDirectory)
 
 const expo = openDatabaseSync(
   "purecast_main_db.sqlite",
@@ -25,7 +23,6 @@ const db = drizzle(expo)
 
 export function DrizzlePlayground() {
   const { data } = useLiveQuery(db.select().from(schema.users))
-  console.log("🚀 ~ DrizzlePlayground ~ data:", data)
 
   const addUser = async () => {
     await db
@@ -42,8 +39,6 @@ export function DrizzlePlayground() {
   }
 
   const { success, error } = useMigrations(db, migrations)
-  console.log("🚀 ~ DrizzlePlayground ~ success:", success)
-  console.log("🚀 ~ DrizzlePlayground ~ error:", error)
 
   if (error) {
     return (

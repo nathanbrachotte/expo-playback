@@ -22,7 +22,7 @@ export function useGetItunesPodcastQuery(id: string | null) {
   })
 }
 
-export function useGetItunesEpisodesQuery(podcastId: string | null) {
+export function useGetItunesPodcastAndEpisodesQuery(podcastId: string | null) {
   return useQuery({
     queryKey: ["episodes", podcastId],
     queryFn: () => fetchPodcastAndEpisodes({ id: podcastId }),
@@ -40,20 +40,25 @@ export function useGetItunesEpisodesQuery(podcastId: string | null) {
   })
 }
 
-export function useGetItunesEpisodeQuery(episodeId: string | null) {
-  console.log("🚀 ~ useGetItunesEpisodeQuery ~ episodeId:", episodeId)
+export function useGetItunesEpisodeQuery({
+  episodeId,
+  podcastId,
+}: {
+  episodeId: string | null
+  podcastId: string | null
+}) {
   return useQuery({
     queryKey: ["episode", episodeId],
     // TODO: Use actual query
-    queryFn: () => fetchPodcastAndEpisodes({ id: episodeId }),
+    queryFn: () => fetchPodcastAndEpisodes({ id: podcastId }),
     // queryFn: () => fetchSingleEpisode(episodeId),
     select: (data) => {
+      console.log("🚀 ~ useGetItunesEpisodeQuery ~ data:", JSON.stringify(data, null, 2))
       if (!episodeId) {
         return null
       }
 
       const foundEpisode = data.results.find((episode) => episode.trackId.toString() === episodeId)
-      console.log("🚀 ~ useGetItunesEpisodeQuery ~ foundEpisode:", foundEpisode)
 
       if (!foundEpisode) {
         return null
@@ -77,10 +82,6 @@ export function useSearchItunesPodcastsQuery(searchQuery: string | null) {
   return useQuery({
     queryKey: ["podcastSearch", searchQuery],
     queryFn: () => searchPodcast(searchQuery),
-    select: (data) => {
-      if (!data?.results) return []
-      return data.results.map((item) => ToLocalPodcastSchema.parse(item))
-    },
     enabled: !!searchQuery && searchQuery.trim().length > 0,
   })
 }

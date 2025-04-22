@@ -4,6 +4,9 @@ import * as ExpoPlayback from "expo-playback"
 import { useEffect, useState } from "react"
 import { Button, H4, Slider, Text, YStack, XStack } from "tamagui"
 
+import { usePlayerContext } from "../../providers/PlayerProvider"
+import { formatTime } from "../../utils/time.utils"
+
 type SkipSegment = {
   startTime: number
   endTime: number
@@ -26,18 +29,13 @@ export function Player({
   episodeTitle = "Sample Episode",
   podcastTitle = "Sample Podcast",
 }: PlayerProps) {
+  const activeEpisode = usePlayerContext()
+
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   // const [audioFile, setAudioFile] = useState<string | null>(null)
-
-  // Format time in MM:SS format
-  const formatTime = (timeInSeconds: number) => {
-    const minutes = Math.floor(timeInSeconds / 60)
-    const seconds = Math.floor(timeInSeconds % 60)
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`
-  }
 
   useEffect(() => {
     const audioDirectory = FileSystem.documentDirectory + "audio/"
@@ -127,8 +125,7 @@ export function Player({
   }
 
   return (
-    <YStack p="$4" borderTopWidth={1} borderColor="$borderColor" bg="$color5">
-      {/* Episode Info */}
+    <YStack p="$4" borderTopWidth={1} borderColor="$borderColor" bg="$color5" position="relative">
       <XStack>
         {/* Album Art Placeholder */}
         <YStack width={50} height={50} />

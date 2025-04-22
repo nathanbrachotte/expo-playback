@@ -2,7 +2,8 @@ import { RouteProp } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 
 export type EpisodeScreenParams = {
-  id: string
+  episodeId: string
+  podcastId: string
 }
 
 export type RootStackParamList = {
