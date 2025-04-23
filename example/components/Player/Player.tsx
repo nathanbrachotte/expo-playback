@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { Button, H4, Slider, Text, YStack, XStack } from "tamagui"
 import { formatTime } from "../../utils/time.utils"
 import { usePlayerContext } from "../../providers/PlayerProvider"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 export function Player() {
   const { activeEpisode } = usePlayerContext()
@@ -14,7 +15,7 @@ export function Player() {
   }
 
   return (
-    <YStack p="$4" borderTopWidth={1} borderColor="$borderColor" bg="$color5" position="relative">
+    <YStack py="$6" px="$4" borderTopWidth={1} borderColor="$borderColor" bg="$color5">
       <XStack>
         {/* Album Art Placeholder */}
         <YStack width={50} height={50} />

@@ -1,6 +1,5 @@
 import { Toasts } from "@backpackapp-io/react-native-toast"
 import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native"
-import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { PortalProvider } from "@tamagui/portal"
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin"
@@ -11,21 +10,14 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context"
 import { TamaguiProvider, Theme } from "tamagui"
 
+import { Routes } from "./Routes"
 import { MigrationsWrapper } from "./components/MigrationsWrapper"
 import { db } from "./drizzle"
 import { I18nProvider } from "./providers/LangProvider"
 import { PlayerProvider } from "./providers/PlayerProvider"
-import { DatabaseExplorerScreen } from "./screens/DatabaseExplorerScreen"
-import { EpisodeScreen } from "./screens/Episode/EpisodeScreen"
-import { HomeScreen } from "./screens/HomeScreen"
-import { PodcastScreen } from "./screens/PodcastScreen"
-import { PodcastSearchScreen } from "./screens/PodcastSearchScreen"
 // import config from "./tamagui.config"
-import { SettingsScreen } from "./screens/SettingsScreen"
 import { tamaguiConfig } from "./tamagui.config"
-import { RootStackParamList } from "./types/navigation.types"
 
-const Stack = createNativeStackNavigator<RootStackParamList>()
 const queryClient = new QueryClient()
 
 const ToastProvider = () => {
@@ -62,14 +54,7 @@ export default function App() {
                       }
                     >
                       <NavigationContainer theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-                        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-                          <Stack.Screen name="Home" component={HomeScreen} />
-                          <Stack.Screen name="PodcastSearch" component={PodcastSearchScreen} />
-                          <Stack.Screen name="Podcast" component={PodcastScreen} />
-                          <Stack.Screen name="Episode" component={EpisodeScreen} />
-                          <Stack.Screen name="Settings" component={SettingsScreen} />
-                          <Stack.Screen name="DatabaseExplorer" component={DatabaseExplorerScreen} />
-                        </Stack.Navigator>
+                        <Routes />
                       </NavigationContainer>
                     </I18nProvider>
                   </PlayerProvider>

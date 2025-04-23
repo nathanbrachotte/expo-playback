@@ -19,6 +19,7 @@
     "@tamagui/config": "1.125.31",
     "@tamagui/core": "1.125.31",
     "@tamagui/font-inter": "1.125.31",
+    "@tamagui/linear-gradient": "^1.126.1",
     "@tamagui/lucide-icons": "1.125.31",
     "@tamagui/portal": "1.125.31",
     "@tamagui/react-native-media-driver": "1.125.31",
@@ -41,7 +42,9 @@
     "react-native-screens": "~4.4.0",
     "react-native-svg": "^15.11.2",
     "tamagui": "1.125.31",
-    "zod": "^3.24.2"
+    "zod": "^3.24.2",
+    "expo-linear-gradient": "~14.0.2",
+    "expo-network": "~7.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

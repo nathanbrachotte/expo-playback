@@ -15,45 +15,59 @@ export function useLocalPodcastsQuery() {
   })
 }
 
+export async function getPodcastById(id: string | null) {
+  if (!id) {
+    return null
+  }
+
+  const res = await db
+    .select()
+    .from(schema.podcastsTable)
+    .where(sql`id = ${id}`)
+
+  return res[0]
+}
+
 export function useGetLocalPodcastQuery(id: string | null) {
   return useQuery({
     queryKey: ["savedPodcast", id],
-    queryFn: async () => {
-      if (!id) {
-        return null
-      }
-
-      const podcasts = await db
-        // TODO: use get()? There's gotta be a way to get only one episode
-        .select()
-        .from(schema.podcastsTable)
-        .where(sql`id = ${id}`)
-      return podcasts[0]
-    },
+    queryFn: () => getPodcastById(id),
     enabled: !!id,
   })
 }
 
-// !FIXME: Return only one episode from SQL query
-// !FIXME: Types are so fucking fucked I hate this shit
-//!FIXME THAT LOCAL QUERY DOEST WORK
+export const episodeWithPodcastByIdDbQuery = (id: string | null) =>
+  db
+    .select({
+      episode: {
+        ...episodesTable,
+      },
+      podcast: {
+        title: podcastsTable.title,
+        id: podcastsTable.id,
+        appleId: podcastsTable.appleId,
+      },
+    })
+    .from(episodesTable)
+    .where(sql`${episodesTable.id} = ${id}`)
+    .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
+
+export async function getEpisodeWithPodcastById(id: string | null) {
+  if (!id) {
+    return null
+  }
+
+  const res = await episodeWithPodcastByIdDbQuery(id)
+
+  if (res.length !== 1) {
+    return null
+  }
+
+  return res[0]
+}
+
 export function useGetLiveLocalEpisodeQuery({ id }: { id: string | null }) {
-  return useLiveQuery(
-    db
-      .select({
-        episode: {
-          ...episodesTable,
-        },
-        podcast: {
-          title: podcastsTable.title,
-          id: podcastsTable.id,
-          appleId: podcastsTable.appleId,
-        },
-      })
-      .from(episodesTable)
-      .where(sql`${episodesTable.id} = ${id}`)
-      .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`),
-  )
+  return useLiveQuery(episodeWithPodcastByIdDbQuery(id), [id])
 }
 
 // Join episodes with podcasts to get podcast title, and order by published_at desc

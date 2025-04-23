@@ -2,6 +2,7 @@ import { useNavigation, useRoute, useNavigationState } from "@react-navigation/n
 import { ArrowBigRight, Download, Play, Share } from "@tamagui/lucide-icons"
 import { Image } from "react-native"
 import { H4, Paragraph, YStack, XStack, Button, Spinner } from "tamagui"
+import { LinearGradient } from "tamagui/linear-gradient"
 import { z } from "zod"
 
 import { useGetEpisodeByIdQuery } from "../../clients/both.queries"
@@ -13,6 +14,7 @@ import { usePlayerContext } from "../../providers/PlayerProvider"
 import { SharedEpisodeFields } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getAppleIdFromPodcast } from "../../utils/podcasts.utils"
+import { getEpisodeWithPodcastById, episodeWithPodcastByIdDbQuery } from "../../clients/local.queries"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -41,13 +43,25 @@ function EpisodeDumbScreen({
   })
 
   const downloadAndPlay = async () => {
-    const res = await handleSavePodcast(getAppleIdFromPodcast(podcast))
-    // TODO: Verify this works
-    const savedEpisodeId = res?.savedEpisodes.lastInsertRowId
-    if (!savedEpisodeId) {
-      throw new Error("Something when wrong when saving the podcast: " + JSON.stringify(res, null, 2))
+    const res = await getEpisodeWithPodcastById(episode.appleId)
+    const localEpisode = res?.episode
+
+    // If episode does not exist locally, save it
+    if (localEpisode == null) {
+      const res = await handleSavePodcast(getAppleIdFromPodcast(podcast))
+      // TODO: Verify this works
+      const savedEpisodeId = res?.savedEpisodes.lastInsertRowId
+      if (!savedEpisodeId) {
+        throw new Error("Something when wrong when saving the podcast: " + JSON.stringify(res, null, 2))
+      }
+
+      // TODO: Add download mechanism
+      setActiveEpisodeId(savedEpisodeId)
+      return
     }
-    setActiveEpisodeId(savedEpisodeId)
+
+    // If episode exists locally, set it as active directly
+    setActiveEpisodeId(localEpisode.id)
   }
 
   const goToPodcast = () => {
@@ -58,44 +72,45 @@ function EpisodeDumbScreen({
 
   return (
     <PureLayout header={<H4>Episode</H4>}>
-      <PureScrollView>
-        <PureYStack gap="$3" p="$3" flex={1}>
-          <XStack gap="$4" alignItems="center">
-            {episode.image ? (
-              <Image
-                source={{ uri: episode.image }}
-                style={{ width: 120, height: 120, borderRadius: 12 }}
-                resizeMode="cover"
-              />
-            ) : null}
-          </XStack>
-          <YStack gap="$2" flex={1}>
-            <Paragraph size="$8" fontWeight="bold">
-              {episode.title} - {episode.podcastId} - {episode.appleId}
-            </Paragraph>
+      <PureYStack gap="$3" flex={1} overflow="hidden">
+        <XStack px="$3" gap="$4" alignItems="center">
+          {episode.image ? (
+            <Image
+              source={{ uri: episode.image }}
+              style={{ width: 120, height: 120, borderRadius: 12 }}
+              resizeMode="cover"
+            />
+          ) : null}
+        </XStack>
+        <YStack flex={1}>
+          <Paragraph px="$3" size="$8" fontWeight="bold">
+            {episode.title} - {episode.podcastId} - {episode.appleId}
+          </Paragraph>
 
-            <Paragraph>
-              <Paragraph fontWeight="bold">Release Date:</Paragraph>{" "}
-              {new Date(episode.publishedAt).toLocaleDateString()}
-            </Paragraph>
+          <Paragraph px="$3">
+            <Paragraph fontWeight="bold">Release Date:</Paragraph> {new Date(episode.publishedAt).toLocaleDateString()}
+          </Paragraph>
 
-            {/* // TODO: Make sure the formatting works! */}
-            <Paragraph size="$5">{episode.description}</Paragraph>
-          </YStack>
-        </PureYStack>
-        <PureYStack gap="$2" centered>
-          <PureXStack gap="$2" centered>
-            <Button icon={Download} />
-            <Button icon={Play} onPress={downloadAndPlay} />
-            <Button icon={Share} />
-          </PureXStack>
-          {!podcastScreenInStack && (
-            <Button onPress={goToPodcast} icon={ArrowBigRight} width="$14">
-              <Button.Text>Podcast</Button.Text>
-            </Button>
-          )}
-        </PureYStack>
-      </PureScrollView>
+          <PureScrollView>
+            <YStack p="$2" px="$3">
+              <Paragraph size="$5">{episode.description}</Paragraph>
+              <Paragraph size="$5">{episode.description}</Paragraph>
+            </YStack>
+          </PureScrollView>
+        </YStack>
+      </PureYStack>
+      <PureYStack gap="$2" centered>
+        <PureXStack gap="$2" centered>
+          <Button icon={Download} />
+          <Button icon={Play} onPress={downloadAndPlay} />
+          <Button icon={Share} />
+        </PureXStack>
+        {!podcastScreenInStack && (
+          <Button onPress={goToPodcast} icon={ArrowBigRight} width="$14">
+            <Button.Text>Podcast</Button.Text>
+          </Button>
+        )}
+      </PureYStack>
     </PureLayout>
   )
 }

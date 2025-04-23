@@ -3,8 +3,6 @@ import { ChevronLeft } from "@tamagui/lucide-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { YStack, XStack, Button, AnimatePresence } from "tamagui"
 
-import { Player } from "./Player/Player"
-
 export function PureLayout({
   children,
   header,
@@ -52,7 +50,6 @@ export function PureLayout({
       <YStack flex={1} gap="$2">
         {children}
       </YStack>
-      <Player />
     </YStack>
   )
 }
