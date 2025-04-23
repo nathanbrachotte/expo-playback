@@ -32,7 +32,6 @@ export async function searchPodcast(query: string | null) {
   }
 
   const data = (await response.json()) as ApplePodcastResponse
-  console.log("🚀 ~ searchPodcast ~ data:", JSON.stringify(data, null, 2))
 
   return {
     resultCount: data.resultCount,
@@ -58,7 +57,6 @@ export async function fetchPodcastAndEpisodes({
   id: string | null
   limit?: number
 }): Promise<AppleEpisodeResponse> {
-  console.log("🚀 ~ fetchPodcastAndEpisodes ~ id:", { id: podcastId, limit })
   if (!podcastId) {
     return {
       resultCount: 0,
@@ -77,7 +75,6 @@ export async function fetchPodcastAndEpisodes({
     entity: "podcastEpisode", // Remove this and it only returns the podcast
     limit: limit.toString(),
   })
-  console.log("🚀 ~ queryParams:", queryParams.toString())
 
   const response = await fetch(`${ITUNES_API_BASE_URL}/lookup?${queryParams.toString()}`)
 
@@ -86,7 +83,6 @@ export async function fetchPodcastAndEpisodes({
   }
 
   const data = (await response.json()) as AppleEpisodeResponse
-  console.log("🚀 ~ fetchPodcastAndEpisodes ~ data:", JSON.stringify(data, null, 2))
 
   return data
 }

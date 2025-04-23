@@ -1,6 +1,9 @@
 import { useGetItunesEpisodeQuery, useGetItunesPodcastQuery } from "./itunes.queries"
 import { useGetLocalPodcastQuery, useGetLiveLocalEpisodeQuery } from "./local.queries"
 
+/**
+ * Hooks that fetch first from local and then from remote if not found locally
+ */
 export function useGetPodcastByIdQuery(podcastId: string | null) {
   const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(podcastId)
 
@@ -41,6 +44,9 @@ export function useGetEpisodeByIdQuery({ episodeId, podcastId }: { episodeId: st
   const isLoading = isAppleLoading
 
   const foundEpisode = localEpisode[0] || fetchedEpisode
+  console.log("🚀 ~ useGetEpisodeByIdQuery ~ fetchedEpisode:", fetchedEpisode)
+  console.log("🚀 ~ useGetEpisodeByIdQuery ~ localEpisode:", localEpisode)
+  console.log("🚀 ~ useGetEpisodeByIdQuery ~ foundEpisode:", foundEpisode)
 
   if (!foundEpisode) {
     const error = isLoading ? null : Error("useGetEpisodeByIdQuery - Can't find episode")

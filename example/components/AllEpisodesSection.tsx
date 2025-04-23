@@ -6,7 +6,6 @@ import { useAllEpisodesQuery } from "../clients/local.queries"
 
 export function AllEpisodesList() {
   const { data: episodesWithPodcasts } = useAllEpisodesQuery()
-  console.log("🚀 ~ AllEpisodesList ~ episodesWithPodcasts:", JSON.stringify(episodesWithPodcasts, null, 2))
 
   const isLoading = !episodesWithPodcasts
 

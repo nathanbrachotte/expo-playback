@@ -58,7 +58,7 @@ function EpisodeDumbScreen({
           </XStack>
           <YStack gap="$2" flex={1}>
             <Paragraph size="$8" fontWeight="bold">
-              {episode.title}
+              {episode.title} - {episode.podcastId} - {episode.appleId}
             </Paragraph>
 
             <Paragraph>
@@ -93,7 +93,13 @@ export function EpisodeScreen() {
   const { episode, podcast, isLoading } = useGetEpisodeByIdQuery({ episodeId, podcastId })
 
   if (isLoading) {
-    return <Spinner />
+    return (
+      <PureLayout header={<H4>Episode</H4>}>
+        <PureYStack f={1} centered>
+          <Spinner />
+        </PureYStack>
+      </PureLayout>
+    )
   }
 
   if (!episode) {

@@ -38,7 +38,6 @@ export function useGetLocalPodcastQuery(id: string | null) {
 // !FIXME: Types are so fucking fucked I hate this shit
 //!FIXME THAT LOCAL QUERY DOEST WORK
 export function useGetLiveLocalEpisodeQuery({ id }: { id: string | null }) {
-  console.log("🚀 ~ useGetLiveLocalEpisodeQuery ~ id:", id)
   return useLiveQuery(
     db
       .select({
@@ -46,12 +45,13 @@ export function useGetLiveLocalEpisodeQuery({ id }: { id: string | null }) {
           ...episodesTable,
         },
         podcast: {
+          title: podcastsTable.title,
           id: podcastsTable.id,
           appleId: podcastsTable.appleId,
         },
       })
       .from(episodesTable)
-      .where(sql`id = ${id}`)
+      .where(sql`${episodesTable.id} = ${id}`)
       .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`),
   )
 }

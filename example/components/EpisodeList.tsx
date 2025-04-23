@@ -49,7 +49,6 @@ export function EpisodesList({
       data={episodes}
       keyExtractor={(item) => uniqueKeySchema.parse(item).uniqueKey}
       renderItem={({ item }) => {
-        console.log("🚀 ~ item:", item)
         // TODO: Use date-fns to render this correctly
         const publishedAt = formatDate(Number(item.publishedAt))
         const duration = formatDuration(item.duration)

@@ -16,7 +16,6 @@ export function PureLayout({
   children,
   header,
   actionSection,
-  // wrapperStyle,
 }: {
   children: React.ReactNode
   header?: React.ReactNode

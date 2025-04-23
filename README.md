@@ -6,5 +6,5 @@ TODO:
 
 - [ ] Try: `npm run start` then `Shift + M`/Drizzle, then `run ios`
 - [ ] Fix navigation going Podcast > Episode > Podcast > Episode etc
-- [ ] Fix local episode query not working (always default to episode)
+- [x] Fix local episode query not working (always default to episode)
 - [ ] Finish player

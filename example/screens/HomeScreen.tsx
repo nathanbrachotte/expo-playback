@@ -9,6 +9,7 @@ import { AllEpisodesList } from "../components/AllEpisodesSection"
 import { PureLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { PureSection } from "../components/Sections/PureSection"
+import { TestSection } from "../components/TestSection"
 
 function PodcastsList() {
   const { data: podcastList } = useLocalPodcastsQuery()
@@ -91,6 +92,7 @@ export function HomeScreen() {
         </XStack>
       }
     >
+      <TestSection />
       {hasSavedPodcasts ? (
         <>
           <PodcastsSection />
