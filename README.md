@@ -8,4 +8,4 @@ TODO:
 - [x] Fix navigation going Podcast > Episode > Podcast > Episode etc
 - [x] Fix local episode query not working (always default to episode)
 - [ ] Finish player
-- [ ] Fix UI "jumping" when navigation
+- [x] Fix UI "jumping" when navigation (It's not the header)

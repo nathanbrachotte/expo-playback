@@ -1,16 +1,9 @@
 import { useNavigation, useNavigationState } from "@react-navigation/native"
 import { ChevronLeft } from "@tamagui/lucide-icons"
-import { SafeAreaView } from "react-native"
-import { styled, YStack, XStack, Button, AnimatePresence } from "tamagui"
-import { Player } from "./Player/Player"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { YStack, XStack, Button, AnimatePresence } from "tamagui"
 
-const CustomSafeAreaView = styled(SafeAreaView, {
-  variants: {} as const,
-  defaultVariants: {
-    bg: "$background",
-  },
-  flex: 1,
-})
+import { Player } from "./Player/Player"
 
 export function PureLayout({
   children,
@@ -22,12 +15,14 @@ export function PureLayout({
   actionSection?: React.ReactNode
   // wrapperStyle?: ComponentProps<typeof YStack>
 }) {
+  const insets = useSafeAreaInsets()
   const navigation = useNavigation()
   // const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const isFirstScreen = useNavigationState((state) => state?.routes.length <= 1)
 
   return (
-    <CustomSafeAreaView>
+    // SafeAreaView is not working, so we need to use YStack to get the insets, see: https://reactnative.dev/docs/safeareaview
+    <YStack bg="$background" flex={1} pt={insets.top} pb={insets.bottom} pl={insets.left} pr={insets.right}>
       <XStack justifyContent="space-between" alignItems="center" px="$3" py="$2">
         <XStack flex={0.5} justifyContent="flex-start" minWidth={40}>
           <AnimatePresence>
@@ -58,6 +53,6 @@ export function PureLayout({
         {children}
       </YStack>
       <Player />
-    </CustomSafeAreaView>
+    </YStack>
   )
 }
