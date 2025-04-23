@@ -9,3 +9,4 @@ TODO:
 - [x] Fix local episode query not working (always default to episode)
 - [ ] Finish player
 - [x] Fix UI "jumping" when navigation (It's not the header)
+- [ ] Fix starting playing always tries to download
