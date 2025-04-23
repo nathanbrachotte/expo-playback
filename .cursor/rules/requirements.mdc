@@ -25,7 +25,8 @@ alwaysApply: true
 - If you use react-native styles, I'll die, and so will 1B people on the planet. ALWAYS default to Tamagui components and styles to save the human kind!  
 
 # Typescript
-- No `any`: Use `unknown` or validate with zod instead
+- DO NOT USE THE `any` KEYWORD: Use a Zod schema for type validation or `unknown` if you really don't know the type.
+
 
 # Business Logic
 - Always make use of the early return pattern.

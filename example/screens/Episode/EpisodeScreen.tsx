@@ -1,7 +1,8 @@
-import { useNavigation, useRoute } from "@react-navigation/native"
+import { useNavigation, useRoute, useNavigationState } from "@react-navigation/native"
 import { ArrowBigRight, Download, Play, Share } from "@tamagui/lucide-icons"
 import { Image } from "react-native"
 import { H4, Paragraph, YStack, XStack, Button, Spinner } from "tamagui"
+import { z } from "zod"
 
 import { useGetEpisodeByIdQuery } from "../../clients/both.queries"
 import { useSavePodcastMutation } from "../../clients/local.mutations"
@@ -12,6 +13,13 @@ import { usePlayerContext } from "../../providers/PlayerProvider"
 import { SharedEpisodeFields } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getAppleIdFromPodcast } from "../../utils/podcasts.utils"
+
+const podcastRouteSchema = z.object({
+  name: z.literal("Podcast"),
+  params: z.object({
+    id: z.string().optional(),
+  }),
+})
 
 function EpisodeDumbScreen({
   episode,
@@ -26,6 +34,11 @@ function EpisodeDumbScreen({
   const navigation = useNavigation()
   const { setActiveEpisodeId } = usePlayerContext()
   const { handleSavePodcast } = useSavePodcastMutation()
+  const routes = useNavigationState((state) => state?.routes || [])
+  const podcastScreenInStack = routes.some((route) => {
+    const result = podcastRouteSchema.safeParse(route)
+    return result.success && result.data.params.id === (podcast.id?.toString() || podcast.appleId?.toString())
+  })
 
   const downloadAndPlay = async () => {
     const res = await handleSavePodcast(getAppleIdFromPodcast(podcast))
@@ -76,9 +89,11 @@ function EpisodeDumbScreen({
             <Button icon={Play} onPress={downloadAndPlay} />
             <Button icon={Share} />
           </PureXStack>
-          <Button onPress={goToPodcast} icon={ArrowBigRight} width="$14">
-            <Button.Text>Podcast</Button.Text>
-          </Button>
+          {!podcastScreenInStack && (
+            <Button onPress={goToPodcast} icon={ArrowBigRight} width="$14">
+              <Button.Text>Podcast</Button.Text>
+            </Button>
+          )}
         </PureYStack>
       </PureScrollView>
     </PureLayout>

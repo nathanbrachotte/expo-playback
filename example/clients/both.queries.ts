@@ -6,6 +6,7 @@ import { useGetLocalPodcastQuery, useGetLiveLocalEpisodeQuery } from "./local.qu
  */
 export function useGetPodcastByIdQuery(podcastId: string | null) {
   const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(podcastId)
+  console.log("🚀 ~ useGetPodcastByIdQuery ~ localPodcast:", localPodcast)
 
   //? We only fetch info if the episode is not already there locally
   const isMissingLocally = !localPodcast && !isLocalLoading
