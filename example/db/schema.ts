@@ -20,6 +20,7 @@ export const podcastsTable = sqliteTable("podcasts", {
   description: text("description"),
   image: text("image"),
   title: text("title").notNull(),
+  rssFeedUrl: text("rss_feed_url"),
   ...sharedKeys,
 })
 

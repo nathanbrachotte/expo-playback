@@ -3,7 +3,7 @@ import { Image } from "react-native"
 import { H4, Paragraph, YStack, XStack, Spinner } from "tamagui"
 
 import { useGetPodcastByIdQuery } from "../clients/both.queries"
-import { useGetItunesPodcastAndEpisodesQuery } from "../clients/itunes.queries"
+import { useGetRssEpisodesQuery } from "../clients/rss.queries"
 import { EpisodesList } from "../components/EpisodeList"
 import { PureLayout } from "../components/Layout"
 import { PureYStack } from "../components/PureStack"
@@ -12,31 +12,31 @@ import { LoadingSection } from "../components/Sections/LoadingSection"
 import { PodcastScreenRouteProp } from "../types/navigation.types"
 
 export function EpisodesSection({ id }: { id: string }) {
-  const {
-    data: fetchedEpisodesResponse,
-    error: fetchedEpisodesError,
-    isLoading,
-  } = useGetItunesPodcastAndEpisodesQuery(id || null)
-  const episodes = fetchedEpisodesResponse?.episodes
+  const { podcast } = useGetPodcastByIdQuery(id)
+  const { data: episodes, error: fetchedEpisodesError, isLoading } = useGetRssEpisodesQuery(podcast?.rssFeedUrl || null)
 
-  if (isLoading) {
+  if (isLoading || !podcast) {
     return <Spinner />
   }
 
-  if (!episodes) {
+  if (!episodes || fetchedEpisodesError) {
+    console.error(fetchedEpisodesError)
     return <ErrorSection />
   }
 
   return (
     <PureYStack px="$3">
-      <EpisodesList episodes={episodes || []} />
+      <EpisodesList
+        podcastTitle={podcast.title}
+        episodes={episodes.map((episode) => ({ ...episode, podcastId: podcast.appleId })) || []}
+      />
     </PureYStack>
   )
 }
 
 export function PodcastScreen() {
   const route = useRoute<PodcastScreenRouteProp>()
-  // Could be the local id or the appleId
+
   const { id } = route.params
 
   const { podcast, isLoading } = useGetPodcastByIdQuery(id ?? null)
@@ -74,7 +74,7 @@ export function PodcastScreen() {
             </Paragraph>
             <Paragraph size="$5">{podcast.author}</Paragraph>
             <Paragraph size="$3" color="$gray11">
-              {podcast.author} • TODO episodes
+              {podcast.author} • {podcast.rssFeedUrl ? "Episodes" : "No RSS feed available"}
             </Paragraph>
           </YStack>
         </XStack>

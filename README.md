@@ -2,7 +2,15 @@
 
 Expo Module to handle audio playback from native
 
-TODO:
+## Commands
+
+```shell
+npx expo install <lib>
+npm run ios
+cd ios && pod install && cd .. # install pods
+```
+
+## TODO
 
 - [ ] Try: `npm run start` then `Shift + M`/Drizzle, then `run ios`
 - [x] Fix navigation going Podcast > Episode > Podcast > Episode etc

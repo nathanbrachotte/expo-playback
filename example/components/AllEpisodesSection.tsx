@@ -23,12 +23,8 @@ export function AllEpisodesList() {
 
   return (
     <EpisodesList
-      episodes={
-        episodesWithPodcasts.map((episode) => ({
-          ...episode.episode,
-          podcastTitle: episode.podcast.title,
-        })) ?? []
-      }
+      podcastTitle={episodesWithPodcasts[0].podcast.title}
+      episodes={episodesWithPodcasts.map((episode) => episode.episode) ?? []}
     />
   )
 }

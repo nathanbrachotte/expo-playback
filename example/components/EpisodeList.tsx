@@ -37,11 +37,7 @@ const uniqueKeySchema = z
       epi.id?.toString() || epi.appleId?.toString() || epi.publishedAt?.getDate().toString() || "BIG BIG TROUBLE",
   }))
 
-export function EpisodesList({
-  episodes,
-}: {
-  episodes: (SharedEpisodeFields & { podcastTitle?: Optional<string> })[]
-}) {
+export function EpisodesList({ episodes, podcastTitle }: { episodes: SharedEpisodeFields[]; podcastTitle: string }) {
   const navigation = useNavigation()
 
   return (
@@ -59,7 +55,7 @@ export function EpisodesList({
             subtitle={item.description}
             image={item.image}
             extraInfo={`${publishedAt} • ${duration}`}
-            podcastTitle={item.podcastTitle}
+            podcastTitle={podcastTitle}
             onPress={() => {
               if (!item.appleId) {
                 throw new Error("Found episode without an appleId")

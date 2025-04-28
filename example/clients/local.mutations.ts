@@ -20,6 +20,7 @@ async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Sh
       image: podcast.image,
       title: podcast.title,
       appleId: podcast.appleId,
+      rssFeedUrl: podcast.rssFeedUrl,
     } satisfies typeof schema.podcastsTable.$inferInsert)
     .returning()
 

@@ -11,6 +11,7 @@ import m0006 from './0006_short_cerise.sql';
 import m0007 from './0007_low_kitty_pryde.sql';
 import m0008 from './0008_striped_micromax.sql';
 import m0009 from './0009_conscious_wither.sql';
+import m0010 from './0010_workable_terrax.sql';
 
   export default {
     journal,
@@ -24,7 +25,8 @@ m0005,
 m0006,
 m0007,
 m0008,
-m0009
+m0009,
+m0010
     }
   }
   

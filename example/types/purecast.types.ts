@@ -1,4 +1,4 @@
-import { EPISODES_RESPONSE_MOCK, PODCASTS_SEARCH_RESPONSE_MOCK } from "../utils/podcasts.mock"
+import { EPISODES_RESPONSE_MOCK, PODCASTS_SEARCH_RESPONSE_MOCK } from "../clients/itunes.mock"
 
 export interface SearchResult {
   id: string

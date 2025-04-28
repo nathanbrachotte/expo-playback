@@ -1,6 +1,6 @@
 import { ToLocalPodcastSchema } from "./schemas"
 import { AppleEpisodeResponse, ApplePodcastResponse } from "../types/purecast.types"
-import { EPISODES_RESPONSE_MOCK, PODCASTS_SEARCH_RESPONSE_MOCK } from "../utils/podcasts.mock"
+import { EPISODES_RESPONSE_MOCK, PODCASTS_SEARCH_RESPONSE_MOCK } from "./itunes.mock"
 
 /**
  * This API absolutely sucks but is free.

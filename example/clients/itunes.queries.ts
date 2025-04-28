@@ -53,7 +53,6 @@ export function useGetItunesEpisodeQuery({
     queryFn: () => fetchPodcastAndEpisodes({ id: podcastId }),
     // queryFn: () => fetchSingleEpisode(episodeId),
     select: (data) => {
-      console.log("🚀 ~ useGetItunesEpisodeQuery ~ data:", JSON.stringify(data, null, 2))
       if (!episodeId) {
         return null
       }

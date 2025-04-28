@@ -1,0 +1,1 @@
+ALTER TABLE `podcasts` ADD `rss_feed_url` text;

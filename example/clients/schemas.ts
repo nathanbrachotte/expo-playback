@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+import { RssItemSchema } from "./rss.fetch"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
 
 export const ToLocalPodcastSchema = z
@@ -36,10 +37,9 @@ export const ToLocalPodcastSchema = z
         image: data.artworkUrl100,
         description: "",
         //? id should be added manually when needed. Or should it?
+        rssFeedUrl: data.feedUrl || null,
       }) satisfies Omit<SharedPodcastFields, "id">,
   )
-
-export type ParsedLocalPodcastSchema = z.infer<typeof ToLocalPodcastSchema>
 
 export const ToLocalEpisodeSchema = z
   .object({
@@ -112,3 +112,33 @@ export const ToLocalEpisodeSchema = z
       } satisfies Omit<SharedEpisodeFields, "id">
     },
   )
+
+export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
+  // Convert duration from "HH:MM:SS" to milliseconds
+  const durationParts = data["itunes:duration"]?.split(":") || []
+  let duration = 0
+  if (durationParts.length === 3) {
+    duration =
+      parseInt(durationParts[0]) * 3600000 + parseInt(durationParts[1]) * 60000 + parseInt(durationParts[2]) * 1000
+  } else if (durationParts.length === 2) {
+    duration = parseInt(durationParts[0]) * 60000 + parseInt(durationParts[1]) * 1000
+  } else {
+    duration = parseInt(durationParts[0]) * 1000
+  }
+
+  return {
+    title: data.title,
+    duration,
+    publishedAt: new Date(data.pubDate),
+    downloadUrl: data.enclosure.url,
+    image: data["itunes:image"]?.href || null,
+    description: data.description || "",
+    shouldDownload: false,
+    appleId: data.guid["#text"] || null,
+    // `podcastId` is not part of the RSS response
+  } satisfies Omit<SharedEpisodeFields, "id" | "podcastId">
+})
+
+export type ParsedLocalPodcastSchema = z.infer<typeof ToLocalPodcastSchema>
+export type ParsedLocalEpisodeSchema = z.infer<typeof ToLocalEpisodeSchema>
+export type ParsedRssEpisodeSchema = z.infer<typeof ToEpisodeFromRSSSchema>

@@ -2,11 +2,11 @@ import { useNavigation, useRoute, useNavigationState } from "@react-navigation/n
 import { ArrowBigRight, Download, Play, Share } from "@tamagui/lucide-icons"
 import { Image } from "react-native"
 import { H4, Paragraph, YStack, XStack, Button, Spinner } from "tamagui"
-import { LinearGradient } from "tamagui/linear-gradient"
 import { z } from "zod"
 
-import { useGetEpisodeByIdQuery } from "../../clients/both.queries"
+import { useGetEpisodeByIdQuery, useGetPodcastByIdQuery } from "../../clients/both.queries"
 import { useSavePodcastMutation } from "../../clients/local.mutations"
+import { getEpisodeWithPodcastById } from "../../clients/local.queries"
 import { PureLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
@@ -14,7 +14,6 @@ import { usePlayerContext } from "../../providers/PlayerProvider"
 import { SharedEpisodeFields } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getAppleIdFromPodcast } from "../../utils/podcasts.utils"
-import { getEpisodeWithPodcastById, episodeWithPodcastByIdDbQuery } from "../../clients/local.queries"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -120,7 +119,9 @@ export function EpisodeScreen() {
 
   const { episodeId, podcastId } = route.params
 
-  const { episode, podcast, isLoading } = useGetEpisodeByIdQuery({ episodeId, podcastId })
+  const { podcast } = useGetPodcastByIdQuery(podcastId)
+
+  const { episode, isLoading } = useGetEpisodeByIdQuery({ episodeId, feedUrl: podcast?.rssFeedUrl || null })
 
   if (isLoading) {
     return (

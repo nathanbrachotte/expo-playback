@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="/global/feed/rss.xslt" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:media="http://search.yahoo.com/mrss/" xmlns:podaccess="https://access.acast.com/schema/1.0/" xmlns:acast="https://schema.acast.com/1.0/">
+    <channel>
+		<ttl>60</ttl>
+		<generator>acast.com</generator>
+		<title>FloodCast</title>
+		<link>http://www.florentbernard.com</link>
+		<atom:link href="https://feeds.acast.com/public/shows/5ffe3facad3e633276e9ea57" rel="self" type="application/rss+xml"/>
+		<language>fr</language>
+		<copyright>All rights reserved</copyright>
+		<itunes:keywords/>
+		<itunes:author>FloodCast</itunes:author>
+		<itunes:subtitle/>
+		<itunes:summary><![CDATA[Floodcast, c'est le podcast présenté par Florent Bernard et Adrien Ménielle dans lequel ils invitent des artistes pour discuter de pleins de choses. <hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></itunes:summary>
+		<description><![CDATA[Floodcast, c'est le podcast présenté par Florent Bernard et Adrien Ménielle dans lequel ils invitent des artistes pour discuter de pleins de choses. <hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></description>
+		<itunes:explicit>false</itunes:explicit>
+		<itunes:owner>
+			<itunes:name>FloodCast</itunes:name>
+			<itunes:email>info+5ffe3facad3e633276e9ea57@mg-eu.acast.com</itunes:email>
+		</itunes:owner>
+		<acast:showId>5ffe3facad3e633276e9ea57</acast:showId>
+		<acast:showUrl>floodcast</acast:showUrl>
+		<acast:signature key="EXAMPLE" algorithm="aes-256-cbc"><![CDATA[wbG1Z7+6h9QOi+CR1Dv0uQ==]]></acast:signature>
+		<acast:settings><![CDATA[FYjHyZbXWHZ7gmX8Pp1rmStkiTEE0CNxIPxmLPEYNwOPYEjva3g6uTTuD+shB98DXouQK8jj63xORPpUCF7tmR82YXA5gdesSEH4mug1NUKLh5HxL7hivXxh6KUxsPdmQP76F1xqrXXQvZzCVwiaug==]]></acast:settings>
+        <acast:network id="6007695c795a1c638da17e9b" slug="florent-bernard"><![CDATA[Florent Bernard]]></acast:network>
+		<acast:importedFeed>https://feeds.soundcloud.com/users/soundcloud:users:139721529/sounds.rss</acast:importedFeed>
+		<itunes:type>episodic</itunes:type>
+			<itunes:image href="https://assets.pippa.io/shows/5ffe3facad3e633276e9ea57/show-cover.jpg"/>
+			<image>
+				<url>https://assets.pippa.io/shows/5ffe3facad3e633276e9ea57/show-cover.jpg</url>
+				<link>http://www.florentbernard.com</link>
+				<title>FloodCast</title>
+			</image>
+			<itunes:new-feed-url>https://feeds.acast.com/public/shows/5ffe3facad3e633276e9ea57</itunes:new-feed-url>
+		<item>
+			<title>S10E31 - FC Taxi 2</title>
+			<itunes:title>S10E31 - FC Taxi 2</itunes:title>
+			<pubDate>Mon, 28 Apr 2025 02:01:00 GMT</pubDate>
+			<itunes:duration>1:48:18</itunes:duration>
+			<enclosure url="https://sphinx.acast.com/p/open/s/5ffe3facad3e633276e9ea57/e/680eafcc50eb1025286b18bb/media.mp3" length="156011058" type="audio/mpeg"/>
+			<guid isPermaLink="false">680eafcc50eb1025286b18bb</guid>
+			<itunes:explicit>false</itunes:explicit>
+			<link>https://shows.acast.com/floodcast/episodes/s10e31-fc-taxi-2</link>
+			<acast:episodeId>680eafcc50eb1025286b18bb</acast:episodeId>
+			<acast:showId>5ffe3facad3e633276e9ea57</acast:showId>
+			<acast:episodeUrl>s10e31-fc-taxi-2</acast:episodeUrl>
+			<acast:settings><![CDATA[FYjHyZbXWHZ7gmX8Pp1rmbKbhgrQiwYShz70Q9/ffXZMTtedvdcRQbP4eiLMjXzCKLPjEYLpGj+NMVKa+5C8pL4u/EOj1Vw4h5MMJYp0lCcFAe0fnxBJy/1ju4Qxy1fh8gO4DvlGA40yms2g0/hOkcrfHIopjTygHFqGwwOPKFIai4SuTvs86Lx3UYCyl6ZsEiDoRTlK1eY9tUQIOnybc//qmXw6b/1YP6D3whapl5UgChHPZPNBe27brZkj8uZvc2Y5MjExYo2yhyWr7eovz+n+zt8Z6Zzg7WJTOsjG7yz1TYmZC6D1fo2q/Tesw4NG]]></acast:settings>
+			<itunes:episodeType>full</itunes:episodeType>
+			<itunes:season>10</itunes:season>
+			<itunes:episode>31</itunes:episode>
+			<itunes:image href="https://assets.pippa.io/shows/5ffe3facad3e633276e9ea57/1745792902119-2b6b1f96-26fb-4cf5-8e28-565aab17bf23.jpeg"/>
+			<description><![CDATA[<p>Avec Mourad Winter et Benjamin Tranié.&nbsp;</p><br><p>Présenté par Florent Bernard et Adrien Ménielle.&nbsp;</p><br><p>On en parle de choses dans cet épisode : de souvenir de cinéma, se faire mordre les couilles, de faire de la natation, d’Adrian Amadoré, d’Ecosia, de se faire tirer des trucs, d’écrire des pièces de théâtre et d’être pudique.</p><br><p>Bises,</p><p>Flo.&nbsp;</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></description>
+			<itunes:summary><![CDATA[<p>Avec Mourad Winter et Benjamin Tranié.&nbsp;</p><br><p>Présenté par Florent Bernard et Adrien Ménielle.&nbsp;</p><br><p>On en parle de choses dans cet épisode : de souvenir de cinéma, se faire mordre les couilles, de faire de la natation, d’Adrian Amadoré, d’Ecosia, de se faire tirer des trucs, d’écrire des pièces de théâtre et d’être pudique.</p><br><p>Bises,</p><p>Flo.&nbsp;</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></itunes:summary>
+		</item>
+		<item>
+			<title>S08E25 - Le Perroquet de Sardou</title>
+			<itunes:title>S08E25 - Le Perroquet de Sardou</itunes:title>
+			<pubDate>Sun, 28 May 2023 23:26:02 GMT</pubDate>
+			<itunes:duration>1:37:09</itunes:duration>
+			<enclosure url="https://sphinx.acast.com/p/open/s/5ffe3facad3e633276e9ea57/e/6473e30a064cb10011b1ca91/media.mp3" length="139922031" type="audio/mpeg"/>
+			<guid isPermaLink="false">6473e30a064cb10011b1ca91</guid>
+			<itunes:explicit>false</itunes:explicit>
+			<link>https://shows.acast.com/floodcast/episodes/s08e25-le-perroquet-de-sardou</link>
+			<acast:episodeId>6473e30a064cb10011b1ca91</acast:episodeId>
+			<acast:showId>5ffe3facad3e633276e9ea57</acast:showId>
+			<acast:episodeUrl>s08e25-le-perroquet-de-sardou</acast:episodeUrl>
+			<acast:settings><![CDATA[FYjHyZbXWHZ7gmX8Pp1rmbKbhgrQiwYShz70Q9/ffXZMTtedvdcRQbP4eiLMjXzCKLPjEYLpGj+NMVKa+5C8pL4u/EOj1Vw4h5MMJYp0lCd9ce8NLz7LZxvW1n9/FH98JtdUFGVUOdtwxpR/vaWbQG0s3PuNUAZFC+6OoBXzz2Fgum/I7OKEg3GpqVFPeB05AJ0LRloR9yqAmPU4KcKQEpRcAIeeSQUssnA5GRJCxb5Ey0Isln5RhsfiXn7fMnNzvx3f3Ou/9+1Fri4gY7AdN4E5Mw2L9PrrHbt3+1vy9zkDy6VpiaqRU7SuGMXUYKW0cDr6mYAntsmd3bjQA7dXQP9l9ccTj4zTsr3xHxMJLVDQ6X2vIVD81ZXmH83fQwuD]]></acast:settings>
+			<itunes:episodeType>full</itunes:episodeType>
+			<itunes:season>8</itunes:season>
+			<itunes:episode>25</itunes:episode>
+			<itunes:image href="https://assets.pippa.io/shows/5ffe3facad3e633276e9ea57/show-cover.jpg"/>
+			<description><![CDATA[<p>Avec Manon Bril et Marjorie LeNoan. </p><p>Présenté par Florent Bernard et Adrien Ménielle. </p><br><p>On en parle de choses dans cet épisode : de jeux télé, de doyen, de Futuroscope, de Roland, de sèche-pleurs, d’un perroquet, de Dirty Dancing, de l’effet Mandela, de patin-à-roulettes, de poisson mortel à manger, de Benoît Magimel et de Zelda.</p><br><p>Tu peux nous laisser des bonnes notes sur ta plateforme d'écoute et/ou en parler autour de toi, le bouche-à-oreille, c'est toujours chanmé !&nbsp;</p><br><p>Bises,</p><p>Flo.&nbsp;</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></description>
+			<itunes:summary><![CDATA[<p>Avec Manon Bril et Marjorie LeNoan. </p><p>Présenté par Florent Bernard et Adrien Ménielle. </p><br><p>On en parle de choses dans cet épisode : de jeux télé, de doyen, de Futuroscope, de Roland, de sèche-pleurs, d’un perroquet, de Dirty Dancing, de l’effet Mandela, de patin-à-roulettes, de poisson mortel à manger, de Benoît Magimel et de Zelda.</p><br><p>Tu peux nous laisser des bonnes notes sur ta plateforme d'écoute et/ou en parler autour de toi, le bouche-à-oreille, c'est toujours chanmé !&nbsp;</p><br><p>Bises,</p><p>Flo.&nbsp;</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></itunes:summary>
+		</item>
+		<item>
+			<title>S08E24 - Chier un Furet</title>
+			<itunes:title>S08E24 - Chier un Furet</itunes:title>
+			<pubDate>Mon, 22 May 2023 02:01:50 GMT</pubDate>
+			<itunes:duration>2:08:42</itunes:duration>
+			<enclosure url="https://sphinx.acast.com/p/open/s/5ffe3facad3e633276e9ea57/e/646a23688364380011ed09e6/media.mp3" length="185354978" type="audio/mpeg"/>
+			<guid isPermaLink="false">646a23688364380011ed09e6</guid>
+			<itunes:explicit>false</itunes:explicit>
+			<link>https://shows.acast.com/floodcast/episodes/s08e24-chier-un-furet</link>
+			<acast:episodeId>646a23688364380011ed09e6</acast:episodeId>
+			<acast:showId>5ffe3facad3e633276e9ea57</acast:showId>
+			<acast:episodeUrl>s08e24-chier-un-furet</acast:episodeUrl>
+			<acast:settings><![CDATA[FYjHyZbXWHZ7gmX8Pp1rmbKbhgrQiwYShz70Q9/ffXZMTtedvdcRQbP4eiLMjXzCKLPjEYLpGj+NMVKa+5C8pL4u/EOj1Vw4h5MMJYp0lCfMJqUv2uMB811jS/uZOXl0vdbBaaOqTq8bhQCCdpF3QK35hEL97gkgXcqHsbxku75C46DbtHv+sbA6llm/1W+sRsGR+Py3+ArjEJWQccnYVTYETnQuncjy0wjFEIN1lwm/8ulaFmTH/FRMo1MJtEhkqHCRRnsYcDtQFgdXM0ERHzLjFEqnRbq+ssjygT7JysKBzNfQlxL4XYJq3+06D27NIe/A4JlYamWM4BeGCqrL2OVLjnrziy6V6XWx20pkyEN3teZXwk7Lg3nBjf5aefs4]]></acast:settings>
+			<itunes:episodeType>full</itunes:episodeType>
+			<itunes:season>8</itunes:season>
+			<itunes:episode>24</itunes:episode>
+			<itunes:image href="https://assets.pippa.io/shows/5ffe3facad3e633276e9ea57/show-cover.jpg"/>
+			<description><![CDATA[<p>Avec McFly et Carlito. </p><p>Présenté par Florent Bernard et Adrien Ménielle. </p><br><p>On en parle de choses dans cet épisode : de l’enfer, de sport, de harcèlement scolaire, de Youtube, de burn-out, de Luc Alfan-Alfan, de lâcher des caisses, de l’Eurovision et de presse qui se base sur des commentaires.&nbsp;</p><br><p>Tu peux nous laisser des bonnes notes sur ta plateforme d'écoute et/ou en parler autour de toi, le bouche-à-oreille, c'est toujours chanmé !&nbsp;</p><br><p>Bises,</p><p>Flo.&nbsp;</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></description>
+			<itunes:summary><![CDATA[<p>Avec McFly et Carlito. </p><p>Présenté par Florent Bernard et Adrien Ménielle. </p><br><p>On en parle de choses dans cet épisode : de l’enfer, de sport, de harcèlement scolaire, de Youtube, de burn-out, de Luc Alfan-Alfan, de lâcher des caisses, de l’Eurovision et de presse qui se base sur des commentaires.&nbsp;</p><br><p>Tu peux nous laisser des bonnes notes sur ta plateforme d'écoute et/ou en parler autour de toi, le bouche-à-oreille, c'est toujours chanmé !&nbsp;</p><br><p>Bises,</p><p>Flo.&nbsp;</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></itunes:summary>
+		</item>
+		<item>
+			<title>S08E23 - Basketteur Pro</title>
+			<itunes:title>S08E23 - Basketteur Pro</itunes:title>
+			<pubDate>Mon, 15 May 2023 02:15:24 GMT</pubDate>
+			<itunes:duration>1:16:56</itunes:duration>
+			<enclosure url="https://sphinx.acast.com/p/open/s/5ffe3facad3e633276e9ea57/e/646150654b8fae001120382e/media.mp3" length="110800884" type="audio/mpeg"/>
+			<guid isPermaLink="false">646150654b8fae001120382e</guid>
+			<itunes:explicit>false</itunes:explicit>
+			<link>https://shows.acast.com/floodcast/episodes/s08e23-basketteur-pro</link>
+			<acast:episodeId>646150654b8fae001120382e</acast:episodeId>
+			<acast:showId>5ffe3facad3e633276e9ea57</acast:showId>
+			<acast:episodeUrl>s08e23-basketteur-pro</acast:episodeUrl>
+			<acast:settings><![CDATA[FYjHyZbXWHZ7gmX8Pp1rmbKbhgrQiwYShz70Q9/ffXZMTtedvdcRQbP4eiLMjXzCKLPjEYLpGj+NMVKa+5C8pL4u/EOj1Vw4h5MMJYp0lCdXlwTZOopNuvovW7XwesYZKb4LzRd3/dnvvOq/ty0WTNf8LC6e8chxx37fIU7m43xvCIkC4mBjL2iEROrS3scKX3H3Yp/gKDRy5bxdGvV3Ml0S0A88GvukJWZpttUnhblc2RgD6BEjZ20tF051Za7lbsAllCt0KhHlm/OAMgir47oFq6nn1X8Wl5YcAxjJatlSC/3xfw60b1WQeMbR4U8jyugbk68/lASR/fy98u+iX6E4YqXool7LEsbKSP3hn6yRIOK2xnhv6uh1ppfhdW8r]]></acast:settings>
+			<itunes:episodeType>full</itunes:episodeType>
+			<itunes:season>8</itunes:season>
+			<itunes:episode>23</itunes:episode>
+			<itunes:image href="https://assets.pippa.io/shows/5ffe3facad3e633276e9ea57/show-cover.jpg"/>
+			<description><![CDATA[<p>Présenté par Florent Bernard et Adrien Ménielle.</p><br><p>Un épisode un peu F.A.Q, pour changer. On en parle de choses dans cet épisode : du match de basket d'Adrien contre Tony Parker, de comment on prépare un épisode, de l'épisode fantôme de Lyon, d'écrire un sketchshow, d'écrire de la chronique, etc...</p><br><p>Tu peux nous laisser des bonnes notes sur ta plateforme d'écoute et/ou en parler autour de toi, le bouche-à-oreille, c'est toujours chanmé !&nbsp;</p><br><p>Bises,</p><p>Flo.&nbsp;</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></description>
+			<itunes:summary><![CDATA[<p>Présenté par Florent Bernard et Adrien Ménielle.</p><br><p>Un épisode un peu F.A.Q, pour changer. On en parle de choses dans cet épisode : du match de basket d'Adrien contre Tony Parker, de comment on prépare un épisode, de l'épisode fantôme de Lyon, d'écrire un sketchshow, d'écrire de la chronique, etc...</p><br><p>Tu peux nous laisser des bonnes notes sur ta plateforme d'écoute et/ou en parler autour de toi, le bouche-à-oreille, c'est toujours chanmé !&nbsp;</p><br><p>Bises,</p><p>Flo.&nbsp;</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></itunes:summary>
+		</item>
+		<item>
+			<title>S01E02 - Le Père Noël sent la pisse</title>
+			<itunes:title>S01E02 - Le Père Noël sent la pisse</itunes:title>
+			<pubDate>Sun, 05 Apr 2015 15:09:57 GMT</pubDate>
+			<itunes:duration>1:07:32</itunes:duration>
+			<enclosure url="https://sphinx.acast.com/p/open/s/5ffe3facad3e633276e9ea57/e/tag%3Asoundcloud%2C2010%3Atracks%2F199361946/media.mp3" length="97268340" type="audio/mpeg"/>
+			<guid isPermaLink="false">tag:soundcloud,2010:tracks/199361946</guid>
+			<itunes:explicit>true</itunes:explicit>
+			<link>https://shows.acast.com/floodcast/episodes/5ffe3fb70fb4f41362812c64</link>
+			<acast:episodeId>5ffe3fb70fb4f41362812c64</acast:episodeId>
+			<acast:showId>5ffe3facad3e633276e9ea57</acast:showId>
+			<acast:settings><![CDATA[FYjHyZbXWHZ7gmX8Pp1rmbKbhgrQiwYShz70Q9/ffXZMTtedvdcRQbP4eiLMjXzCKLPjEYLpGj+NMVKa+5C8pL4u/EOj1Vw4h5MMJYp0lCdp8px9bjKx6F2fAqninWjqwqBRuQbvbnENNUIyk3aU1Bqx+TxkUKY6vsoQwPTiNOF2V5XZKQjKJgpok5CkPqzasIJnbg6q3LO5qhmKUnQn4cul586gc3aYZUcyDmrgJbiIatOjVelpv6HNSZgeAu3BIa5jkrlKbs80xsmPKpOR4eF3RHjcg9MjSiggaXlEzRquoX77u4weQ/YHlhWaxMH7p+VnWuF3SuSvP2f/mZSavd8FuHKee5d8emWIAfXtN/ZkiwQiO/CPnSDqxBjItlUv]]></acast:settings>
+			<itunes:subtitle>Avec Greg Romano, Adrien Ménielle, Nicolas Berno …</itunes:subtitle>
+			<itunes:episodeType>full</itunes:episodeType>
+			<itunes:image href="https://assets.pippa.io/shows/5ffe3facad3e633276e9ea57/5ffe3fb70fb4f41362812c64.jpg"/>
+			<description><![CDATA[<p>Avec Greg Romano, Nicolas Berno et Vincent Tirel. </p><br><p>Présenté par Florent Bernard et Adrien Ménielle. </p><br><p>Dans le podcast de cette semaine, après le petit tour de table de ce qu'on a kiffé ces derniers jours, on parle des désillusions d'enfants. Le Père Noël qui n'existe pas, les collèges français qui ressemblent pas aux collèges des films américains, Mickey qui est incapable de parler à Disneyland... Tout ça bien-sûr en divaguant toutes les 5 minutes, car c'est aussi ça Floodcast.</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></description>
+			<itunes:summary><![CDATA[<p>Avec Greg Romano, Nicolas Berno et Vincent Tirel. </p><br><p>Présenté par Florent Bernard et Adrien Ménielle. </p><br><p>Dans le podcast de cette semaine, après le petit tour de table de ce qu'on a kiffé ces derniers jours, on parle des désillusions d'enfants. Le Père Noël qui n'existe pas, les collèges français qui ressemblent pas aux collèges des films américains, Mickey qui est incapable de parler à Disneyland... Tout ça bien-sûr en divaguant toutes les 5 minutes, car c'est aussi ça Floodcast.</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></itunes:summary>
+		</item>
+		<item>
+			<title>S01E01 - Les meilleures années de ta vie</title>
+			<itunes:title>S01E01 - Les meilleures années de ta vie</itunes:title>
+			<pubDate>Sat, 07 Mar 2015 14:25:29 GMT</pubDate>
+			<itunes:duration>59:06</itunes:duration>
+			<enclosure url="https://sphinx.acast.com/p/open/s/5ffe3facad3e633276e9ea57/e/tag%3Asoundcloud%2C2010%3Atracks%2F194691544/media.mp3" length="141730320" type="audio/mpeg"/>
+			<guid isPermaLink="false">tag:soundcloud,2010:tracks/194691544</guid>
+			<itunes:explicit>true</itunes:explicit>
+			<link>https://shows.acast.com/floodcast/episodes/5ffe3fb70fb4f41362812c65</link>
+			<acast:episodeId>5ffe3fb70fb4f41362812c65</acast:episodeId>
+			<acast:showId>5ffe3facad3e633276e9ea57</acast:showId>
+			<acast:settings><![CDATA[FYjHyZbXWHZ7gmX8Pp1rmbKbhgrQiwYShz70Q9/ffXZMTtedvdcRQbP4eiLMjXzCKLPjEYLpGj+NMVKa+5C8pL4u/EOj1Vw4h5MMJYp0lCckHEwW4rMKdkv+Y5k8VePUyHkoVbUNqrNjHsmpDvB639YO9JR5nBmRJCZh3T1EqVBvJ464V5+du1frm8aD9bCdwI/9nwDVFLaEngql+jRAQzzWJPwCVa3SYcai9wuvMlhQgDk5gdNNMmaTbbJ2j/CzEI2XQHqwCQBMO3SmY455WdPdGY8a2iJMWm/FyIk1dNBLU5mazyvXvGaxgtR/mOqk/KtzNVgcunCU5y4P9jJadw==]]></acast:settings>
+			<itunes:subtitle>Avec McFly, Adrien Ménielle, Jack Parker et Franç…</itunes:subtitle>
+			<itunes:episodeType>full</itunes:episodeType>
+			<itunes:image href="https://assets.pippa.io/shows/5ffe3facad3e633276e9ea57/5ffe3fb70fb4f41362812c65.jpg"/>
+			<description><![CDATA[<p>Avec McFly, Jack Parker et François Descraques.</p><br><p>Présenté par Florent Bernard et Adrien Ménielle. </p><br><p>Dans le podcast de cette semaine, après un bref passage sur ce qu'on a vu cette semaine, on parle pendant trois quarts d'heures de nos années lycées, et plus particulièrement de nos crushs de lycée, nos échecs de coeurs et des anecdotes bien pathétiques qui nous sont arrivées. Ca sonne très "moi je" mais y'a moyen que vous vous retrouviez dans pleins de ces histoires...</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></description>
+			<itunes:summary><![CDATA[<p>Avec McFly, Jack Parker et François Descraques.</p><br><p>Présenté par Florent Bernard et Adrien Ménielle. </p><br><p>Dans le podcast de cette semaine, après un bref passage sur ce qu'on a vu cette semaine, on parle pendant trois quarts d'heures de nos années lycées, et plus particulièrement de nos crushs de lycée, nos échecs de coeurs et des anecdotes bien pathétiques qui nous sont arrivées. Ca sonne très "moi je" mais y'a moyen que vous vous retrouviez dans pleins de ces histoires...</p><hr><p style='color:grey; font-size:0.75em;'> Hébergé par Acast. Visitez <a style='color:grey;' target='_blank' rel='noopener noreferrer' href='https://acast.com/privacy'>acast.com/privacy</a> pour plus d'informations.</p>]]></itunes:summary>
+		</item>
+    	<itunes:category text="Comedy"/>
+    </channel>
+</rss>

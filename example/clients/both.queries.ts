@@ -1,12 +1,12 @@
 import { useGetItunesEpisodeQuery, useGetItunesPodcastQuery } from "./itunes.queries"
 import { useGetLocalPodcastQuery, useGetLiveLocalEpisodeQuery } from "./local.queries"
+import { useGetRssEpisodeQuery } from "./rss.queries"
 
 /**
  * Hooks that fetch first from local and then from remote if not found locally
  */
 export function useGetPodcastByIdQuery(podcastId: string | null) {
   const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(podcastId)
-  console.log("🚀 ~ useGetPodcastByIdQuery ~ localPodcast:", localPodcast)
 
   //? We only fetch info if the episode is not already there locally
   const isMissingLocally = !localPodcast && !isLocalLoading
@@ -22,32 +22,25 @@ export function useGetPodcastByIdQuery(podcastId: string | null) {
   return { isLoading, podcast }
 }
 
-export function useGetEpisodeByIdQuery({ episodeId, podcastId }: { episodeId: string; podcastId: string }) {
+export function useGetEpisodeByIdQuery({ episodeId, feedUrl }: { episodeId: string; feedUrl: string | null }) {
   // This one uses LiveQuery so types are fucked
   const { data: localEpisode, error, updatedAt } = useGetLiveLocalEpisodeQuery({ id: episodeId })
 
   //? We only fetch info if the episode is not already there locally
   const isMissingLocally = localEpisode.length !== 1
 
-  const {
-    data: fetchedEpisode,
-    isLoading: isAppleLoading,
-    error: appleError,
-  } = useGetItunesEpisodeQuery(
-    isMissingLocally
-      ? { episodeId, podcastId }
+  const { data: fetchedEpisode, isLoading: isAppleLoading } = useGetRssEpisodeQuery(
+    isMissingLocally && feedUrl
+      ? { episodeId, feedUrl }
       : {
           episodeId: null,
-          podcastId: null,
+          feedUrl: null,
         },
   )
 
   const isLoading = isAppleLoading
 
   const foundEpisode = localEpisode[0] || fetchedEpisode
-  console.log("🚀 ~ useGetEpisodeByIdQuery ~ fetchedEpisode:", fetchedEpisode)
-  console.log("🚀 ~ useGetEpisodeByIdQuery ~ localEpisode:", localEpisode)
-  console.log("🚀 ~ useGetEpisodeByIdQuery ~ foundEpisode:", foundEpisode)
 
   if (!foundEpisode) {
     const error = isLoading ? null : Error("useGetEpisodeByIdQuery - Can't find episode")
