@@ -81,6 +81,6 @@ export function useSearchItunesPodcastsQuery(searchQuery: string | null) {
   return useQuery({
     queryKey: ["podcastSearch", searchQuery],
     queryFn: () => searchPodcast(searchQuery),
-    enabled: !!searchQuery && searchQuery.trim().length > 0,
+    enabled: !!searchQuery && searchQuery.trim().length > 2,
   })
 }
