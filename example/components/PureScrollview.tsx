@@ -16,18 +16,19 @@ type PureScrollViewProps = {
   gradientColors?: [string, string]
 }
 
-export function PureScrollView({
-  children,
-  gradientHeight = 100,
-  gradientColors = ["transparent", "$color1"],
-}: PureScrollViewProps) {
+export function PureScrollView({ children, gradientHeight = 100, gradientColors }: PureScrollViewProps) {
   return (
     <YStack flex={1} position="relative">
-      <BaseScrollView flex={1} contentContainerStyle={{ flexGrow: 1 }}>
+      <BaseScrollView flex={1} contentContainerStyle={{ flexGrow: 1 }} fadingEdgeLength={100}>
         {children}
       </BaseScrollView>
       <YStack position="absolute" bottom={0} left={0} right={0} height={gradientHeight} pointerEvents="none">
-        <LinearGradient colors={gradientColors} style={{ flex: 1 }} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} />
+        <LinearGradient
+          colors={gradientColors || ["transparent", "$background"]}
+          style={{ flex: 1 }}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+        />
       </YStack>
     </YStack>
   )

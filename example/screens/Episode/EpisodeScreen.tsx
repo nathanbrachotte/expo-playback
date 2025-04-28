@@ -1,7 +1,8 @@
 import { useNavigation, useRoute, useNavigationState } from "@react-navigation/native"
 import { ArrowBigRight, Download, Play, Share } from "@tamagui/lucide-icons"
-import { Image } from "react-native"
-import { H4, Paragraph, YStack, XStack, Button, Spinner } from "tamagui"
+import { Image, useWindowDimensions } from "react-native"
+import RenderHtml from "react-native-render-html"
+import { H4, Paragraph, YStack, XStack, Button, Spinner, useTheme, useThemeName } from "tamagui"
 import { z } from "zod"
 
 import { useGetEpisodeByIdQuery, useGetPodcastByIdQuery } from "../../clients/both.queries"
@@ -21,6 +22,28 @@ const podcastRouteSchema = z.object({
     id: z.string().optional(),
   }),
 })
+
+export function EpisodeDescription({ description }: { description: string }) {
+  const { width } = useWindowDimensions()
+  const theme = useTheme()
+
+  const source = {
+    html: `
+      <body style="
+        background-color: ${theme.background.val};
+        color: ${theme.color.val};
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        padding: 16px;
+      ">
+        ${description}
+      </body>
+    `,
+  }
+
+  return <RenderHtml contentWidth={width} source={source} />
+}
 
 function EpisodeDumbScreen({
   episode,
@@ -92,10 +115,7 @@ function EpisodeDumbScreen({
           </Paragraph>
 
           <PureScrollView>
-            <YStack p="$2" px="$3">
-              <Paragraph size="$5">{episode.description}</Paragraph>
-              <Paragraph size="$5">{episode.description}</Paragraph>
-            </YStack>
+            <EpisodeDescription description={episode.description} />
           </PureScrollView>
         </YStack>
       </PureYStack>
@@ -117,14 +137,9 @@ function EpisodeDumbScreen({
 
 export function EpisodeScreen() {
   const route = useRoute<EpisodeScreenRouteProp>()
-
   const { episodeId, podcastId } = route.params
-
   const { podcast } = useGetPodcastByIdQuery(podcastId)
-  console.log("🚀 ~ EpisodeScreen ~ podcast:", podcast)
-
   const { episode, isLoading } = useGetEpisodeByIdQuery({ episodeId, feedUrl: podcast?.rssFeedUrl || null })
-  console.log("🚀 ~ EpisodeScreen ~ episode:", episode)
 
   if (isLoading) {
     return (
