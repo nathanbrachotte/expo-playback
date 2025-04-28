@@ -1,4 +1,4 @@
-import { useGetItunesEpisodeQuery, useGetItunesPodcastQuery } from "./itunes.queries"
+import { useGetItunesPodcastQuery } from "./itunes.queries"
 import { useGetLocalPodcastQuery, useGetLiveLocalEpisodeQuery } from "./local.queries"
 import { useGetRssEpisodeQuery } from "./rss.queries"
 
@@ -29,7 +29,7 @@ export function useGetEpisodeByIdQuery({ episodeId, feedUrl }: { episodeId: stri
   //? We only fetch info if the episode is not already there locally
   const isMissingLocally = localEpisode.length !== 1
 
-  const { data: fetchedEpisode, isLoading: isAppleLoading } = useGetRssEpisodeQuery(
+  const { data: fetchedEpisode, isLoading: isRssLoading } = useGetRssEpisodeQuery(
     isMissingLocally && feedUrl
       ? { episodeId, feedUrl }
       : {
@@ -38,20 +38,19 @@ export function useGetEpisodeByIdQuery({ episodeId, feedUrl }: { episodeId: stri
         },
   )
 
-  const isLoading = isAppleLoading
+  const isLoading = isRssLoading
 
-  const foundEpisode = localEpisode[0] || fetchedEpisode
+  const foundEpisode = localEpisode[0]?.episode || fetchedEpisode
 
   if (!foundEpisode) {
     const error = isLoading ? null : Error("useGetEpisodeByIdQuery - Can't find episode")
 
     return {
       error,
-      isLoading: isAppleLoading,
+      isLoading: isRssLoading,
       episode: null,
-      podcast: null,
     }
   }
 
-  return { isLoading, episode: foundEpisode.episode, podcast: foundEpisode.podcast }
+  return { isLoading, episode: foundEpisode }
 }

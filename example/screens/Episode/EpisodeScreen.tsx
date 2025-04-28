@@ -36,7 +36,8 @@ function EpisodeDumbScreen({
   const { setActiveEpisodeId } = usePlayerContext()
   const { handleSavePodcast } = useSavePodcastMutation()
   const routes = useNavigationState((state) => state?.routes || [])
-  const podcastScreenInStack = routes.some((route) => {
+
+  const isPodcastScreenInStack = routes.some((route) => {
     const result = podcastRouteSchema.safeParse(route)
     return result.success && result.data.params.id === (podcast.id?.toString() || podcast.appleId?.toString())
   })
@@ -104,7 +105,7 @@ function EpisodeDumbScreen({
           <Button icon={Play} onPress={downloadAndPlay} />
           <Button icon={Share} />
         </PureXStack>
-        {!podcastScreenInStack && (
+        {!isPodcastScreenInStack && (
           <Button onPress={goToPodcast} icon={ArrowBigRight} width="$14">
             <Button.Text>Podcast</Button.Text>
           </Button>
@@ -120,8 +121,10 @@ export function EpisodeScreen() {
   const { episodeId, podcastId } = route.params
 
   const { podcast } = useGetPodcastByIdQuery(podcastId)
+  console.log("🚀 ~ EpisodeScreen ~ podcast:", podcast)
 
   const { episode, isLoading } = useGetEpisodeByIdQuery({ episodeId, feedUrl: podcast?.rssFeedUrl || null })
+  console.log("🚀 ~ EpisodeScreen ~ episode:", episode)
 
   if (isLoading) {
     return (
@@ -133,7 +136,7 @@ export function EpisodeScreen() {
     )
   }
 
-  if (!episode) {
+  if (!episode || !podcast) {
     return (
       <PureLayout header={<H4>Episode</H4>}>
         <PureYStack f={1} centered>
