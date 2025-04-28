@@ -2,27 +2,30 @@ import { XMLParser } from "fast-xml-parser"
 import { z } from "zod"
 
 // true or falso or "Yes" or "No". Because why not.
-const ExplicitSchema = z.union([
-  z.boolean(),
-  z.string().transform((val) => val === "Yes"),
-  z.string().transform((val) => val === "No"),
-])
+const ExplicitSchema = z
+  .union([z.boolean(), z.string().transform((val) => val === "Yes"), z.string().transform((val) => val === "No")])
+  .optional()
+
+const TitleSchema = z.union([z.string(), z.number()])
 // Schema for RSS feed items (episodes)
 export const RssItemSchema = z.object({
-  "title": z.string(),
-  "itunes:title": z.string().optional(),
+  "title": TitleSchema,
+  "itunes:title": TitleSchema.optional(),
   "pubDate": z.string(),
   "itunes:duration": z.string().optional(),
-  "enclosure": z.object({
-    url: z.string(),
-    length: z.string(),
-    type: z.string(),
-  }),
-  "guid": z.object({
-    "#text": z.string().optional(),
-    "isPermaLink": z.string().optional(),
-  }),
-
+  "enclosure": z
+    .object({
+      url: z.string(),
+      length: z.string(),
+      type: z.string(),
+    })
+    .optional(),
+  "guid": z
+    .object({
+      "#text": z.string().optional(),
+      "isPermaLink": z.string().optional(),
+    })
+    .optional(),
   "itunes:explicit": ExplicitSchema,
   "link": z.string(),
   "itunes:episodeType": z.string().optional(),
@@ -39,7 +42,7 @@ export const RssItemSchema = z.object({
 
 // Schema for RSS feed channel (podcast)
 const RssChannelSchema = z.object({
-  "title": z.string(),
+  "title": TitleSchema,
   "link": z.string(),
   "language": z.string(),
   "copyright": z.string(),

@@ -25,7 +25,7 @@ async function ensureAudioDirectory() {
 type PlayerContextType = {
   togglePlayPause: VoidFunction
   activeEpisode: LocalEpisode
-  setActiveEpisodeId: (id: LocalEpisode["id"]) => void
+  setActiveEpisodeId: (id: LocalEpisode["id"] | null) => void
   skipBackward: VoidFunction
   skipForward: VoidFunction
   onSliderValueChange: (id: number[]) => void
@@ -34,7 +34,7 @@ type PlayerContextType = {
 const PlayerContext = createContext<PlayerContextType | null>(null)
 
 export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
-  const [activeEpisodeId, setActiveEpisodeId] = useState<LocalEpisode["id"] | null>(959688)
+  const [activeEpisodeId, setActiveEpisodeId] = useState<LocalEpisode["id"] | null>(null)
   const { data } = useGetLiveLocalEpisodeQuery({ id: activeEpisodeId?.toString() ?? null })
 
   const episode = data[0]?.episode

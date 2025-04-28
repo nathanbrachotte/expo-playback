@@ -69,19 +69,19 @@ function EpisodeDumbScreen({
     const res = await getEpisodeWithPodcastById(episode.appleId)
     const localEpisode = res?.episode
 
-    // If episode does not exist locally, save it
-    if (localEpisode == null) {
-      const res = await handleSavePodcast(getAppleIdFromPodcast(podcast))
-      // TODO: Verify this works
-      const savedEpisodeId = res?.savedEpisodes.lastInsertRowId
-      if (!savedEpisodeId) {
-        throw new Error("Something when wrong when saving the podcast: " + JSON.stringify(res, null, 2))
-      }
+    // // If episode does not exist locally, save it
+    // if (localEpisode == null) {
+    //   const res = await handleSavePodcast(getAppleIdFromPodcast(podcast))
+    //   // TODO: Verify this works
+    //   const savedEpisodeId = res?.savedEpisodes.lastInsertRowId
+    //   if (!savedEpisodeId) {
+    //     throw new Error("Something when wrong when saving the podcast: " + JSON.stringify(res, null, 2))
+    //   }
 
-      // TODO: Add download mechanism
-      setActiveEpisodeId(savedEpisodeId)
-      return
-    }
+    //   // TODO: Add download mechanism
+    //   setActiveEpisodeId(savedEpisodeId)
+    //   return
+    // }
 
     // If episode exists locally, set it as active directly
     setActiveEpisodeId(localEpisode.id)
