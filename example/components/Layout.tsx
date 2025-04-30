@@ -3,6 +3,8 @@ import { ChevronLeft } from "@tamagui/lucide-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { YStack, XStack, Button, AnimatePresence } from "tamagui"
 
+import { Player } from "./Player/Player"
+
 export function PureLayout({
   children,
   header,
@@ -11,7 +13,6 @@ export function PureLayout({
   children: React.ReactNode
   header?: React.ReactNode
   actionSection?: React.ReactNode
-  // wrapperStyle?: ComponentProps<typeof YStack>
 }) {
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
@@ -20,7 +21,7 @@ export function PureLayout({
 
   return (
     // SafeAreaView is not working, so we need to use YStack to get the insets, see: https://reactnative.dev/docs/safeareaview
-    <YStack bg="$background" flex={1} pt={insets.top} pb={insets.bottom} pl={insets.left} pr={insets.right}>
+    <YStack bg="$background" flex={1} pt={insets.top} pl={insets.left} pr={insets.right}>
       <XStack justifyContent="space-between" alignItems="center" px="$3" py="$2">
         <XStack flex={0.5} justifyContent="flex-start" minWidth={40}>
           <AnimatePresence>
@@ -47,9 +48,8 @@ export function PureLayout({
         </XStack>
       </XStack>
 
-      <YStack flex={1} gap="$2">
-        {children}
-      </YStack>
+      <YStack flex={1}>{children}</YStack>
+      <Player />
     </YStack>
   )
 }

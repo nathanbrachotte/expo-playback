@@ -24,7 +24,10 @@ async function ensureAudioDirectory() {
 
 type PlayerContextType = {
   togglePlayPause: VoidFunction
-  activeEpisode: LocalEpisode
+  activeEpisode: {
+    episode: LocalEpisode
+    podcast: ReturnType<typeof useGetLiveLocalEpisodeQuery>["data"][0]["podcast"]
+  }
   setActiveEpisodeId: (id: LocalEpisode["id"] | null) => void
   skipBackward: VoidFunction
   skipForward: VoidFunction
@@ -36,6 +39,7 @@ const PlayerContext = createContext<PlayerContextType | null>(null)
 export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
   const [activeEpisodeId, setActiveEpisodeId] = useState<LocalEpisode["id"] | null>(null)
   const { data } = useGetLiveLocalEpisodeQuery({ id: activeEpisodeId?.toString() ?? null })
+  console.log("🚀 ~ PlayerProvider ~ data:", data)
 
   const episode = data[0]?.episode
   // !FIXME: Use audio url?? Or local stuff?
@@ -124,7 +128,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     <PlayerContext.Provider
       value={{
         togglePlayPause,
-        activeEpisode: episode,
+        activeEpisode: data[0],
         setActiveEpisodeId,
         skipBackward,
         skipForward,

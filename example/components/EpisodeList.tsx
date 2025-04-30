@@ -8,6 +8,7 @@ import { Optional } from "../utils/types.utils"
 import { z } from "zod"
 import { PureYStack } from "./PureStack"
 import { Paragraph } from "tamagui"
+import { PLAYER_HEIGHT } from "./Player/Player"
 
 const formatDuration = (seconds: number) => {
   const minutes = Math.floor(seconds / 60)
@@ -69,7 +70,7 @@ export function EpisodesList({ episodes, podcastTitle }: { episodes: SharedEpiso
       // ListHeaderComponent={}
       ListFooterComponent={
         // !FIXME: Why is this needed?
-        <PureYStack height="$19" />
+        <PureYStack height={PLAYER_HEIGHT * 2} />
       }
       showsVerticalScrollIndicator={false}
     />

@@ -1,30 +1,147 @@
-import { Play, Pause, SkipBack, SkipForward, X } from "@tamagui/lucide-icons"
-import { Button, H4, Slider, Text, YStack, XStack, Image, AnimatePresence } from "tamagui"
+import { ArrowUp, Play, SkipBack, SkipForward, X } from "@tamagui/lucide-icons"
+import { PropsWithChildren, useState } from "react"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import {
+  Button,
+  H4,
+  Slider,
+  Text,
+  YStack,
+  XStack,
+  Image,
+  AnimatePresence,
+  Sheet,
+  Paragraph,
+  H1,
+  H2,
+  H3,
+  H5,
+  H6,
+} from "tamagui"
+
 import { usePlayerContext } from "../../providers/PlayerProvider"
+import { PureXStack, PureYStack } from "../PureStack"
+import { DEVICE_WIDTH } from "../../utils/constants"
+
+export const PLAYER_HEIGHT = 100
+const PLAYER_IMAGE_SIZE = DEVICE_WIDTH * 0.8
+
+function PlayerBackground({ children }: PropsWithChildren) {
+  const insets = useSafeAreaInsets()
+
+  return (
+    <YStack height={PLAYER_HEIGHT} pb={insets.bottom}>
+      {children}
+    </YStack>
+  )
+}
+
+function PlayerControls() {
+  return (
+    <XStack ai="center" gap="$1">
+      <Button size="$3" icon={<SkipBack size={16} />} onPress={() => {}} />
+      <Button size="$5" circular theme="blue" icon={<Play size={24} />} onPress={() => {}} />
+      <Button size="$3" icon={<SkipForward size={16} />} onPress={() => {}} />
+    </XStack>
+  )
+}
+
+function PlayerSheet({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: (isOpen: boolean) => void }) {
+  const { activeEpisode, setActiveEpisodeId } = usePlayerContext()
+  const { title, description, image } = activeEpisode?.episode ?? {}
+  const { title: podcastTitle, image: podcastImage } = activeEpisode?.podcast ?? {}
+  const insets = useSafeAreaInsets()
+  const imageSource = image ?? podcastImage ?? false
+
+  return (
+    <Sheet modal open={isOpen} onOpenChange={onOpenChange} snapPoints={[90]} dismissOnSnapToBottom animation="quick">
+      <Sheet.Overlay
+        animation="quick"
+        enterStyle={{ opacity: 0 }}
+        exitStyle={{ opacity: 0 }}
+        backgroundColor="rgba(0,0,0,0.5)"
+      />
+
+      <Sheet.Frame bg="$backgroundHover" gap="$2" py="$2" px="$4" alignItems="center">
+        <Sheet.Handle backgroundColor="$borderColor" width="$5" height="$0.5" />
+        {/* Header */}
+        <PureYStack>
+          <H5 textAlign="center">{podcastTitle}</H5>
+          <H3 textAlign="center">{title}</H3>
+        </PureYStack>
+
+        {/* Image */}
+        {imageSource ? (
+          <Image
+            mt="$4"
+            borderRadius="$6"
+            source={{ uri: imageSource }}
+            width={PLAYER_IMAGE_SIZE}
+            height={PLAYER_IMAGE_SIZE}
+            resizeMode="cover"
+          />
+        ) : (
+          <YStack width={PLAYER_IMAGE_SIZE} height={PLAYER_IMAGE_SIZE} borderRadius="$6" />
+        )}
+
+        {/* Controls */}
+        <YStack mb={insets.bottom} justifyContent="flex-end" alignItems="center" f={1} gap="$4" px="$4">
+          <Slider
+            size="$2"
+            defaultValue={[0]}
+            value={[50]}
+            max={100}
+            step={1}
+            onValueChange={() => {}}
+            w={PLAYER_IMAGE_SIZE}
+          >
+            <Slider.Track w="$full">
+              <Slider.TrackActive />
+            </Slider.Track>
+            <Slider.Thumb circular index={0} />
+          </Slider>
+
+          {/* // TODO: Fix layout */}
+          <XStack mt="$1">
+            <Text fontSize="$2" flex={1}>
+              0:00
+            </Text>
+            <Text fontSize="$2" flex={1}>
+              0:00
+            </Text>
+          </XStack>
+          <PlayerControls />
+        </YStack>
+      </Sheet.Frame>
+    </Sheet>
+  )
+}
 
 export function Player() {
   const { activeEpisode, setActiveEpisodeId } = usePlayerContext()
-
-  console.log("🚀 ~ Player ~ Episode:", activeEpisode)
+  const { title, description, image } = activeEpisode?.episode ?? {}
+  const { title: podcastTitle } = activeEpisode?.podcast ?? {}
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
 
   if (!activeEpisode) {
-    return null
+    return <PlayerBackground />
+  }
+
+  const openSheet = () => {
+    setIsSheetOpen(true)
   }
 
   return (
-    <YStack bg="$color5">
+    <PlayerBackground>
+      <PlayerSheet isOpen={isSheetOpen} onOpenChange={setIsSheetOpen} />
       <AnimatePresence>
         {activeEpisode && (
           <YStack
-            py="$6"
-            px="$4"
+            onPress={openSheet}
+            px="$5"
+            py="$2"
             borderTopWidth={1}
             borderColor="$borderColor"
-            bg="$color5"
-            position="relative"
-            bottom={0}
-            left={0}
-            right={0}
             animation="quick"
             enterStyle={{
               y: 100,
@@ -37,73 +154,21 @@ export function Player() {
             y={0}
             opacity={1}
           >
-            <XStack>
-              {/* Album Art */}
-              {activeEpisode.image ? (
-                <Image
-                  source={{ uri: activeEpisode.image }}
-                  width={50}
-                  height={50}
-                  borderRadius="$2"
-                  resizeMode="cover"
-                />
+            <XStack justifyContent="space-between" alignItems="center">
+              {image ? (
+                <Image source={{ uri: image }} width={50} height={50} borderRadius="$2" resizeMode="cover" />
               ) : (
                 <YStack width={50} height={50} bg="$blue8" borderRadius="$2" overflow="hidden" />
               )}
 
-              <YStack flex={1} ml="$3">
-                <H4 numberOfLines={1} fontSize="$5">
-                  {activeEpisode.title}
-                </H4>
-                <Text numberOfLines={1} opacity={0.7} fontSize="$3">
-                  {activeEpisode.podcastId}
-                </Text>
-              </YStack>
+              {/* Controls */}
+              <PlayerControls />
 
-              {/* Close Button */}
-              <Button
-                size="$2"
-                circular
-                icon={<X size={16} />}
-                onPress={() => setActiveEpisodeId(null)}
-                opacity={0.7}
-              />
-            </XStack>
-
-            {/* Progress Bar */}
-            <YStack mt="$5">
-              <Slider size="$2" defaultValue={[0]} value={[0]} max={100} step={1} onValueChange={() => {}}>
-                <Slider.Track>
-                  <Slider.TrackActive />
-                </Slider.Track>
-                <Slider.Thumb circular index={0} />
-              </Slider>
-
-              <XStack mt="$1">
-                <Text fontSize="$2" flex={1}>
-                  0:00
-                </Text>
-                <Text fontSize="$2" flex={1}>
-                  0:00
-                </Text>
-              </XStack>
-            </YStack>
-
-            {/* Controls */}
-            <XStack mt="$3" mb="$1" justifyContent="center" alignItems="center">
-              <YStack flex={1} />
-              <Button size="$3" icon={<SkipBack size={16} />} onPress={() => {}} />
-
-              <YStack mx="$4">
-                <Button size="$6" circular theme="blue" icon={<Play size={24} />} onPress={() => {}} />
-              </YStack>
-
-              <Button size="$3" icon={<SkipForward size={16} />} onPress={() => {}} />
-              <YStack flex={1} />
+              <Button size="$3" icon={<ArrowUp size={16} />} onPress={openSheet} />
             </XStack>
           </YStack>
         )}
       </AnimatePresence>
-    </YStack>
+    </PlayerBackground>
   )
 }

@@ -23,7 +23,6 @@ export function Routes() {
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="DatabaseExplorer" component={DatabaseExplorerScreen} />
       </Stack.Navigator>
-      <Player />
     </>
   )
 }

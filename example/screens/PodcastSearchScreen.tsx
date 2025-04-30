@@ -1,11 +1,12 @@
 import { Headphones, Plus, X } from "@tamagui/lucide-icons"
 import { useState } from "react"
-import { H4, Input, Paragraph, ScrollView, YStack, Button, XStack, Spinner } from "tamagui"
+import { H4, Input, Paragraph, YStack, Button, XStack, Spinner } from "tamagui"
 
 import { useSearchItunesPodcastsQuery } from "../clients/itunes.queries"
 import { useSavePodcastMutation } from "../clients/local.mutations"
 import { PureLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
+import { PureScrollView } from "../components/PureScrollview"
 import { PureYStack } from "../components/PureStack"
 
 export function PodcastSearchScreen() {
@@ -53,8 +54,8 @@ export function PodcastSearchScreen() {
       </XStack>
       {error ? <Paragraph marginTop="$2">Failed to fetch podcasts. Please try again.</Paragraph> : null}
 
-      <ScrollView showsVerticalScrollIndicator={false} alwaysBounceVertical={false}>
-        <YStack gap="$3" mt="$3" p="$1">
+      <PureScrollView>
+        <YStack gap="$3" mt="$3">
           {!hasSearchResults && !isLoading && !error && (
             <YStack flex={1} alignItems="center" justifyContent="center" py="$10" gap="$4">
               <Headphones size={64} color="$blue10" />
@@ -95,7 +96,7 @@ export function PodcastSearchScreen() {
               )
             })}
         </YStack>
-      </ScrollView>
+      </PureScrollView>
     </PureLayout>
   )
 }
