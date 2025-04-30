@@ -2,7 +2,7 @@ import { useNavigation, useRoute, useNavigationState } from "@react-navigation/n
 import { ArrowBigRight, Download, Play, Share } from "@tamagui/lucide-icons"
 import { Image, useWindowDimensions } from "react-native"
 import RenderHtml from "react-native-render-html"
-import { H4, Paragraph, YStack, XStack, Button, Spinner, useTheme, useThemeName } from "tamagui"
+import { H4, Paragraph, YStack, XStack, Button, Spinner, useTheme } from "tamagui"
 import { z } from "zod"
 
 import { useGetEpisodeByIdQuery, useGetPodcastByIdQuery } from "../../clients/both.queries"
@@ -14,7 +14,6 @@ import { PureXStack, PureYStack } from "../../components/PureStack"
 import { usePlayerContext } from "../../providers/PlayerProvider"
 import { SharedEpisodeFields } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
-import { getAppleIdFromPodcast } from "../../utils/podcasts.utils"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -48,12 +47,14 @@ export function EpisodeDescription({ description }: { description: string }) {
 function EpisodeDumbScreen({
   episode,
   podcast,
+  isLocal,
 }: {
   episode: SharedEpisodeFields
   podcast: {
     id?: number
     appleId?: number
   }
+  isLocal: boolean
 }) {
   const navigation = useNavigation()
   const { setActiveEpisodeId } = usePlayerContext()
@@ -109,7 +110,6 @@ function EpisodeDumbScreen({
           <Paragraph px="$3" size="$8" fontWeight="bold">
             {episode.title} - {episode.podcastId} - {episode.appleId}
           </Paragraph>
-
           <Paragraph px="$3">
             <Paragraph fontWeight="bold">Release Date:</Paragraph> {new Date(episode.publishedAt).toLocaleDateString()}
           </Paragraph>
@@ -139,7 +139,7 @@ export function EpisodeScreen() {
   const route = useRoute<EpisodeScreenRouteProp>()
   const { episodeId, podcastId } = route.params
   const { podcast } = useGetPodcastByIdQuery(podcastId)
-  const { episode, isLoading } = useGetEpisodeByIdQuery({ episodeId, feedUrl: podcast?.rssFeedUrl || null })
+  const { episode, isLoading, isLocal } = useGetEpisodeByIdQuery({ episodeId, feedUrl: podcast?.rssFeedUrl || null })
 
   if (isLoading) {
     return (
@@ -161,5 +161,5 @@ export function EpisodeScreen() {
     )
   }
 
-  return <EpisodeDumbScreen episode={episode} podcast={podcast} />
+  return <EpisodeDumbScreen episode={episode} podcast={podcast} isLocal={isLocal} />
 }

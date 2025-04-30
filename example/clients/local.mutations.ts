@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { fetchPodcastAndEpisodes } from "./itunes.fetch"
+import { fetchRssFeed } from "./rss.fetch"
+import { extractEpisodesFromRssFeed } from "./rss.queries"
 import { PURE_TOASTS } from "../components/toasts"
 import { db, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
@@ -9,8 +11,10 @@ import {
   extractAndParseEpisodesFromItunesResponse,
   extractAndParsePodcastFromItunesResponse,
 } from "../utils/podcasts.utils"
+import { getPodcastById } from "./local.queries"
+import { eq } from "drizzle-orm"
 
-async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: SharedEpisodeFields[]) {
+async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Omit<SharedEpisodeFields, "">[]) {
   const [savedPodcast] = await db
     .insert(schema.podcastsTable)
     .values({
@@ -46,8 +50,14 @@ export function useSavePodcastMutation() {
   const queryClient = useQueryClient()
 
   const mutationData = useMutation({
-    mutationFn: async ({ podcast, episodes }: { podcast: SharedPodcastFields; episodes: SharedEpisodeFields[] }) => {
-      return await savePodcastAndEpisodes(podcast, episodes)
+    mutationFn: async ({ podcast }: { podcast: SharedPodcastFields }) => {
+      const res = await fetchRssFeed(podcast.rssFeedUrl)
+      const rssEpisodes = extractEpisodesFromRssFeed(res).map((episode) => ({
+        ...episode,
+        podcastId: podcast.appleId,
+      }))
+
+      return await savePodcastAndEpisodes(podcast, rssEpisodes)
     },
     onSuccess: ({ savedPodcast, savedEpisodes }) => {
       // Invalidate and refetch saved podcasts query
@@ -56,23 +66,17 @@ export function useSavePodcastMutation() {
   })
 
   const handleSavePodcast = async (podcastAppleId: string | null) => {
-    let res: AppleEpisodeResponse | null = null
+    const podcast = await getPodcastById(podcastAppleId)
 
-    try {
-      res = await fetchPodcastAndEpisodes({ id: podcastAppleId })
-    } catch (error) {
-      console.error("Failed to fetch podcast and episodes:", error)
+    if (!podcast) {
       PURE_TOASTS.error({
-        message: "Failed to Save",
+        message: "Podcast not found",
       })
       return
     }
 
-    const episodes = extractAndParseEpisodesFromItunesResponse(res.results)
-    const podcast = extractAndParsePodcastFromItunesResponse(res.results)
-
     try {
-      const res = await mutationData.mutateAsync({ podcast, episodes })
+      const res = await mutationData.mutateAsync({ podcast })
       PURE_TOASTS.success({ message: "Podcast Added!" })
 
       return res
@@ -92,13 +96,17 @@ export function useRemovePodcastMutation() {
 
   return useMutation({
     mutationFn: async (podcastId: string) => {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      return podcastId
+      await db.transaction(async (tx) => {
+        await tx.delete(schema.episodesTable).where(eq(schema.episodesTable.podcastId, Number(podcastId)))
+        await tx.delete(schema.podcastsTable).where(eq(schema.podcastsTable.id, Number(podcastId)))
+      })
     },
     onSuccess: () => {
-      // Invalidate and refetch saved podcasts query
+      PURE_TOASTS.success({ message: "Podcast Removed!" })
       queryClient.invalidateQueries({ queryKey: ["savedPodcasts"] })
+    },
+    onError: () => {
+      PURE_TOASTS.error({ message: "Failed to Remove Podcast" })
     },
   })
 }

@@ -4,6 +4,7 @@ import { H1, Paragraph, YStack } from "tamagui"
 import { useGetLiveLocalEpisodeQuery } from "../clients/local.queries"
 
 const SHOW_TEST_SECTION = false
+
 export function TestSection() {
   const { data: localEpisode, error, updatedAt } = useGetLiveLocalEpisodeQuery({ id: "1000704249323" })
 

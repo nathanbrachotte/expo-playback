@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native"
 import { Cog, Plus, Search } from "@tamagui/lucide-icons"
 import React from "react"
-import { Button, XStack, H2, ScrollView, Paragraph, YStack, H5 } from "tamagui"
+import { Button, XStack, H2, ScrollView, YStack, H5 } from "tamagui"
 
 import { PurecastLogo } from "../assets/PurecastLogo"
 import { useLocalPodcastsQuery } from "../clients/local.queries"

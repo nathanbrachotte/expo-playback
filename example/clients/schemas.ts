@@ -127,14 +127,14 @@ export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
   }
 
   return {
-    title: data.title,
+    title: String(data.title),
     duration,
     publishedAt: new Date(data.pubDate),
-    downloadUrl: data.enclosure.url,
+    downloadUrl: data.enclosure?.url || "",
     image: data["itunes:image"]?.href || null,
     description: data.description || "",
     shouldDownload: false,
-    appleId: data.guid["#text"] || null,
+    appleId: data.guid?.["#text"] || null,
     // `podcastId` is not part of the RSS response
   } satisfies Omit<SharedEpisodeFields, "id" | "podcastId">
 })

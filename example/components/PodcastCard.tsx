@@ -27,12 +27,18 @@ export function PodcastCard({ id, title, author, description, cover, Actions, ..
       p="$2"
       gap="$3"
       flexDirection="row"
+      maxWidth="$20"
+      overflow="hidden"
       {...props}
     >
       {cover && <Image source={{ uri: cover }} width={60} height={60} borderRadius="$4" resizeMode="cover" />}
       <YStack flex={1} gap="$1">
-        <H4>{title}</H4>
-        <Paragraph>{author}</Paragraph>
+        <H4 numberOfLines={1} maxWidth="$14">
+          {title}
+        </H4>
+        <Paragraph numberOfLines={1} maxWidth="$14">
+          {author}
+        </Paragraph>
         {description ? (
           <Paragraph size="$2" color="$gray11">
             {description}

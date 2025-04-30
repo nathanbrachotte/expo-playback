@@ -1,6 +1,6 @@
 import { useRoute } from "@react-navigation/native"
 import { Image } from "react-native"
-import { H4, Paragraph, YStack, XStack, Spinner } from "tamagui"
+import { H4, Paragraph, YStack, XStack, Spinner, Button } from "tamagui"
 
 import { useGetPodcastByIdQuery } from "../clients/both.queries"
 import { useGetRssEpisodesQuery } from "../clients/rss.queries"
@@ -10,6 +10,8 @@ import { PureYStack } from "../components/PureStack"
 import { ErrorSection } from "../components/Sections/Error"
 import { LoadingSection } from "../components/Sections/LoadingSection"
 import { PodcastScreenRouteProp } from "../types/navigation.types"
+import { Minus, Plus } from "@tamagui/lucide-icons"
+import { useRemovePodcastMutation, useSavePodcastMutation } from "../clients/local.mutations"
 
 export function EpisodesSection({ id }: { id: string }) {
   const { podcast } = useGetPodcastByIdQuery(id)
@@ -39,7 +41,9 @@ export function PodcastScreen() {
 
   const { id } = route.params
 
-  const { podcast, isLoading } = useGetPodcastByIdQuery(id ?? null)
+  const { podcast, isLoading, isLocal } = useGetPodcastByIdQuery(id ?? null)
+  const { handleSavePodcast } = useSavePodcastMutation()
+  const { mutateAsync } = useRemovePodcastMutation()
 
   if (!id) {
     return <ErrorSection />
@@ -72,6 +76,11 @@ export function PodcastScreen() {
             <Paragraph size="$8" fontWeight="bold">
               {podcast.title} {podcast.appleId}
             </Paragraph>
+            {isLocal ? (
+              <Button w="$12" onPress={() => mutateAsync(String(podcast.appleId))} icon={Minus} />
+            ) : (
+              <Button w="$12" circular onPress={() => handleSavePodcast(String(podcast.appleId))} icon={Plus} />
+            )}
             <Paragraph size="$5">{podcast.author}</Paragraph>
             <Paragraph size="$3" color="$gray11">
               {podcast.author} • {podcast.rssFeedUrl ? "Episodes" : "No RSS feed available"}
