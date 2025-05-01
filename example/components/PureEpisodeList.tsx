@@ -1,14 +1,13 @@
 import { useNavigation } from "@react-navigation/native"
 import React from "react"
 import { FlatList } from "react-native"
+import { z } from "zod"
 
 import { EpisodeCard } from "./EpisodeCard"
-import { SharedEpisodeFields } from "../types/db.types"
-import { Optional } from "../utils/types.utils"
-import { z } from "zod"
 import { PureYStack } from "./PureStack"
-import { Paragraph } from "tamagui"
+import { SharedEpisodeFields } from "../types/db.types"
 import { PLAYER_HEIGHT } from "./Player/Player"
+import { getImageFromEntity } from "../utils/image.utils"
 
 const formatDuration = (seconds: number) => {
   const minutes = Math.floor(seconds / 60)
@@ -54,7 +53,7 @@ export function EpisodesList({ episodes, podcastTitle }: { episodes: SharedEpiso
           <EpisodeCard
             title={item.title}
             subtitle={item.description}
-            image={item.image}
+            image={getImageFromEntity(item, "100")}
             extraInfo={`${publishedAt} • ${duration}`}
             podcastTitle={podcastTitle}
             onPress={() => {

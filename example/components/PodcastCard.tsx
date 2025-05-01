@@ -27,7 +27,6 @@ export function PodcastCard({ id, title, author, description, cover, Actions, ..
       p="$2"
       gap="$3"
       flexDirection="row"
-      maxWidth="$20"
       overflow="hidden"
       {...props}
     >

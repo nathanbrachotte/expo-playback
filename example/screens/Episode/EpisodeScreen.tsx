@@ -6,7 +6,6 @@ import { H4, Paragraph, YStack, XStack, Button, Spinner, useTheme } from "tamagu
 import { z } from "zod"
 
 import { useGetEpisodeByIdQuery, useGetPodcastByIdQuery } from "../../clients/both.queries"
-import { useSavePodcastMutation } from "../../clients/local.mutations"
 import { getEpisodeWithPodcastById } from "../../clients/local.queries"
 import { PureLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
@@ -14,6 +13,10 @@ import { PureXStack, PureYStack } from "../../components/PureStack"
 import { usePlayerContext } from "../../providers/PlayerProvider"
 import { SharedEpisodeFields } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
+import { getImageFromEntity } from "../../utils/image.utils"
+import { getAppleIdFromPodcast } from "../../utils/podcasts.utils"
+import { useSavePodcastMutation } from "../../clients/local.mutations"
+import { searchPodcast } from "../../clients/itunes.fetch"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -58,7 +61,11 @@ function EpisodeDumbScreen({
 }) {
   const navigation = useNavigation()
   const { setActiveEpisodeId } = usePlayerContext()
-  const { handleSavePodcast } = useSavePodcastMutation()
+  const { podcast: podcastFromQuery } = useGetPodcastByIdQuery(
+    podcast.id?.toString() || podcast.appleId?.toString() || null,
+  )
+
+  const { mutateAsync: savePodcast } = useSavePodcastMutation()
   const routes = useNavigationState((state) => state?.routes || [])
 
   const isPodcastScreenInStack = routes.some((route) => {
@@ -70,19 +77,28 @@ function EpisodeDumbScreen({
     const res = await getEpisodeWithPodcastById(episode.appleId)
     const localEpisode = res?.episode
 
-    // // If episode does not exist locally, save it
-    // if (localEpisode == null) {
-    //   const res = await handleSavePodcast(getAppleIdFromPodcast(podcast))
-    //   // TODO: Verify this works
-    //   const savedEpisodeId = res?.savedEpisodes.lastInsertRowId
-    //   if (!savedEpisodeId) {
-    //     throw new Error("Something when wrong when saving the podcast: " + JSON.stringify(res, null, 2))
-    //   }
+    // If episode does not exist locally, save it
+    if (localEpisode == null) {
+      const appleId = getAppleIdFromPodcast(podcast)
+      if (!appleId) {
+        throw new Error("Apple ID not found for podcast: " + JSON.stringify(podcast, null, 2))
+      }
 
-    //   // TODO: Add download mechanism
-    //   setActiveEpisodeId(savedEpisodeId)
-    //   return
-    // }
+      if (!podcastFromQuery) {
+        throw new Error("Podcast not found in query")
+      }
+
+      const res = await savePodcast({ podcast: podcastFromQuery })
+      // TODO: Verify this works
+      const savedEpisodeId = res?.savedEpisodes.lastInsertRowId
+      if (!savedEpisodeId) {
+        throw new Error("Something when wrong when saving the podcast: " + JSON.stringify(res, null, 2))
+      }
+
+      // TODO: Add download mechanism
+      setActiveEpisodeId(savedEpisodeId)
+      return
+    }
 
     // If episode exists locally, set it as active directly
     setActiveEpisodeId(localEpisode.id)
@@ -94,16 +110,14 @@ function EpisodeDumbScreen({
     })
   }
 
+  const image = getImageFromEntity(episode, "100")
+
   return (
     <PureLayout header={<H4>Episode</H4>}>
       <PureYStack gap="$3" flex={1} overflow="hidden">
         <XStack px="$3" gap="$4" alignItems="center">
-          {episode.image ? (
-            <Image
-              source={{ uri: episode.image }}
-              style={{ width: 120, height: 120, borderRadius: 12 }}
-              resizeMode="cover"
-            />
+          {image ? (
+            <Image source={{ uri: image }} style={{ width: 120, height: 120, borderRadius: 12 }} resizeMode="cover" />
           ) : null}
         </XStack>
         <YStack flex={1}>

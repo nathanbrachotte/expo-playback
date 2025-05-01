@@ -1,6 +1,6 @@
 import { Headphones, Plus, X } from "@tamagui/lucide-icons"
 import { useState } from "react"
-import { H4, Input, Paragraph, YStack, Button, XStack, Spinner } from "tamagui"
+import { H4, Input, Paragraph, YStack, Button, XStack, Spinner, H3 } from "tamagui"
 
 import { useSearchItunesPodcastsQuery } from "../clients/itunes.queries"
 import { useSavePodcastMutation } from "../clients/local.mutations"
@@ -8,16 +8,17 @@ import { PureLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { PureScrollView } from "../components/PureScrollview"
 import { PureYStack } from "../components/PureStack"
+import { getImageFromEntity } from "../utils/image.utils"
 
 export function PodcastSearchScreen() {
   const [searchQuery, setSearchQuery] = useState("Floodcast")
 
   const { data: searchResults, error, isLoading, refetch, isFetching } = useSearchItunesPodcastsQuery(searchQuery)
-  const { handleSavePodcast } = useSavePodcastMutation()
+  const { mutateAsync: savePodcast, isPending: isSaving } = useSavePodcastMutation()
 
   const isSearching = isFetching || isLoading
-  const data = searchResults?.results
-  const hasSearchResults = data && data.length > 0
+  const data = searchResults?.results || []
+  const hasSearchResults = data.length > 0
 
   return (
     <PureLayout header={<H4>Add Podcasts</H4>}>
@@ -52,26 +53,36 @@ export function PodcastSearchScreen() {
           {isSearching ? "" : "Search"}
         </Button>
       </XStack>
-      {error ? <Paragraph marginTop="$2">Failed to fetch podcasts. Please try again.</Paragraph> : null}
+      {error ? (
+        <PureYStack centered flex={1}>
+          <H3>Oh no 😵</H3>
+          <Paragraph mt="$2">Failed to fetch podcasts. Please try again.</Paragraph>
+        </PureYStack>
+      ) : null}
 
-      <PureScrollView>
-        <YStack gap="$3" mt="$3">
+      <PureScrollView scrollViewProps={{ alwaysBounceVertical: true, mt: "$3" }}>
+        <YStack gap="$3">
           {!hasSearchResults && !isLoading && !error && (
-            <YStack flex={1} alignItems="center" justifyContent="center" py="$10" gap="$4">
+            <PureYStack flex={1} centered py="$10" gap="$4">
               <Headphones size={64} color="$blue10" />
               <YStack alignItems="center" gap="$2">
-                <Paragraph size="$6" fontWeight="bold" textAlign="center">
-                  No Podcasts Yet!
-                </Paragraph>
+                <H3>No Podcasts Yet!</H3>
                 <Paragraph size="$4" textAlign="center">
                   Start by searching for your favorite podcasts above 👆
                 </Paragraph>
               </YStack>
-            </YStack>
+            </PureYStack>
           )}
           {hasSearchResults &&
             data.map((result) => {
               if (!result) {
+                return null
+              }
+              if (!("appleId" in result)) {
+                console.warn(
+                  "🚀 ~ PodcastSearchScreen ~ data.map ~ Wrong shape result:",
+                  JSON.stringify(result, null, 2),
+                )
                 return null
               }
 
@@ -81,14 +92,14 @@ export function PodcastSearchScreen() {
                   id={result.appleId.toString()}
                   title={result.title}
                   author={result.author}
-                  cover={result.image}
+                  cover={getImageFromEntity(result, "100")}
                   Actions={
                     <PureYStack centered>
                       <Button
                         circular
-                        icon={isLoading ? () => <Spinner /> : () => <Plus size={16} />}
-                        onPress={() => handleSavePodcast(result.appleId.toString())}
-                        disabled={isLoading}
+                        icon={isSaving ? () => <Spinner /> : () => <Plus size={16} />}
+                        onPress={() => savePodcast({ podcast: result })}
+                        disabled={isSaving}
                       />
                     </PureYStack>
                   }

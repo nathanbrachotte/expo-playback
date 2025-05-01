@@ -1,6 +1,7 @@
 import { ToLocalPodcastSchema } from "./schemas"
 import { AppleEpisodeResponse, ApplePodcastResponse } from "../types/purecast.types"
 import { EPISODES_RESPONSE_MOCK, PODCASTS_SEARCH_RESPONSE_MOCK } from "./itunes.mock"
+import { BooleanFilter } from "../utils/types.utils"
 
 /**
  * This API absolutely sucks but is free.
@@ -21,9 +22,13 @@ export async function searchPodcast(query: string | null) {
   }
 
   if (TEST_MODE) {
-    return PODCASTS_SEARCH_RESPONSE_MOCK
+    return {
+      ...PODCASTS_SEARCH_RESPONSE_MOCK,
+      results: PODCASTS_SEARCH_RESPONSE_MOCK.results.map((item) => {
+        return ToLocalPodcastSchema.parse(item)
+      }),
+    }
   }
-
   const encodedQuery = encodeURIComponent(query.trim())
   const response = await fetch(`${ITUNES_API_BASE_URL}/search?media=podcast&term=${encodedQuery}&country=DE`)
 
@@ -35,16 +40,20 @@ export async function searchPodcast(query: string | null) {
 
   return {
     resultCount: data.resultCount,
-    results: data.results.map((item) => {
-      const parsed = ToLocalPodcastSchema.safeParse(item)
+    results: data.results
+      .map((item) => {
+        console.log("🚀 ~ results:data.results.map ~ item:", JSON.stringify(item, null, 2))
+        const parsed = ToLocalPodcastSchema.safeParse(item)
 
-      // Used to detect unexpected shape
-      if (!parsed.success) {
-        console.log("🚀 ~ searchPodcast ~ parsed:", JSON.stringify(parsed.error, null, 2))
-      }
+        // Used to detect unexpected shape
+        if (!parsed.success) {
+          console.log("🚀 ~ searchPodcast ~ parsed:", JSON.stringify(parsed.error, null, 2))
+          return null
+        }
 
-      return parsed.data
-    }),
+        return parsed.data
+      })
+      .filter(BooleanFilter),
   }
 }
 

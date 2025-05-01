@@ -1,18 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { eq } from "drizzle-orm"
 
-import { fetchPodcastAndEpisodes } from "./itunes.fetch"
 import { fetchRssFeed } from "./rss.fetch"
 import { extractEpisodesFromRssFeed } from "./rss.queries"
 import { PURE_TOASTS } from "../components/toasts"
 import { db, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
-import { AppleEpisodeResponse } from "../types/purecast.types"
-import {
-  extractAndParseEpisodesFromItunesResponse,
-  extractAndParsePodcastFromItunesResponse,
-} from "../utils/podcasts.utils"
-import { getPodcastById } from "./local.queries"
-import { eq } from "drizzle-orm"
 
 async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Omit<SharedEpisodeFields, "">[]) {
   const [savedPodcast] = await db
@@ -21,7 +14,10 @@ async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Om
       id: podcast.appleId,
       author: podcast.author,
       description: podcast.description,
-      image: podcast.image,
+      image30: podcast.image30,
+      image60: podcast.image60,
+      image100: podcast.image100,
+      image600: podcast.image600,
       title: podcast.title,
       appleId: podcast.appleId,
       rssFeedUrl: podcast.rssFeedUrl,
@@ -49,7 +45,7 @@ async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Om
 export function useSavePodcastMutation() {
   const queryClient = useQueryClient()
 
-  const mutationData = useMutation({
+  return useMutation({
     mutationFn: async ({ podcast }: { podcast: SharedPodcastFields }) => {
       const res = await fetchRssFeed(podcast.rssFeedUrl)
       const rssEpisodes = extractEpisodesFromRssFeed(res).map((episode) => ({
@@ -59,36 +55,17 @@ export function useSavePodcastMutation() {
 
       return await savePodcastAndEpisodes(podcast, rssEpisodes)
     },
+    onError: (err) => {
+      console.error("Failed to save podcast:", err)
+      PURE_TOASTS.error({ message: "Failed to Save" })
+    },
     onSuccess: ({ savedPodcast, savedEpisodes }) => {
+      PURE_TOASTS.success({ message: "Podcast Added!" })
       // Invalidate and refetch saved podcasts query
       queryClient.invalidateQueries({ queryKey: ["savedPodcasts"] })
+      queryClient.invalidateQueries({ queryKey: ["savedPodcast"] })
     },
   })
-
-  const handleSavePodcast = async (podcastAppleId: string | null) => {
-    const podcast = await getPodcastById(podcastAppleId)
-
-    if (!podcast) {
-      PURE_TOASTS.error({
-        message: "Podcast not found",
-      })
-      return
-    }
-
-    try {
-      const res = await mutationData.mutateAsync({ podcast })
-      PURE_TOASTS.success({ message: "Podcast Added!" })
-
-      return res
-    } catch (error) {
-      console.error("Failed to save podcast:", error)
-      PURE_TOASTS.error({
-        message: "Failed to Save",
-      })
-    }
-  }
-
-  return { handleSavePodcast, ...mutationData }
 }
 
 export function useRemovePodcastMutation() {
@@ -104,6 +81,7 @@ export function useRemovePodcastMutation() {
     onSuccess: () => {
       PURE_TOASTS.success({ message: "Podcast Removed!" })
       queryClient.invalidateQueries({ queryKey: ["savedPodcasts"] })
+      queryClient.invalidateQueries({ queryKey: ["savedPodcast"] })
     },
     onError: () => {
       PURE_TOASTS.error({ message: "Failed to Remove Podcast" })

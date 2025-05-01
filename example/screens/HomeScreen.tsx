@@ -10,24 +10,28 @@ import { PureLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { PureSection } from "../components/Sections/PureSection"
 import { TestSection } from "../components/TestSection"
+import { getImageFromEntity } from "../utils/image.utils"
 
 function PodcastsList() {
   const { data: podcastList } = useLocalPodcastsQuery()
 
   return (
     <ScrollView horizontal>
-      {podcastList?.map((podcast) => (
-        <PodcastCard
-          id={String(podcast.id)}
-          key={podcast.id}
-          title={podcast.title}
-          author={podcast.author}
-          description={podcast.description}
-          cover={podcast.image}
-          mt="$2"
-          mr="$3"
-        />
-      ))}
+      {podcastList?.map((podcast) => {
+        const image = getImageFromEntity(podcast, "100")
+
+        return (
+          <PodcastCard
+            id={String(podcast.id)}
+            key={podcast.id}
+            author={podcast.author}
+            title={podcast.title}
+            cover={image}
+            mt="$2"
+            mr="$3"
+          />
+        )
+      })}
     </ScrollView>
   )
 }

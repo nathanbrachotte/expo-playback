@@ -1,27 +1,12 @@
-import { ArrowUp, Play, SkipBack, SkipForward, X } from "@tamagui/lucide-icons"
+import { ArrowUp, Play, SkipBack, SkipForward } from "@tamagui/lucide-icons"
 import { PropsWithChildren, useState } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import {
-  Button,
-  H4,
-  Slider,
-  Text,
-  YStack,
-  XStack,
-  Image,
-  AnimatePresence,
-  Sheet,
-  Paragraph,
-  H1,
-  H2,
-  H3,
-  H5,
-  H6,
-} from "tamagui"
+import { Button, Slider, Text, YStack, XStack, Image, AnimatePresence, Sheet, H3, H5 } from "tamagui"
 
 import { usePlayerContext } from "../../providers/PlayerProvider"
-import { PureXStack, PureYStack } from "../PureStack"
 import { DEVICE_WIDTH } from "../../utils/constants"
+import { getImageFromEntity } from "../../utils/image.utils"
+import { PureYStack } from "../PureStack"
 
 export const PLAYER_HEIGHT = 100
 const PLAYER_IMAGE_SIZE = DEVICE_WIDTH * 0.8
@@ -47,11 +32,15 @@ function PlayerControls() {
 }
 
 function PlayerSheet({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: (isOpen: boolean) => void }) {
-  const { activeEpisode, setActiveEpisodeId } = usePlayerContext()
-  const { title, description, image } = activeEpisode?.episode ?? {}
-  const { title: podcastTitle, image: podcastImage } = activeEpisode?.podcast ?? {}
+  const { activeEpisode } = usePlayerContext()
+  const { title } = activeEpisode?.episode ?? {}
+  const { title: podcastTitle } = activeEpisode?.podcast ?? {}
   const insets = useSafeAreaInsets()
-  const imageSource = image ?? podcastImage ?? false
+
+  const episodeImage = getImageFromEntity(activeEpisode?.episode ?? {}, "100")
+  const podcastImage = getImageFromEntity(activeEpisode?.podcast ?? {}, "100")
+
+  const imageSource = episodeImage ?? podcastImage ?? false
 
   return (
     <Sheet modal open={isOpen} onOpenChange={onOpenChange} snapPoints={[90]} dismissOnSnapToBottom animation="quick">
@@ -119,8 +108,6 @@ function PlayerSheet({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: 
 
 export function Player() {
   const { activeEpisode, setActiveEpisodeId } = usePlayerContext()
-  const { title, description, image } = activeEpisode?.episode ?? {}
-  const { title: podcastTitle } = activeEpisode?.podcast ?? {}
   const [isSheetOpen, setIsSheetOpen] = useState(false)
 
   if (!activeEpisode) {
@@ -130,6 +117,8 @@ export function Player() {
   const openSheet = () => {
     setIsSheetOpen(true)
   }
+
+  const episodeImage = getImageFromEntity(activeEpisode?.episode ?? {}, "100")
 
   return (
     <PlayerBackground>
@@ -155,8 +144,8 @@ export function Player() {
             opacity={1}
           >
             <XStack justifyContent="space-between" alignItems="center">
-              {image ? (
-                <Image source={{ uri: image }} width={50} height={50} borderRadius="$2" resizeMode="cover" />
+              {episodeImage ? (
+                <Image source={{ uri: episodeImage }} width={50} height={50} borderRadius="$2" resizeMode="cover" />
               ) : (
                 <YStack width={50} height={50} bg="$blue8" borderRadius="$2" overflow="hidden" />
               )}

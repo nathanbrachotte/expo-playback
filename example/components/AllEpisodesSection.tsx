@@ -1,7 +1,7 @@
 import React from "react"
 import { YStack, Paragraph } from "tamagui"
 
-import { EpisodesList } from "./EpisodeList"
+import { EpisodesList } from "./PureEpisodeList"
 import { useAllEpisodesQuery } from "../clients/local.queries"
 
 export function AllEpisodesList() {

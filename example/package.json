@@ -7,7 +7,8 @@
     "android": "expo run:android",
     "db:generate": "drizzle-kit generate",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "type:check": "tsc --noEmit"
   },
   "dependencies": {
     "@backpackapp-io/react-native-toast": "^0.13.0",

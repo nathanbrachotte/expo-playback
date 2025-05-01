@@ -23,7 +23,7 @@ export function DatabaseExplorerScreen() {
     await db.insert(schema.podcastsTable).values({
       title: "Test Podcast " + Math.random().toString(36).substring(7),
       description: "This is a test podcast description",
-      image: "https://example.com/test-image.jpg",
+      image30: "https://example.com/test-image.jpg",
       appleId: Math.floor(Math.random() * 1000000),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -42,7 +42,7 @@ export function DatabaseExplorerScreen() {
       podcastId: randomPodcast.id,
       title: "Test Episode " + Math.random().toString(36).substring(7),
       description: "This is a test episode description",
-      image: "https://example.com/test-episode-image.jpg",
+      image30: "https://example.com/test-episode-image.jpg",
       publishedAt: new Date(),
       createdAt: new Date(),
       shouldDownload: true,

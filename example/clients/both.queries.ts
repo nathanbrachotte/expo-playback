@@ -19,7 +19,7 @@ export function useGetPodcastByIdQuery(podcastId: string | null) {
 
   const podcast = localPodcast || fetchedPodcast
 
-  return { isLoading, podcast, isLocal: !isMissingLocally }
+  return { isLoading, podcast, isLocal: !!localPodcast }
 }
 
 export function useGetEpisodeByIdQuery({ episodeId, feedUrl }: { episodeId: string; feedUrl: string | null }) {

@@ -1,7 +1,7 @@
 import { useLiveQuery, drizzle } from "drizzle-orm/expo-sqlite"
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator"
 import * as FileSystem from "expo-file-system"
-import { defaultDatabaseDirectory, openDatabaseSync } from "expo-sqlite"
+import { openDatabaseSync } from "expo-sqlite"
 import React from "react"
 import { View, Text, Button } from "react-native"
 
@@ -22,13 +22,14 @@ const expo = openDatabaseSync(
 const db = drizzle(expo)
 
 export function DrizzlePlayground() {
-  const { data } = useLiveQuery(db.select().from(schema.users))
+  const { data } = useLiveQuery(db.select().from(schema.podcastsTable))
 
   const addUser = async () => {
     await db
-      .insert(schema.users)
+      .insert(schema.podcastsTable)
       .values({
-        name: "John Doe" + Math.random() * 100,
+        title: "John Doe" + Math.random() * 100,
+        appleId: Math.random() * 100,
       })
       .then((res) => {
         console.log("🚀 ~ addUser ~ res:", res)

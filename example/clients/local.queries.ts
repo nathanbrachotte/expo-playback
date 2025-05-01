@@ -47,10 +47,7 @@ export const episodeWithPodcastByIdDbQuery = (id: string | null) =>
         ...episodesTable,
       },
       podcast: {
-        title: podcastsTable.title,
-        id: podcastsTable.id,
-        appleId: podcastsTable.appleId,
-        image: podcastsTable.image,
+        ...podcastsTable,
       },
     })
     .from(episodesTable)
@@ -84,8 +81,7 @@ export const useAllEpisodesQuery = () => {
           ...episodesTable,
         },
         podcast: {
-          title: podcastsTable.title,
-          image: podcastsTable.image,
+          ...podcastsTable,
         },
       })
       .from(episodesTable)
