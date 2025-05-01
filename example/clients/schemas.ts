@@ -123,8 +123,9 @@ export const ToLocalEpisodeSchema = z
   )
 
 export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
+  // TODO: This whole duration math is fucked up
   // Convert duration from "HH:MM:SS" to milliseconds
-  const durationParts = data["itunes:duration"]?.split(":") || []
+  const durationParts = typeof data["itunes:duration"] === "string" ? data["itunes:duration"].split(":") : []
   let duration = 0
   if (durationParts.length === 3) {
     duration =
@@ -147,7 +148,7 @@ export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
     image600: null,
     description: data.description || "",
     shouldDownload: false,
-    appleId: data.guid?.["#text"] || null,
+    appleId: typeof data.guid === "string" ? data.guid : data.guid?.["#text"] || null,
     // `podcastId` is not part of the RSS response
   } satisfies Omit<SharedEpisodeFields, "id" | "podcastId">
 })

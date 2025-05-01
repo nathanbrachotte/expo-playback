@@ -15,7 +15,7 @@ function PlayerBackground({ children }: PropsWithChildren) {
   const insets = useSafeAreaInsets()
 
   return (
-    <YStack height={PLAYER_HEIGHT} pb={insets.bottom}>
+    <YStack height={PLAYER_HEIGHT} pb={insets.bottom} bg="$background">
       {children}
     </YStack>
   )
@@ -126,6 +126,7 @@ export function Player() {
       <AnimatePresence>
         {activeEpisode && (
           <YStack
+            bg="$background"
             onPress={openSheet}
             px="$5"
             py="$2"

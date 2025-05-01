@@ -12,7 +12,7 @@ export const RssItemSchema = z.object({
   "title": TitleSchema,
   "itunes:title": TitleSchema.optional(),
   "pubDate": z.string(),
-  "itunes:duration": z.string().optional(),
+  "itunes:duration": z.union([z.string(), z.number()]).optional(),
   "enclosure": z
     .object({
       url: z.string(),
@@ -21,16 +21,19 @@ export const RssItemSchema = z.object({
     })
     .optional(),
   "guid": z
-    .object({
-      "#text": z.string().optional(),
-      "isPermaLink": z.string().optional(),
-    })
+    .union([
+      z.object({
+        "#text": z.string().optional(),
+        "isPermaLink": z.string().optional(),
+      }),
+      z.string(),
+    ])
     .optional(),
   "itunes:explicit": ExplicitSchema,
   "link": z.string(),
   "itunes:episodeType": z.string().optional(),
-  "itunes:season": z.number().optional(),
-  "itunes:episode": z.number().optional(),
+  "itunes:season": z.union([z.string(), z.number()]).optional(),
+  "itunes:episode": z.union([z.string(), z.number()]).optional(),
   "itunes:image": z
     .object({
       href: z.string(),

@@ -23,6 +23,8 @@ export function Routes() {
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="DatabaseExplorer" component={DatabaseExplorerScreen} />
       </Stack.Navigator>
+      {/* KEEP IT HERE DON?T LISTEN TO ERIK; IN ROUTES IT NEEDS TO BE REINSTANTIATED EVERY TIME */}
+      <Player />
     </>
   )
 }
