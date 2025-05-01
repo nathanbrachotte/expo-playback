@@ -124,9 +124,9 @@ export function DatabaseExplorerScreen() {
 
             <Card p="$4" gap="$3">
               <Text fontSize="$6" fontWeight="bold">
-                Episodes
+                Episodes (first 10)
               </Text>
-              <Text fontSize="$4">{JSON.stringify(episodes, null, 2)}</Text>
+              <Text fontSize="$4">{JSON.stringify(episodes.slice(0, 10), null, 2)}</Text>
             </Card>
 
             <Card p="$4" gap="$3">
