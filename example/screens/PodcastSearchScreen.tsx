@@ -14,7 +14,6 @@ export function PodcastSearchScreen() {
   const [searchQuery, setSearchQuery] = useState("Floodcast")
 
   const { data: searchResults, error, isLoading, refetch, isFetching } = useSearchItunesPodcastsQuery(searchQuery)
-  const { mutateAsync: savePodcast, isPending: isSaving } = useSavePodcastMutation()
 
   const isSearching = isFetching || isLoading
   const data = searchResults?.results || []
@@ -75,39 +74,56 @@ export function PodcastSearchScreen() {
           )}
           {hasSearchResults &&
             data.map((result) => {
-              if (!result) {
-                return null
-              }
-              if (!("appleId" in result)) {
-                console.warn(
-                  "🚀 ~ PodcastSearchScreen ~ data.map ~ Wrong shape result:",
-                  JSON.stringify(result, null, 2),
-                )
-                return null
-              }
-
-              return (
-                <PodcastCard
-                  key={result.appleId}
-                  id={result.appleId.toString()}
-                  title={result.title}
-                  author={result.author}
-                  cover={getImageFromEntity(result, "100")}
-                  Actions={
-                    <PureYStack centered>
-                      <Button
-                        circular
-                        icon={isSaving ? () => <Spinner /> : () => <Plus size={16} />}
-                        onPress={() => savePodcast({ podcast: result })}
-                        disabled={isSaving}
-                      />
-                    </PureYStack>
-                  }
-                />
-              )
+              return <SearchResultCard key={result.appleId} entry={result} />
             })}
         </YStack>
       </PureScrollView>
     </PureLayout>
+  )
+}
+
+function SearchResultCard({
+  entry,
+}: {
+  entry: {
+    appleId: number
+    author: string
+    title: string
+    image30: string | null
+    image60: string | null
+    image100: string | null
+    image600: string | null
+    description: string
+    rssFeedUrl: string | null
+  }
+}) {
+  const { mutateAsync: savePodcast, isPending: isSaving } = useSavePodcastMutation({
+    // Makes the mutation unique per card so we can have one loading state per card
+    podcastId: entry.appleId.toString() || entry.title || entry.author,
+  })
+
+  if (!("appleId" in entry)) {
+    console.warn("🚀 ~ PodcastSearchScreen ~ data.map ~ Wrong shape result:", JSON.stringify(entry, null, 2))
+    return null
+  }
+
+  return (
+    <PodcastCard
+      key={entry.appleId}
+      id={entry.appleId.toString()}
+      title={entry.title}
+      author={entry.author}
+      cover={getImageFromEntity(entry, "100")}
+      Actions={
+        <PureYStack centered>
+          <Button
+            circular
+            icon={isSaving ? () => <Spinner /> : () => <Plus size={16} />}
+            onPress={() => savePodcast({ podcast: entry })}
+            disabled={isSaving}
+          />
+        </PureYStack>
+      }
+    />
   )
 }

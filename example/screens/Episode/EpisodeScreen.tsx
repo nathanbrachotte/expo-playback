@@ -6,6 +6,7 @@ import { H4, Paragraph, YStack, XStack, Button, Spinner, useTheme } from "tamagu
 import { z } from "zod"
 
 import { useGetEpisodeByIdQuery, useGetPodcastByIdQuery } from "../../clients/both.queries"
+import { useSavePodcastMutation } from "../../clients/local.mutations"
 import { getEpisodeWithPodcastById } from "../../clients/local.queries"
 import { PureLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
@@ -15,8 +16,6 @@ import { SharedEpisodeFields } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { getAppleIdFromPodcast } from "../../utils/podcasts.utils"
-import { useSavePodcastMutation } from "../../clients/local.mutations"
-import { searchPodcast } from "../../clients/itunes.fetch"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -65,7 +64,9 @@ function EpisodeDumbScreen({
     podcast.id?.toString() || podcast.appleId?.toString() || null,
   )
 
-  const { mutateAsync: savePodcast } = useSavePodcastMutation()
+  const { mutateAsync: savePodcast } = useSavePodcastMutation({
+    podcastId: podcast.id?.toString() || podcast.appleId?.toString() || "",
+  })
   const routes = useNavigationState((state) => state?.routes || [])
 
   const isPodcastScreenInStack = routes.some((route) => {

@@ -42,10 +42,11 @@ async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Om
   }
 }
 
-export function useSavePodcastMutation() {
+export function useSavePodcastMutation({ podcastId }: { podcastId: string }) {
   const queryClient = useQueryClient()
 
   return useMutation({
+    mutationKey: ["savePodcast", podcastId],
     mutationFn: async ({ podcast }: { podcast: SharedPodcastFields }) => {
       const res = await fetchRssFeed(podcast.rssFeedUrl)
       const rssEpisodes = extractEpisodesFromRssFeed(res).map((episode) => ({

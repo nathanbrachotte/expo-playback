@@ -6,8 +6,8 @@ import { H4, Paragraph, YStack, XStack, Spinner, Button } from "tamagui"
 import { useGetPodcastByIdQuery } from "../clients/both.queries"
 import { useRemovePodcastMutation, useSavePodcastMutation } from "../clients/local.mutations"
 import { useGetRssEpisodesQuery } from "../clients/rss.queries"
-import { EpisodesList } from "../components/PureEpisodeList"
 import { PureLayout } from "../components/Layout"
+import { EpisodesList } from "../components/PureEpisodeList"
 import { PureYStack } from "../components/PureStack"
 import { ErrorSection } from "../components/Sections/Error"
 import { LoadingSection } from "../components/Sections/LoadingSection"
@@ -47,7 +47,9 @@ export function PodcastScreen() {
   const { id } = route.params
 
   const { podcast, isLoading, isLocal } = useGetPodcastByIdQuery(id ?? null)
-  const { mutateAsync: savePodcast, isPending: isSaving } = useSavePodcastMutation()
+  const { mutateAsync: savePodcast, isPending: isSaving } = useSavePodcastMutation({
+    podcastId: id ?? "unknown",
+  })
   const { mutateAsync: removePodcast, isPending: isRemoving } = useRemovePodcastMutation()
 
   if (!id) {
