@@ -30,8 +30,8 @@ public class ExpoPlaybackModule: Module {
         return .success(firstEpisode)
     }
 
-    private func startBackgroundDownloads() {
-        EpisodeDownloader().scheduleNextDownload()
+    private func startBackgroundDownload(episodeId: Int64) {
+        EpisodeDownloader.shared.downloadEpisode(episodeId: episodeId)
     }
 
     // Each module class must implement the definition function. The definition consists of components
@@ -167,8 +167,8 @@ public class ExpoPlaybackModule: Module {
             }
         }
 
-        Function("startBackgroundDownloads") { () in
-            startBackgroundDownloads()
+        Function("startBackgroundDownload") { (episodeId: Int64) in
+            startBackgroundDownload(episodeId: episodeId)
         }
 
         AsyncFunction("pause") { (promise: Promise) in

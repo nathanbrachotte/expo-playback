@@ -102,7 +102,6 @@ export function DatabaseExplorerScreen() {
     <PureLayout header={<H4 fontWeight="bold">Database Explorer</H4>}>
       <YStack p="$4" gap="$4">
         <XStack gap="$2">
-          <Button onPress={() => ExpoPlayback.startBackgroundDownloads()}>Start Downloads</Button>
           <Button onPress={resetDatabase} theme="red">
             Reset Database
           </Button>

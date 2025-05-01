@@ -28,8 +28,8 @@ export function updateSkipSegments(segments: SkipSegment[]): void {
   return ExpoPlaybackModule.updateSkipSegments(segments)
 }
 
-export function startBackgroundDownloads(): void {
-  return ExpoPlaybackModule.startBackgroundDownloads()
+export function startBackgroundDownload(episodeId: number): void {
+  return ExpoPlaybackModule.startBackgroundDownload(episodeId)
 }
 
 export function cleanup(): void {

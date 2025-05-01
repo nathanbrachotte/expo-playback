@@ -1,5 +1,6 @@
 import { useNavigation, useRoute, useNavigationState } from "@react-navigation/native"
 import { ArrowBigRight, Download, Play, Share } from "@tamagui/lucide-icons"
+import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import { Image, useWindowDimensions } from "react-native"
 import RenderHtml from "react-native-render-html"
 import { H4, Paragraph, YStack, XStack, Button, Spinner, useTheme } from "tamagui"
@@ -77,7 +78,7 @@ function EpisodeDumbScreen({
   const downloadAndPlay = async () => {
     const res = await getEpisodeWithPodcastById(episode.appleId)
     const localEpisode = res?.episode
-
+    console.log("localEpisode", localEpisode, episode.appleId)
     // If episode does not exist locally, save it
     if (localEpisode == null) {
       const appleId = getAppleIdFromPodcast(podcast)
@@ -100,7 +101,7 @@ function EpisodeDumbScreen({
       setActiveEpisodeId(savedEpisodeId)
       return
     }
-
+    ExpoPlaybackModule.startBackgroundDownload(localEpisode.id)
     // If episode exists locally, set it as active directly
     setActiveEpisodeId(localEpisode.id)
   }
