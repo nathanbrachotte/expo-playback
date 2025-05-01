@@ -79,6 +79,7 @@ export function useRemovePodcastMutation() {
         await tx.delete(schema.podcastsTable).where(eq(schema.podcastsTable.id, Number(podcastId)))
       })
     },
+
     onSuccess: () => {
       PURE_TOASTS.success({ message: "Podcast Removed!" })
       queryClient.invalidateQueries({ queryKey: ["savedPodcasts"] })

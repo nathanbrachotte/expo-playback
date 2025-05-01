@@ -1,16 +1,20 @@
 import { useNavigation, useNavigationState } from "@react-navigation/native"
 import { ChevronLeft } from "@tamagui/lucide-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { YStack, XStack, Button, AnimatePresence } from "tamagui"
+import { YStack, XStack, Button, AnimatePresence, ViewStyle } from "tamagui"
+
+import { PureYStack, PureYStackProps } from "./PureStack"
 
 export function PureLayout({
   children,
   header,
   actionSection,
+  containerStyle,
 }: {
   children: React.ReactNode
   header?: React.ReactNode
   actionSection?: React.ReactNode
+  containerStyle?: PureYStackProps
 }) {
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
@@ -46,7 +50,9 @@ export function PureLayout({
         </XStack>
       </XStack>
 
-      <YStack flex={1}>{children}</YStack>
+      <PureYStack flex={1} {...containerStyle}>
+        {children}
+      </PureYStack>
     </YStack>
   )
 }

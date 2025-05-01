@@ -10,8 +10,17 @@ import { PureScrollView } from "../components/PureScrollview"
 import { PureYStack } from "../components/PureStack"
 import { getImageFromEntity } from "../utils/image.utils"
 
+const getRandomLetters = () => {
+  const letters = "abcdefghijklmnopqrstuvwxyz"
+  let result = ""
+  for (let i = 0; i < 3; i++) {
+    result += letters.charAt(Math.floor(Math.random() * letters.length))
+  }
+  return result
+}
+
 export function PodcastSearchScreen() {
-  const [searchQuery, setSearchQuery] = useState("Floodcast")
+  const [searchQuery, setSearchQuery] = useState(getRandomLetters())
 
   const { data: searchResults, error, isLoading, refetch, isFetching } = useSearchItunesPodcastsQuery(searchQuery)
 

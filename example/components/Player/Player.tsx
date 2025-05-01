@@ -7,9 +7,9 @@ import { usePlayerContext } from "../../providers/PlayerProvider"
 import { DEVICE_WIDTH } from "../../utils/constants"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { PureYStack } from "../PureStack"
+import { CoverImage } from "../CoverImage"
 
 export const PLAYER_HEIGHT = 100
-const PLAYER_IMAGE_SIZE = DEVICE_WIDTH * 0.8
 
 function PlayerBackground({ children }: PropsWithChildren) {
   const insets = useSafeAreaInsets()
@@ -60,18 +60,7 @@ function PlayerSheet({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: 
         </PureYStack>
 
         {/* Image */}
-        {imageSource ? (
-          <Image
-            mt="$4"
-            borderRadius="$6"
-            source={{ uri: imageSource }}
-            width={PLAYER_IMAGE_SIZE}
-            height={PLAYER_IMAGE_SIZE}
-            resizeMode="cover"
-          />
-        ) : (
-          <YStack width={PLAYER_IMAGE_SIZE} height={PLAYER_IMAGE_SIZE} borderRadius="$6" />
-        )}
+        <CoverImage entity={activeEpisode?.episode ?? {}} />
 
         {/* Controls */}
         <YStack mb={insets.bottom} justifyContent="flex-end" alignItems="center" f={1} gap="$4" px="$4">

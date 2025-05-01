@@ -1,19 +1,19 @@
 import { useRoute } from "@react-navigation/native"
-import { Minus, Plus } from "@tamagui/lucide-icons"
-import { Image } from "react-native"
-import { H4, Paragraph, YStack, XStack, Spinner, Button } from "tamagui"
+import { Minus } from "@tamagui/lucide-icons"
+import { H4, Paragraph, YStack, XStack, Spinner, Button, H2 } from "tamagui"
 
 import { useGetPodcastByIdQuery } from "../clients/both.queries"
 import { useRemovePodcastMutation, useSavePodcastMutation } from "../clients/local.mutations"
 import { useGetRssEpisodesQuery } from "../clients/rss.queries"
+import { CoverImage } from "../components/CoverImage"
 import { PureLayout } from "../components/Layout"
 import { EpisodesList } from "../components/PureEpisodeList"
-import { PureYStack } from "../components/PureStack"
+import { PureXStack, PureYStack } from "../components/PureStack"
 import { ErrorSection } from "../components/Sections/Error"
+import { Plus } from "@tamagui/lucide-icons"
 import { LoadingSection } from "../components/Sections/LoadingSection"
-import { SharedPodcastFields } from "../types/db.types"
 import { PodcastScreenRouteProp } from "../types/navigation.types"
-import { getImageFromEntity } from "../utils/image.utils"
+import { DEVICE_WIDTH } from "../utils/constants"
 
 function usePodcastTrackCount(podcast: { rssFeedUrl: string | null } | undefined) {
   const { data: episodes, error: fetchedEpisodesError, isLoading } = useGetRssEpisodesQuery(podcast?.rssFeedUrl || null)
@@ -50,46 +50,43 @@ export function PodcastScreen() {
   }
 
   const isUpdatingLocal = isSaving || isRemoving
-  const image = getImageFromEntity(podcast, "100")
+  console.log("🚀 ~ PodcastScreen ~ isRemoving:", isRemoving)
+  console.log("🚀 ~ PodcastScreen ~ isSaving:", isSaving)
+  console.log("🚀 ~ PodcastScreen ~ isUpdatingLocal:", isUpdatingLocal)
 
   return (
-    <PureLayout
-      header={<H4>{podcast.title}</H4>}
-      actionSection={
-        isLocal ? (
-          <Button onPress={() => removePodcast(String(podcast.appleId))} icon={isUpdatingLocal ? null : Minus}>
-            {isUpdatingLocal ? <Spinner /> : <Button.Text>Unfollow</Button.Text>}
-          </Button>
-        ) : (
-          <Button onPress={() => savePodcast({ podcast })} icon={isUpdatingLocal ? null : Plus}>
-            {isUpdatingLocal ? <Spinner /> : <Button.Text>Follow</Button.Text>}
-          </Button>
-        )
-      }
-    >
-      <YStack gap="$4" p="$3">
-        <XStack gap="$4" alignItems="center">
-          {image ? (
-            <Image source={{ uri: image }} style={{ width: 120, height: 120, borderRadius: 12 }} resizeMode="cover" />
-          ) : null}
-          <YStack gap="$2" flex={1}>
-            <Paragraph size="$5">{podcast.author}</Paragraph>
-            <Paragraph size="$3" color="$gray11">
-              {podcast.author} • {trackCount > 0 ? `${trackCount} episodes` : ""}
-            </Paragraph>
-          </YStack>
-        </XStack>
+    <PureLayout>
+      {/* About Section */}
+      <PureXStack px="$3" centered gap="$3">
+        <PureYStack>
+          <CoverImage entity={podcast} size={DEVICE_WIDTH * 0.4} />
+        </PureYStack>
+        <PureYStack flex={1}>
+          <PureYStack flex={1} jc="flex-start" ai="flex-start">
+            <H4 textAlign="center" numberOfLines={2}>
+              {podcast.title}
+            </H4>
+            <Paragraph size="$4">Author(s): {podcast.author}</Paragraph>
+            <Paragraph size="$4">Episodes: {trackCount}</Paragraph>
+          </PureYStack>
+          {!isLocal ? (
+            <PureYStack gap="$2" jc="flex-end">
+              <Button icon={isUpdatingLocal ? null : Plus} onPress={() => savePodcast({ podcast })}>
+                {isUpdatingLocal ? <Spinner /> : <Paragraph size="$3">Add to Library</Paragraph>}
+              </Button>
+            </PureYStack>
+          ) : (
+            <Button onPress={() => removePodcast(String(podcast.appleId))} icon={isUpdatingLocal ? null : Minus}>
+              {isUpdatingLocal ? <Spinner /> : <Paragraph size="$3">Remove from Library</Paragraph>}
+            </Button>
+          )}
+        </PureYStack>
+      </PureXStack>
 
-        {podcast.description ? (
-          <YStack gap="$2">
-            <Paragraph size="$5" fontWeight="bold">
-              About
-            </Paragraph>
-            <Paragraph size="$4">{podcast.description}</Paragraph>
-          </YStack>
-        ) : null}
-      </YStack>
-      <EpisodesSection id={id} />
+      {/* Episodes Section */}
+      <PureYStack flex={1} pt="$3">
+        <EpisodesSection id={id} />
+      </PureYStack>
     </PureLayout>
   )
 }
@@ -112,11 +109,9 @@ export function EpisodesSection({ id }: { id: string }) {
   }
 
   return (
-    <PureYStack px="$3">
-      <EpisodesList
-        podcastTitle={podcast.title}
-        episodes={episodes.map((episode) => ({ ...episode, podcastId: podcast.appleId })) || []}
-      />
-    </PureYStack>
+    <EpisodesList
+      podcastTitle={podcast.title}
+      episodes={episodes.map((episode) => ({ ...episode, podcastId: podcast.appleId })) || []}
+    />
   )
 }

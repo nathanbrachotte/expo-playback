@@ -2,9 +2,22 @@ import { XMLParser } from "fast-xml-parser"
 import { z } from "zod"
 
 // true or falso or "Yes" or "No". Because why not.
-const ExplicitSchema = z
-  .union([z.boolean(), z.string().transform((val) => val === "Yes"), z.string().transform((val) => val === "No")])
-  .optional()
+const ExplicitSchema = z.any()
+// This is the normal way but some retarded podcasts send back like: ["yes", "yes"]
+// @see https://www.ivoox.com/es-patriarcalmente-hablando_fg_f1584817_filtro_1.xml?promotionalCampaign
+// .union([z.boolean(), z.string()])
+// .optional()
+// .transform((val) => {
+//   if (typeof val === "boolean") {
+//     return val
+//   }
+
+//   if (typeof val === "string") {
+//     return val.toLowerCase() === "no"
+//   }
+
+//   return false
+// })
 
 const TitleSchema = z.union([z.string(), z.number()])
 // Schema for RSS feed items (episodes)
@@ -103,10 +116,13 @@ export async function fetchRssFeed(feedUrl: string | null): Promise<RssFeed> {
   })
 
   const parsedData = parser.parse(xmlText)
+
   try {
     const validatedData = RssFeedSchema.parse(parsedData)
     return validatedData
   } catch (error) {
+    console.error("🚀 ~ fetchRssFeed ~ feedUrl:", feedUrl)
+    console.log("🚀 ~ fetchRssFeed ~ parsedData:", JSON.stringify(parsedData, null, 2))
     console.error("🚀 ~ fetchRssFeed ~ error:", error)
     throw new Error(`Failed to parse RSS feed: ${error}`)
   }
