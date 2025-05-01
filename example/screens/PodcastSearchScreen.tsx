@@ -1,6 +1,6 @@
 import { Headphones, Plus, X } from "@tamagui/lucide-icons"
 import { useState } from "react"
-import { H4, Input, Paragraph, YStack, Button, XStack, Spinner, H3 } from "tamagui"
+import { H4, Input, Paragraph, YStack, Button, XStack, Spinner, H3, useDebounce, useDebounceValue } from "tamagui"
 
 import { useSearchItunesPodcastsQuery } from "../clients/itunes.queries"
 import { useSavePodcastMutation } from "../clients/local.mutations"
@@ -21,8 +21,15 @@ const getRandomLetters = () => {
 
 export function PodcastSearchScreen() {
   const [searchQuery, setSearchQuery] = useState(getRandomLetters())
+  const [debouncedSearchQuery] = useDebounceValue(searchQuery, 1000)
 
-  const { data: searchResults, error, isLoading, refetch, isFetching } = useSearchItunesPodcastsQuery(searchQuery)
+  const {
+    data: searchResults,
+    error,
+    isLoading,
+    refetch,
+    isFetching,
+  } = useSearchItunesPodcastsQuery(debouncedSearchQuery)
 
   const isSearching = isFetching || isLoading
   const data = searchResults?.results || []
