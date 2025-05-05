@@ -9,7 +9,7 @@ import { useGetRssEpisodesQuery } from "../clients/rss.queries"
 import { CoverImage } from "../components/CoverImage"
 import { EpisodeCard } from "../components/EpisodeCard"
 import { PureLayout } from "../components/Layout"
-import { EpisodesList } from "../components/PureEpisodeList"
+import { EpisodesList } from "../components/PureEpisodeFlatList"
 import { PureXStack, PureYStack } from "../components/PureStack"
 import { ErrorSection } from "../components/Sections/Error"
 import { LoadingSection } from "../components/Sections/LoadingSection"
@@ -147,10 +147,12 @@ export function LocalEpisodesSection({ id }: { id: string }) {
 }
 
 export function RemotePodcastScreen({ id }: { id: string }) {
-  const { data, isLoading } = useGetItunesPodcastAndEpisodesQuery(id ?? null)
+  const { data, isLoading, error } = useGetItunesPodcastAndEpisodesQuery(id ?? null)
+
   const { mutateAsync: savePodcast, isPending: isSaving } = useSavePodcastMutation({
     podcastId: id,
   })
+
   const podcast = data?.podcast
   const episodes = data?.episodes
 
@@ -209,11 +211,18 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
   return (
     <EpisodesList
       podcastTitle={podcast.title}
-      episodes={episodes.map((episode) => ({ ...episode, podcastId: podcast.appleId })) || []}
+      episodes={
+        episodes.map((episode) => ({
+          ...episode,
+          //
+          podcastId: podcast.appleId,
+          duration: episode.duration || null,
+        })) || []
+      }
       renderItem={({ item }) => {
         // TODO: Use date-fns to render this correctly
         const publishedAt = formatDate(Number(item.publishedAt))
-        const duration = formatDuration(item.duration)
+        const duration = formatDuration(item.duration || 0)
 
         return (
           <EpisodeCard

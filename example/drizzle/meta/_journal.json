@@ -92,6 +92,13 @@
       "when": 1746473173259,
       "tag": "0012_special_morg",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1746477457436,
+      "tag": "0013_opposite_wendigo",
+      "breakpoints": true
     }
   ]
 }

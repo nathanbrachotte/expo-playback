@@ -47,7 +47,8 @@
     "react-native-screens": "~4.4.0",
     "react-native-svg": "^15.11.2",
     "tamagui": "1.125.31",
-    "zod": "^3.24.2"
+    "zod": "^3.24.2",
+    "expo-crypto": "~14.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -43,7 +43,7 @@ export const episodesTable = sqliteTable(
     image100: text("image_100"),
     image600: text("image_600"),
     publishedAt: integer("published_at", { mode: "timestamp" }).notNull(),
-    duration: integer("duration").notNull(),
+    duration: integer("duration"),
     shouldDownload: integer("should_download", { mode: "boolean" }).default(false),
     downloadUrl: text("download_url").notNull(),
     rssId: text("rss_id").unique(),

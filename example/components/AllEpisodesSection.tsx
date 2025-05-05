@@ -3,7 +3,7 @@ import React from "react"
 import { YStack, Paragraph } from "tamagui"
 
 import { EpisodeCard } from "./EpisodeCard"
-import { EpisodesList } from "./PureEpisodeList"
+import { EpisodesList } from "./PureEpisodeFlatList"
 import { useAllEpisodesQuery } from "../clients/local.queries"
 import { getImageFromEntity } from "../utils/image.utils"
 

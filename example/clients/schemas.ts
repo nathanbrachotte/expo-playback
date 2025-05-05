@@ -73,7 +73,7 @@ export const ToLocalEpisodeSchema = z
     shortDescription: z.string().optional(),
     trackId: z.number(),
     trackName: z.string(),
-    trackTimeMillis: z.number(),
+    trackTimeMillis: z.number().optional(),
     trackViewUrl: z.string(),
     wrapperType: z.literal("podcastEpisode").optional(),
     // Fields from single podcast response

@@ -6,6 +6,7 @@ import { extractEpisodesFromRssFeed } from "./rss.queries"
 import { PURE_TOASTS } from "../components/toasts"
 import { db, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
+import { generateRssId } from "../utils/episodes.utils"
 
 async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Omit<SharedEpisodeFields, "">[]) {
   // TODO: transaction
@@ -24,12 +25,13 @@ async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Om
       rssFeedUrl: podcast.rssFeedUrl,
     } satisfies typeof schema.podcastsTable.$inferInsert)
     .returning()
-  console.log("🚀 ~ savePodcastAndEpisodes ~ savedPodcast:", savedPodcast)
 
+  //! FIXME: What happens if two episodes have the same rssId (because of different podcasts)?
   const savedEpisodes = await db.insert(schema.episodesTable).values(
     episodes.map((episode) => {
       return {
         ...episode,
+        rssId: generateRssId(savedPodcast.id, episode.rssId),
         podcastId: savedPodcast.id,
       } satisfies typeof schema.episodesTable.$inferInsert
     }),
