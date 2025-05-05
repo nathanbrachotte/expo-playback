@@ -8,6 +8,7 @@ import { db, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
 
 async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Omit<SharedEpisodeFields, "">[]) {
+  // TODO: transaction
   const [savedPodcast] = await db
     .insert(schema.podcastsTable)
     .values({
@@ -23,15 +24,12 @@ async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Om
       rssFeedUrl: podcast.rssFeedUrl,
     } satisfies typeof schema.podcastsTable.$inferInsert)
     .returning()
+  console.log("🚀 ~ savePodcastAndEpisodes ~ savedPodcast:", savedPodcast)
 
   const savedEpisodes = await db.insert(schema.episodesTable).values(
     episodes.map((episode) => {
-      const id = Number(episode.appleId)
-      const isValidId = !isNaN(id)
-
       return {
         ...episode,
-        ...(isValidId ? { id } : {}), // If appleId is somehow not a number, use the auto-generated id
         podcastId: savedPodcast.id,
       } satisfies typeof schema.episodesTable.$inferInsert
     }),

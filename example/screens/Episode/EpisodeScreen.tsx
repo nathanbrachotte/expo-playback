@@ -8,7 +8,7 @@ import { z } from "zod"
 
 import { useGetEpisodeByIdQuery, useGetPodcastByIdQuery } from "../../clients/both.queries"
 import { useSavePodcastMutation } from "../../clients/local.mutations"
-import { getEpisodeWithPodcastById } from "../../clients/local.queries"
+import { getEpisodeWithPodcastByExternalId, getEpisodeWithPodcastById } from "../../clients/local.queries"
 import { PureLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
@@ -76,34 +76,39 @@ function EpisodeDumbScreen({
   })
 
   const downloadAndPlay = async () => {
-    const res = await getEpisodeWithPodcastById(episode.appleId)
+    // @ts-ignore ds
+    console.log("🚀 ~ downloadAndPlay ~ episode:", JSON.stringify(episode, null, 2))
+    // @ts-ignore ds
+    const res = await getEpisodeWithPodcastByExternalId(episode.id)
+    console.log("🚀 ~ downloadAndPlay ~ res:", res)
     const localEpisode = res?.episode
-    console.log("localEpisode", localEpisode, episode.appleId)
+    console.log("🚀 ~ downloadAndPlay ~ localEpisode:", localEpisode)
+
     // If episode does not exist locally, save it
-    if (localEpisode == null) {
-      const appleId = getAppleIdFromPodcast(podcast)
-      if (!appleId) {
-        throw new Error("Apple ID not found for podcast: " + JSON.stringify(podcast, null, 2))
-      }
+    // if (localEpisode == null) {
+    //   const appleId = getAppleIdFromPodcast(podcast)
+    //   if (!appleId) {
+    //     throw new Error("Apple ID not found for podcast: " + JSON.stringify(podcast, null, 2))
+    //   }
 
-      if (!podcastFromQuery) {
-        throw new Error("Podcast not found in query")
-      }
+    //   if (!podcastFromQuery) {
+    //     throw new Error("Podcast not found in query")
+    //   }
 
-      const res = await savePodcast({ podcast: podcastFromQuery })
-      // TODO: Verify this works
-      const savedEpisodeId = res?.savedEpisodes.lastInsertRowId
-      if (!savedEpisodeId) {
-        throw new Error("Something when wrong when saving the podcast: " + JSON.stringify(res, null, 2))
-      }
+    //   const res = await savePodcast({ podcast: podcastFromQuery })
+    //   // TODO: Verify this works
+    //   const savedEpisodeId = res?.savedEpisodes.lastInsertRowId
+    //   if (!savedEpisodeId) {
+    //     throw new Error("Something when wrong when saving the podcast: " + JSON.stringify(res, null, 2))
+    //   }
 
-      // TODO: Add download mechanism
-      setActiveEpisodeId(savedEpisodeId)
-      return
-    }
-    ExpoPlaybackModule.startBackgroundDownload(localEpisode.id)
+    //   // TODO: Add download mechanism
+    //   setActiveEpisodeId(savedEpisodeId)
+    //   return
+    // }
+    ExpoPlaybackModule.startBackgroundDownload(1)
     // If episode exists locally, set it as active directly
-    setActiveEpisodeId(localEpisode.id)
+    // setActiveEpisodeId(1)
   }
 
   const goToPodcast = () => {
@@ -154,6 +159,7 @@ function EpisodeDumbScreen({
 export function EpisodeScreen() {
   const route = useRoute<EpisodeScreenRouteProp>()
   const { episodeId, podcastId } = route.params
+  console.log("🚀 ~ EpisodeScreen ~ episodeId:", episodeId)
   const { podcast } = useGetPodcastByIdQuery(podcastId)
   const { episode, isLoading, isLocal } = useGetEpisodeByIdQuery({ episodeId, feedUrl: podcast?.rssFeedUrl || null })
 

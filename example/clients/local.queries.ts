@@ -40,6 +40,20 @@ export function useGetLocalPodcastQuery(id: string | null) {
   })
 }
 
+export const episodeWithPodcastByAppleIdDbQuery = (appleId: string | null) =>
+  db
+    .select({
+      episode: {
+        ...episodesTable,
+      },
+      podcast: {
+        ...podcastsTable,
+      },
+    })
+    .from(episodesTable)
+    .where(sql`${episodesTable.appleId} = ${appleId}`)
+    .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
+
 export const episodeWithPodcastByIdDbQuery = (id: string | null) =>
   db
     .select({
@@ -53,6 +67,20 @@ export const episodeWithPodcastByIdDbQuery = (id: string | null) =>
     .from(episodesTable)
     .where(sql`${episodesTable.id} = ${id}`)
     .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
+
+export async function getEpisodeWithPodcastByExternalId(id: string | null) {
+  if (!id) {
+    return null
+  }
+
+  const res = await episodeWithPodcastByIdDbQuery(id)
+
+  if (res.length !== 1) {
+    return null
+  }
+
+  return res[0]
+}
 
 export async function getEpisodeWithPodcastById(id: string | null) {
   if (!id) {
