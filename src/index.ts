@@ -7,13 +7,8 @@ import ExpoPlaybackModule, {
 
 export { SkipSegment, PlaybackStatus, SkipSegmentEvent }
 
-export function initializePlayer(url: string, segments: SkipSegment[]): Promise<void> {
-  if (typeof url !== "string") throw new Error("A non-string was passed as URL - get your shit together m8!")
-  return ExpoPlaybackModule.initializePlayer(url, segments)
-}
-
-export function play(): Promise<void> {
-  return ExpoPlaybackModule.play()
+export function play(episodeId: number): Promise<void> {
+  return ExpoPlaybackModule.play(episodeId)
 }
 
 export function pause(): Promise<void> {
@@ -22,10 +17,6 @@ export function pause(): Promise<void> {
 
 export function seekTo(position: number): Promise<void> {
   return ExpoPlaybackModule.seekTo(position)
-}
-
-export function updateSkipSegments(segments: SkipSegment[]): void {
-  return ExpoPlaybackModule.updateSkipSegments(segments)
 }
 
 export function startBackgroundDownload(episodeId: number): void {

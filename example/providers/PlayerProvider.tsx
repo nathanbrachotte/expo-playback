@@ -64,11 +64,6 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
         await FileSystem.downloadAsync(url, localAudioFile)
         // setAudioFile(localAudioFile)
 
-        // Initialize player
-        // ExpoPlayback.initializePlayer(localAudioFile, skipSegments)
-        // TODO: Add skip segments from backend here
-        ExpoPlayback.initializePlayer(localAudioFile, [])
-
         // Listen for playback status updates
         const statusSubscription = ExpoPlayback.addPlaybackStatusListener((status) => {
           setIsPlaying(status.isPlaying)

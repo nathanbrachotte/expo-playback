@@ -1,5 +1,7 @@
 import { useNavigation, useRoute, useNavigationState } from "@react-navigation/native"
 import { ArrowBigRight, Download, Play, Share } from "@tamagui/lucide-icons"
+import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
+import { useCallback } from "react"
 import { Image, useWindowDimensions } from "react-native"
 import RenderHtml from "react-native-render-html"
 import { H4, Paragraph, YStack, XStack, Button, useTheme, H3 } from "tamagui"
@@ -59,7 +61,7 @@ function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcas
     return result.success && result.data.params.id === (podcast.id?.toString() || podcast.appleId?.toString())
   })
 
-  const downloadAndPlay = async () => {
+  const handlePlay = useCallback(async () => {
     // @ts-ignore ds
     console.log("🚀 ~ downloadAndPlay ~ episode:", JSON.stringify(episode, null, 2))
     // @ts-ignore ds
@@ -90,11 +92,14 @@ function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcas
     //   setActiveEpisodeId(savedEpisodeId)
     //   return
     // }
-
-    // ExpoPlaybackModule.startBackgroundDownload(1)
+    ExpoPlaybackModule.play(1)
     // If episode exists locally, set it as active directly
     // setActiveEpisodeId(1)
-  }
+  }, [episode])
+
+  const handleDownload = useCallback(() => {
+    ExpoPlaybackModule.startBackgroundDownload(1)
+  }, [episode])
 
   const goToPodcast = () => {
     navigation.navigate("Podcast", {
@@ -129,8 +134,8 @@ function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcas
       </PureYStack>
       <PureYStack gap="$2" centered>
         <PureXStack gap="$2" centered>
-          <Button icon={Download} />
-          <Button icon={Play} onPress={downloadAndPlay} />
+          <Button icon={Download} onPress={handleDownload} />
+          <Button icon={Play} onPress={handlePlay} />
           <Button icon={Share} />
         </PureXStack>
         {!isPodcastScreenInStack && (

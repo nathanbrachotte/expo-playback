@@ -5,7 +5,10 @@ struct Episode {
     let podcastId: Int64
     let title: String
     let description: String
-    let image: String?
+    let image30: String?
+    let image60: String?
+    let image100: String?
+    let image600: String?
     let publishedAt: Int64
     let shouldDownload: Bool
     let downloadUrl: String
@@ -20,7 +23,10 @@ class EpisodeRepository {
     private let podcastId = Expression<Int64>("podcast_id")
     private let title = Expression<String>("title")
     private let description = Expression<String>("description")
-    private let image = Expression<String?>("image")
+    private let image30 = Expression<String?>("image_30")
+    private let image60 = Expression<String?>("image_60")
+    private let image100 = Expression<String?>("image_100")
+    private let image600 = Expression<String?>("image_600")
     private let publishedAt = Expression<Int64>("published_at")
     private let shouldDownload = Expression<Bool>("should_download")
     private let downloadUrl = Expression<String>("download_url")
@@ -37,7 +43,10 @@ class EpisodeRepository {
                     podcastId: row[podcastId],
                     title: row[title],
                     description: row[description],
-                    image: row[image],
+                    image30: row[image30],
+                    image60: row[image60],
+                    image100: row[image100],
+                    image600: row[image600],
                     publishedAt: row[publishedAt],
                     shouldDownload: row[shouldDownload],
                     downloadUrl: row[downloadUrl],
@@ -64,7 +73,10 @@ class EpisodeRepository {
                     podcastId: row[podcastId],
                     title: row[title],
                     description: row[description],
-                    image: row[image],
+                    image30: row[image30],
+                    image60: row[image60],
+                    image100: row[image100],
+                    image600: row[image600],
                     publishedAt: row[publishedAt],
                     shouldDownload: row[shouldDownload],
                     downloadUrl: row[downloadUrl],
@@ -89,7 +101,10 @@ class EpisodeRepository {
                     podcastId: row[podcastId],
                     title: row[title],
                     description: row[description],
-                    image: row[image],
+                    image30: row[image30],
+                    image60: row[image60],
+                    image100: row[image100],
+                    image600: row[image600],
                     publishedAt: row[publishedAt],
                     shouldDownload: row[shouldDownload],
                     downloadUrl: row[downloadUrl],

@@ -32,37 +32,44 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
         print(episodeId)
         print(location)
         
+        let episode = episodeRepo.getEpisodeById(episodeIdValue: episodeId)
+        
         do {
-            
             let documentsURL = try FileManager.default.url(for: .documentDirectory,
                                                            in: .userDomainMask,
                                                            appropriateFor: nil,
                                                            create: false)
-            let savedURL = documentsURL.appendingPathComponent(
-                location.lastPathComponent)
+            
+            // Generate a random filename
+            let randomString = UUID().uuidString
+            let fileExtension = URL(string: episode!.downloadUrl)?.pathExtension ?? "mp3"
+            let savedURL = documentsURL.appendingPathComponent("\(randomString).\(fileExtension)")
             
             do {
                 try FileManager.default.moveItem(at: location, to: savedURL)
+                
+                // Get the actual file size after moving
+                let fileAttributes = try FileManager.default.attributesOfItem(atPath: savedURL.path)
+                let fileSize = fileAttributes[.size] as? Int64 ?? 0
+                
+                // Update episode metadata with new file location and state
+                self.metadataRepo.createOrUpdateMetadata(
+                    EpisodeMetadata(
+                        episodeId: episodeId,
+                        playback: 0,
+                        isFinished: false,
+                        downloadProgress: 100,
+                        fileSize: fileSize,
+                        filePath: savedURL.absoluteString
+                    )
+                )
             } catch {
                 // handle filesystem error
             }
-            
-            // Update episode metadata with new file location and state
-            self.metadataRepo.createOrUpdateMetadata(
-                EpisodeMetadata(
-                    episodeId: episodeId,
-                    playback: 0,
-                    isFinished: false,
-                    downloadProgress: 100,
-                    fileSize: 1337,
-                    filePath: savedURL.absoluteString
-                )
-            )
         } catch let error {
             print(error)
             return
         }
-        
     }
     
     public func urlSession(_ session: URLSession,
@@ -73,9 +80,7 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
         
         let calculatedProgress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
         print(NSNumber(value: calculatedProgress))
-        
     }
-    
     
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if let error = error {
