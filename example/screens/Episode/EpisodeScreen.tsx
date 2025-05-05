@@ -129,7 +129,7 @@ function EpisodeDumbScreen({
         </XStack>
         <YStack flex={1}>
           <Paragraph px="$3" size="$8" fontWeight="bold">
-            {episode.title} - {episode.podcastId} - {episode.appleId}
+            {episode.title} - {episode.podcastId} - {episode.rssId}
           </Paragraph>
           <Paragraph px="$3">
             <Paragraph fontWeight="bold">Release Date:</Paragraph> {new Date(episode.publishedAt).toLocaleDateString()}

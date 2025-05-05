@@ -150,7 +150,7 @@ export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
     description: data.description || "",
     shouldDownload: false,
     //!!!!!!!!! CHECK CHANGE THIS TO RSS ID
-    appleId: typeof data.guid === "string" ? data.guid : data.guid?.["#text"] || null,
+    rssId: typeof data.guid === "string" ? data.guid : data.guid?.["#text"] || null,
     // `podcastId` is not part of the RSS response
   } satisfies Omit<SharedEpisodeFields, "id" | "podcastId">
 })

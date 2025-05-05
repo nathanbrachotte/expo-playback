@@ -61,20 +61,6 @@ export function useGetLocalEpisodesByPodcastIdQuery(podcastId: string | null) {
   })
 }
 
-export const episodeWithPodcastByAppleIdDbQuery = (appleId: string | null) =>
-  db
-    .select({
-      episode: {
-        ...episodesTable,
-      },
-      podcast: {
-        ...podcastsTable,
-      },
-    })
-    .from(episodesTable)
-    .where(sql`${episodesTable.appleId} = ${appleId}`)
-    .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
-
 export const episodeWithPodcastByIdDbQuery = (id: string | null) =>
   db
     .select({

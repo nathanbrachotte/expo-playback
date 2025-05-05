@@ -135,7 +135,7 @@ function SearchResultCard({
           <Button
             circular
             icon={isSaving ? () => <Spinner /> : () => <Plus size={16} />}
-            onPress={() => savePodcast({ podcast: entry })}
+            onPress={() => savePodcast({ podcast: { ...entry, isFollowed: false } })}
             disabled={isSaving}
           />
         </PureYStack>

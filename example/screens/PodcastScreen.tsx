@@ -7,6 +7,7 @@ import { useRemovePodcastMutation, useSavePodcastMutation } from "../clients/loc
 import { useGetLocalEpisodesByPodcastIdQuery, useGetLocalPodcastQuery } from "../clients/local.queries"
 import { useGetRssEpisodesQuery } from "../clients/rss.queries"
 import { CoverImage } from "../components/CoverImage"
+import { EpisodeCard } from "../components/EpisodeCard"
 import { PureLayout } from "../components/Layout"
 import { EpisodesList } from "../components/PureEpisodeList"
 import { PureXStack, PureYStack } from "../components/PureStack"
@@ -14,7 +15,6 @@ import { ErrorSection } from "../components/Sections/Error"
 import { LoadingSection } from "../components/Sections/LoadingSection"
 import { PodcastScreenRouteProp } from "../types/navigation.types"
 import { DEVICE_WIDTH } from "../utils/constants"
-import { EpisodeCard } from "../components/EpisodeCard"
 import { getImageFromEntity } from "../utils/image.utils"
 
 // TODO: Fix this shit

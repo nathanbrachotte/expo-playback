@@ -26,7 +26,7 @@ export function useGetRssEpisodeQuery({ feedUrl, episodeId }: { feedUrl: string 
     queryKey: ["rssEpisode", feedUrl, episodeId],
     queryFn: () => fetchRssFeed(feedUrl),
     select: (data: RssFeed) => {
-      const episode = extractEpisodesFromRssFeed(data).find((episode) => episode.appleId === episodeId)
+      const episode = extractEpisodesFromRssFeed(data).find((episode) => episode.rssId === episodeId)
 
       if (!episode) {
         return null

@@ -7,7 +7,7 @@ import { usePlayerContext } from "../../providers/PlayerProvider"
 import { DEVICE_WIDTH } from "../../utils/constants"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { PureYStack } from "../PureStack"
-import { CoverImage } from "../CoverImage"
+import { CoverImage, FULL_PLAYER_IMAGE_SIZE } from "../CoverImage"
 
 export const PLAYER_HEIGHT = 100
 
@@ -71,7 +71,7 @@ function PlayerSheet({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: 
             max={100}
             step={1}
             onValueChange={() => {}}
-            w={PLAYER_IMAGE_SIZE}
+            w={FULL_PLAYER_IMAGE_SIZE}
           >
             <Slider.Track w="$full">
               <Slider.TrackActive />
