@@ -7,6 +7,7 @@ Expo Module to handle audio playback from native
 ```shell
 npx expo install <lib>
 npm run ios
+npm db:generate
 cd ios && pod install && cd .. # install pods
 ```
 

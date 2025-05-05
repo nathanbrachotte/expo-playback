@@ -44,6 +44,7 @@ export const ToLocalPodcastSchema = z
         description: "",
         //? id should be added manually when needed. Or should it?
         rssFeedUrl: data.feedUrl || null,
+        isFollowed: false,
       }) satisfies Omit<SharedPodcastFields, "id">,
   )
 
@@ -117,7 +118,7 @@ export const ToLocalEpisodeSchema = z
         shouldDownload: false,
         downloadUrl: episodeUrl || "",
         podcastId: collectionId,
-        appleId: trackId.toString(),
+        rssId: trackId.toString(),
       } satisfies Omit<SharedEpisodeFields, "id">
     },
   )
@@ -148,6 +149,7 @@ export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
     image600: null,
     description: data.description || "",
     shouldDownload: false,
+    //!!!!!!!!! CHECK CHANGE THIS TO RSS ID
     appleId: typeof data.guid === "string" ? data.guid : data.guid?.["#text"] || null,
     // `podcastId` is not part of the RSS response
   } satisfies Omit<SharedEpisodeFields, "id" | "podcastId">

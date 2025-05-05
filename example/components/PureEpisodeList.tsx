@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native"
 import React from "react"
-import { FlatList } from "react-native"
+import { FlatList, ListRenderItem } from "react-native"
 import { z } from "zod"
 
 import { EpisodeCard } from "./EpisodeCard"
@@ -37,35 +37,22 @@ const uniqueKeySchema = z
       epi.id?.toString() || epi.appleId?.toString() || epi.publishedAt?.getDate().toString() || "BIG BIG TROUBLE",
   }))
 
-export function EpisodesList({ episodes, podcastTitle }: { episodes: SharedEpisodeFields[]; podcastTitle: string }) {
+export function EpisodesList({
+  episodes,
+  podcastTitle,
+  renderItem,
+}: {
+  episodes: SharedEpisodeFields[]
+  podcastTitle: string
+  renderItem: ListRenderItem<SharedEpisodeFields>
+}) {
   const navigation = useNavigation()
 
   return (
     <FlatList
       data={episodes}
       keyExtractor={(item) => uniqueKeySchema.parse(item).uniqueKey}
-      renderItem={({ item }) => {
-        // TODO: Use date-fns to render this correctly
-        const publishedAt = formatDate(Number(item.publishedAt))
-        const duration = formatDuration(item.duration)
-
-        return (
-          <EpisodeCard
-            title={item.title}
-            subtitle={item.description}
-            image={getImageFromEntity(item, "100")}
-            extraInfo={`${publishedAt} • ${duration}`}
-            podcastTitle={podcastTitle}
-            onPress={() => {
-              if (!item.appleId) {
-                throw new Error("Found episode without an appleId")
-              }
-
-              navigation.navigate("Episode", { episodeId: item.appleId, podcastId: String(item.podcastId) })
-            }}
-          />
-        )
-      }}
+      renderItem={renderItem}
       // ListHeaderComponent={}
       ListFooterComponent={
         // !FIXME: Why is this needed?

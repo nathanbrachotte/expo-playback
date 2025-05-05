@@ -1,24 +1,38 @@
-import { useRoute } from "@react-navigation/native"
-import { Minus } from "@tamagui/lucide-icons"
-import { H4, Paragraph, YStack, XStack, Spinner, Button, H2 } from "tamagui"
+import { useNavigation, useRoute } from "@react-navigation/native"
+import { Minus, Plus } from "@tamagui/lucide-icons"
+import { H4, Paragraph, Spinner, Button } from "tamagui"
 
-import { useGetPodcastByIdQuery } from "../clients/both.queries"
+import { useGetItunesPodcastAndEpisodesQuery } from "../clients/itunes.queries"
 import { useRemovePodcastMutation, useSavePodcastMutation } from "../clients/local.mutations"
+import { useGetLocalEpisodesByPodcastIdQuery, useGetLocalPodcastQuery } from "../clients/local.queries"
 import { useGetRssEpisodesQuery } from "../clients/rss.queries"
 import { CoverImage } from "../components/CoverImage"
 import { PureLayout } from "../components/Layout"
 import { EpisodesList } from "../components/PureEpisodeList"
 import { PureXStack, PureYStack } from "../components/PureStack"
 import { ErrorSection } from "../components/Sections/Error"
-import { Plus } from "@tamagui/lucide-icons"
 import { LoadingSection } from "../components/Sections/LoadingSection"
 import { PodcastScreenRouteProp } from "../types/navigation.types"
 import { DEVICE_WIDTH } from "../utils/constants"
+import { EpisodeCard } from "../components/EpisodeCard"
+import { getImageFromEntity } from "../utils/image.utils"
 
-function usePodcastTrackCount(podcast: { rssFeedUrl: string | null } | undefined) {
-  const { data: episodes, error: fetchedEpisodesError, isLoading } = useGetRssEpisodesQuery(podcast?.rssFeedUrl || null)
+// TODO: Fix this shit
+const formatDuration = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
 
-  return episodes?.length || 0
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+}
+
+// TODO: Fix this shit
+const formatDate = (timestamp: number) => {
+  const date = new Date(timestamp)
+  const month = date.toLocaleString("default", { month: "short" })
+  const day = date.getDate()
+  const year = date.getFullYear()
+
+  return `${month} ${day}, ${year}`
 }
 
 export function PodcastScreen() {
@@ -26,33 +40,127 @@ export function PodcastScreen() {
 
   const { id } = route.params
 
-  const { podcast, isLoading, isLocal } = useGetPodcastByIdQuery(id ?? null)
-  const trackCount = usePodcastTrackCount(podcast)
-  const { mutateAsync: savePodcast, isPending: isSaving } = useSavePodcastMutation({
-    podcastId: id ?? "unknown",
-  })
-  const { mutateAsync: removePodcast, isPending: isRemoving } = useRemovePodcastMutation()
+  const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(id ?? null)
+
+  if (isLocalLoading) {
+    return <LoadingSection />
+  }
 
   if (!id) {
     return <ErrorSection />
   }
 
-  if (isLoading) {
+  if (localPodcast && !isLocalLoading) {
+    return <LocalPodcastScreen id={id} />
+  }
+
+  return <RemotePodcastScreen id={id} />
+}
+
+// TODO: Use the local episodes query
+function usePodcastTrackCount(podcast: { rssFeedUrl: string | null } | undefined) {
+  const { data: episodes, error: fetchedEpisodesError, isLoading } = useGetRssEpisodesQuery(podcast?.rssFeedUrl || null)
+
+  return episodes?.length || 0
+}
+
+export function LocalPodcastScreen({ id }: { id: string }) {
+  const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(id)
+  const { data: localEpisodes, isLoading: isLocalEpisodesLoading } = useGetLocalEpisodesByPodcastIdQuery(id)
+
+  const { mutateAsync: removePodcast, isPending: isRemoving } = useRemovePodcastMutation()
+
+  if (isLocalLoading || !localPodcast) {
     return <LoadingSection />
   }
 
-  if (!podcast) {
+  return (
+    <PureLayout>
+      {/* About Section */}
+      <PureXStack px="$3" centered gap="$3">
+        <PureYStack>
+          <CoverImage entity={localPodcast} size={DEVICE_WIDTH * 0.4} />
+        </PureYStack>
+        <PureYStack flex={1}>
+          <PureYStack flex={1} jc="flex-start" ai="flex-start">
+            <H4 textAlign="center" numberOfLines={2}>
+              {localPodcast.title}
+            </H4>
+            <Paragraph size="$4">Author(s): {localPodcast.author}</Paragraph>
+            <Paragraph size="$4">Episodes: {localEpisodes?.length}</Paragraph>
+          </PureYStack>
+          <Button onPress={() => removePodcast(String(localPodcast.appleId))} icon={isRemoving ? null : Minus}>
+            {isRemoving ? <Spinner /> : <Paragraph size="$3">Remove from Library</Paragraph>}
+          </Button>
+        </PureYStack>
+      </PureXStack>
+
+      {/* Episodes Section */}
+      <PureYStack flex={1} pt="$3">
+        <LocalEpisodesSection id={id} />
+      </PureYStack>
+    </PureLayout>
+  )
+}
+
+export function LocalEpisodesSection({ id }: { id: string }) {
+  const navigation = useNavigation()
+  const { data: localPodcast, isLoading: isLocalPodcastLoading } = useGetLocalPodcastQuery(id)
+  const { data: localEpisodes, isLoading: isLocalEpisodesLoading } = useGetLocalEpisodesByPodcastIdQuery(id)
+
+  if (isLocalEpisodesLoading || isLocalPodcastLoading || !localEpisodes || !localPodcast) {
     return (
-      <PureLayout header={<H4>Podcast</H4>}>
-        <Paragraph>Podcast not found</Paragraph>
-      </PureLayout>
+      <PureYStack centered flex={1}>
+        <Spinner />
+      </PureYStack>
     )
   }
 
-  const isUpdatingLocal = isSaving || isRemoving
-  console.log("🚀 ~ PodcastScreen ~ isRemoving:", isRemoving)
-  console.log("🚀 ~ PodcastScreen ~ isSaving:", isSaving)
-  console.log("🚀 ~ PodcastScreen ~ isUpdatingLocal:", isUpdatingLocal)
+  return (
+    <EpisodesList
+      podcastTitle={localPodcast.title}
+      episodes={localEpisodes.map((episode) => ({ ...episode, podcastId: localPodcast.appleId })) || []}
+      renderItem={({ item }) => {
+        // TODO: Use date-fns to render this correctly
+        const publishedAt = formatDate(Number(item.publishedAt))
+        const duration = formatDuration(item.duration)
+
+        return (
+          <EpisodeCard
+            title={item.title}
+            subtitle={item.description}
+            image={getImageFromEntity(item, "100")}
+            extraInfo={`${publishedAt} • ${duration}`}
+            podcastTitle={localPodcast.title}
+            onPress={() => {
+              if (!item.rssId) {
+                throw new Error("Found episode without an rssId")
+              }
+
+              navigation.navigate("Episode", { episodeId: item.rssId, podcastId: String(item.podcastId) })
+            }}
+          />
+        )
+      }}
+    />
+  )
+}
+
+export function RemotePodcastScreen({ id }: { id: string }) {
+  const { data, isLoading } = useGetItunesPodcastAndEpisodesQuery(id ?? null)
+  const { mutateAsync: savePodcast, isPending: isSaving } = useSavePodcastMutation({
+    podcastId: id,
+  })
+  const podcast = data?.podcast
+  const episodes = data?.episodes
+
+  // const trackCount = usePodcastTrackCount(podcast)
+
+  const isUpdatingLocal = isSaving || isSaving
+
+  if (isLoading || !podcast || !episodes) {
+    return <LoadingSection />
+  }
 
   return (
     <PureLayout>
@@ -67,35 +175,30 @@ export function PodcastScreen() {
               {podcast.title}
             </H4>
             <Paragraph size="$4">Author(s): {podcast.author}</Paragraph>
-            <Paragraph size="$4">Episodes: {trackCount}</Paragraph>
+            {/* <Paragraph size="$4">Episodes: {trackCount}</Paragraph> */}
           </PureYStack>
-          {!isLocal ? (
-            <PureYStack gap="$2" jc="flex-end">
-              <Button icon={isUpdatingLocal ? null : Plus} onPress={() => savePodcast({ podcast })}>
-                {isUpdatingLocal ? <Spinner /> : <Paragraph size="$3">Add to Library</Paragraph>}
-              </Button>
-            </PureYStack>
-          ) : (
-            <Button onPress={() => removePodcast(String(podcast.appleId))} icon={isUpdatingLocal ? null : Minus}>
-              {isUpdatingLocal ? <Spinner /> : <Paragraph size="$3">Remove from Library</Paragraph>}
+          <PureYStack gap="$2" jc="flex-end">
+            <Button icon={isUpdatingLocal ? null : Plus} onPress={() => savePodcast({ podcast })}>
+              {isUpdatingLocal ? <Spinner /> : <Paragraph size="$3">Add to Library</Paragraph>}
             </Button>
-          )}
+          </PureYStack>
         </PureYStack>
       </PureXStack>
 
       {/* Episodes Section */}
       <PureYStack flex={1} pt="$3">
-        <EpisodesSection id={id} />
+        <RemoteEpisodesSection id={id} />
       </PureYStack>
     </PureLayout>
   )
 }
 
-export function EpisodesSection({ id }: { id: string }) {
-  const { podcast } = useGetPodcastByIdQuery(id)
-  const { data: episodes, error: fetchedEpisodesError, isLoading } = useGetRssEpisodesQuery(podcast?.rssFeedUrl || null)
+export function RemoteEpisodesSection({ id }: { id: string }) {
+  const { data, isLoading } = useGetItunesPodcastAndEpisodesQuery(id)
+  const podcast = data?.podcast
+  const episodes = data?.episodes
 
-  if (isLoading || !podcast) {
+  if (isLoading || !podcast || !episodes) {
     return (
       <PureYStack centered flex={1}>
         <Spinner />
@@ -103,15 +206,28 @@ export function EpisodesSection({ id }: { id: string }) {
     )
   }
 
-  if (!episodes || fetchedEpisodesError) {
-    console.error(fetchedEpisodesError)
-    return <ErrorSection />
-  }
-
   return (
     <EpisodesList
       podcastTitle={podcast.title}
       episodes={episodes.map((episode) => ({ ...episode, podcastId: podcast.appleId })) || []}
+      renderItem={({ item }) => {
+        // TODO: Use date-fns to render this correctly
+        const publishedAt = formatDate(Number(item.publishedAt))
+        const duration = formatDuration(item.duration)
+
+        return (
+          <EpisodeCard
+            title={item.title}
+            subtitle={item.description}
+            image={getImageFromEntity(item, "100")}
+            extraInfo={`${publishedAt} • ${duration}`}
+            podcastTitle={podcast.title}
+            cardProps={{
+              opacity: 0.5,
+            }}
+          />
+        )
+      }}
     />
   )
 }

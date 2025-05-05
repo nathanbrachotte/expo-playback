@@ -1,5 +1,5 @@
 import React from "react"
-import { YStack, Paragraph, Image, XStack, Card, H5 } from "tamagui"
+import { YStack, Paragraph, Image, XStack, Card, H5, CardProps } from "tamagui"
 
 import { Optional } from "../utils/types.utils"
 
@@ -9,10 +9,19 @@ export type EpisodeCardProps = {
   image: Optional<string>
   extraInfo: Optional<string>
   podcastTitle: Optional<string>
-  onPress: VoidFunction
+  onPress?: VoidFunction
+  cardProps?: CardProps
 }
 
-export const EpisodeCard = ({ title, subtitle, image, extraInfo, podcastTitle, onPress }: EpisodeCardProps) => {
+export const EpisodeCard = ({
+  title,
+  subtitle,
+  image,
+  extraInfo,
+  podcastTitle,
+  onPress,
+  cardProps,
+}: EpisodeCardProps) => {
   return (
     <Card
       bordered
@@ -26,6 +35,7 @@ export const EpisodeCard = ({ title, subtitle, image, extraInfo, podcastTitle, o
       onPress={onPress}
       gap="$3"
       flexDirection="row"
+      {...cardProps}
     >
       {image && <Image source={{ uri: image }} style={{ width: 70, height: 70, borderRadius: 4 }} />}
       <YStack flex={1}>

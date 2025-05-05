@@ -40,6 +40,27 @@ export function useGetLocalPodcastQuery(id: string | null) {
   })
 }
 
+async function getEpisodesByPodcastId(podcastId: string | null) {
+  if (!podcastId) {
+    return null
+  }
+
+  const res = await db
+    .select()
+    .from(schema.episodesTable)
+    .where(sql`${episodesTable.podcastId} = ${podcastId}`)
+
+  return res
+}
+
+export function useGetLocalEpisodesByPodcastIdQuery(podcastId: string | null) {
+  return useQuery({
+    queryKey: ["savedEpisodes", podcastId],
+    queryFn: () => getEpisodesByPodcastId(podcastId),
+    enabled: !!podcastId,
+  })
+}
+
 export const episodeWithPodcastByAppleIdDbQuery = (appleId: string | null) =>
   db
     .select({
