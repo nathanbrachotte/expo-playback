@@ -45,7 +45,10 @@ export const ToLocalPodcastSchema = z
         //? id should be added manually when needed. Or should it?
         rssFeedUrl: data.feedUrl || null,
         isFollowed: false,
-      }) satisfies Omit<SharedPodcastFields, "id">,
+        extraInfo: {
+          episodeCount: data.trackCount,
+        },
+      }) satisfies Omit<SharedPodcastFields, "id"> & { extraInfo: { episodeCount: number } },
   )
 
 export const ToLocalEpisodeSchema = z

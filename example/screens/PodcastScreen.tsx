@@ -21,11 +21,11 @@ import { formatDate, formatDuration } from "../utils/time.utils"
 
 function AboutSection({
   podcast,
-  episodes,
+  episodeCount,
   ActionSection,
 }: {
   podcast: SharedPodcastFields
-  episodes: SharedEpisodeFields[]
+  episodeCount: number
   ActionSection: React.ReactNode
 }) {
   return (
@@ -39,7 +39,7 @@ function AboutSection({
             {podcast.title}
           </H4>
           <Paragraph size="$4">Author(s): {podcast.author}</Paragraph>
-          <Paragraph size="$4">Episodes: {episodes.length}</Paragraph>
+          <Paragraph size="$4">Episodes: {episodeCount}</Paragraph>
         </PureYStack>
         {ActionSection}
       </PureYStack>
@@ -106,13 +106,6 @@ export function PodcastScreen() {
   return <RemotePodcastScreen id={id} />
 }
 
-// TODO: Use the local episodes query
-function usePodcastTrackCount(podcast: { rssFeedUrl: string | null } | undefined) {
-  const { data: episodes, error: fetchedEpisodesError, isLoading } = useGetRssEpisodesQuery(podcast?.rssFeedUrl || null)
-
-  return episodes?.length || 0
-}
-
 export function LocalPodcastScreen({ id }: { id: string }) {
   const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(id)
   const { data: localEpisodes, isLoading: isLocalEpisodesLoading } = useGetLocalEpisodesByPodcastIdQuery(id)
@@ -128,7 +121,7 @@ export function LocalPodcastScreen({ id }: { id: string }) {
       {/* About Section */}
       <AboutSection
         podcast={localPodcast}
-        episodes={localEpisodes || []}
+        episodeCount={localEpisodes?.length || 0}
         ActionSection={
           <Button onPress={() => removePodcast(String(localPodcast.appleId))} icon={isRemoving ? null : Minus}>
             {isRemoving ? <Spinner /> : <Paragraph size="$3">Remove from Library</Paragraph>}
@@ -158,6 +151,9 @@ export function LocalEpisodesSection({ id }: { id: string }) {
 
   return (
     <FlatList
+      contentContainerStyle={{
+        paddingHorizontal: 14,
+      }}
       data={localEpisodes.map((episode) => ({ ...episode, podcastId: localPodcast.appleId }))}
       renderItem={({ item }) => {
         return (
@@ -207,7 +203,7 @@ export function RemotePodcastScreen({ id }: { id: string }) {
       {/* About Section */}
       <AboutSection
         podcast={podcast}
-        episodes={episodes}
+        episodeCount={podcast.extraInfo.episodeCount}
         ActionSection={
           <Button icon={isUpdatingLocal ? null : Plus} onPress={() => savePodcast({ podcast })}>
             {isUpdatingLocal ? <Spinner /> : <Paragraph size="$3">Add to Library</Paragraph>}
@@ -239,6 +235,9 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
 
   return (
     <FlatList
+      contentContainerStyle={{
+        paddingHorizontal: 14,
+      }}
       data={episodesWithPodcastId}
       renderItem={({ item }) => {
         return (
