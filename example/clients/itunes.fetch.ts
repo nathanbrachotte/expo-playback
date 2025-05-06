@@ -42,7 +42,7 @@ export async function searchPodcast(query: string | null) {
     resultCount: data.resultCount,
     results: data.results
       .map((item) => {
-        console.log("🚀 ~ results:data.results.map ~ item:", JSON.stringify(item, null, 2))
+        // console.log("🚀 ~ results:data.results.map ~ item:", JSON.stringify(item, null, 2))
         const parsed = ToLocalPodcastSchema.safeParse(item)
 
         // Used to detect unexpected shape

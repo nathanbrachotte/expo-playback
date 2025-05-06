@@ -5,10 +5,10 @@ import { Optional } from "../utils/types.utils"
 
 export type EpisodeCardProps = {
   title: string
-  subtitle: Optional<string>
+  subtitle?: Optional<string>
   image: Optional<string>
-  extraInfo: Optional<string>
-  podcastTitle: Optional<string>
+  extraInfo?: Optional<string>
+  podcastTitle?: Optional<string>
   onPress?: VoidFunction
   cardProps?: CardProps
 }

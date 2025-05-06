@@ -6,6 +6,8 @@ import { EpisodeCard } from "./EpisodeCard"
 import { EpisodesList } from "./PureEpisodeFlatList"
 import { useAllEpisodesQuery } from "../clients/local.queries"
 import { getImageFromEntity } from "../utils/image.utils"
+import { FlatList } from "react-native"
+import { BooleanFilter } from "../utils/types.utils"
 
 // TODO: Fix this shit
 const formatDuration = (seconds: number) => {
@@ -44,13 +46,12 @@ export function AllEpisodesList() {
   }
 
   return (
-    <EpisodesList
-      podcastTitle={episodesWithPodcasts[0].podcast.title}
-      episodes={episodesWithPodcasts.map((episode) => episode.episode) ?? []}
+    <FlatList
+      data={episodesWithPodcasts.map((episode) => episode.episode) ?? []}
       renderItem={({ item }) => {
         // TODO: Use date-fns to render this correctly
         const publishedAt = formatDate(Number(item.publishedAt))
-        const duration = formatDuration(item.duration)
+        const duration = formatDuration(item.duration || 0)
 
         return (
           <EpisodeCard

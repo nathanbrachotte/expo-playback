@@ -49,6 +49,7 @@ export function useSavePodcastMutation({ podcastId }: { podcastId: string }) {
     mutationKey: ["savePodcast", podcastId],
     mutationFn: async ({ podcast }: { podcast: SharedPodcastFields }) => {
       const res = await fetchRssFeed(podcast.rssFeedUrl)
+      console.log("🚀 ~ mutationFn: ~ res:", JSON.stringify(res, null, 2))
       const rssEpisodes = extractEpisodesFromRssFeed(res).map((episode) => ({
         ...episode,
         podcastId: podcast.appleId,
@@ -57,7 +58,7 @@ export function useSavePodcastMutation({ podcastId }: { podcastId: string }) {
       return await savePodcastAndEpisodes(podcast, rssEpisodes)
     },
     onError: (err) => {
-      console.error("Failed to save podcast:", err)
+      console.error("Failed to save podcast:", podcastId, err)
       PURE_TOASTS.error({ message: "Failed to Save" })
     },
     onSuccess: ({ savedPodcast, savedEpisodes }) => {

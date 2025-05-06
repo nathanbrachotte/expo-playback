@@ -18,7 +18,7 @@ import { PlayerProvider } from "./providers/PlayerProvider"
 // import config from "./tamagui.config"
 import { tamaguiConfig } from "./tamagui.config"
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({})
 
 const ToastProvider = () => {
   const insets = useSafeAreaInsets()

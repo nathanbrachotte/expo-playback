@@ -18,6 +18,10 @@ export const uniqueKeySchema = z
       episode.publishedAt?.toISOString() || episode.appleId?.toString() || episode.id?.toString() || "BIG BIG TROUBLE",
   }))
 
+export function DefaultListFooterComponent() {
+  return <PureYStack height={PLAYER_HEIGHT * 2} />
+}
+
 export function EpisodesList({
   episodes,
   podcastTitle,
@@ -40,18 +44,12 @@ export function EpisodesList({
         keyExtractor ??
         ((item) => {
           const uniqueKey = uniqueKeySchema.parse(item).uniqueKey
-          console.log("🚀 ~ keyExtractor ~ uniqueKey:", uniqueKey)
           return uniqueKey
         })
       }
       renderItem={renderItem}
       ListHeaderComponent={ListHeaderComponent}
-      ListFooterComponent={
-        ListFooterComponent || (
-          // !FIXME: Why is this needed?
-          <PureYStack height={PLAYER_HEIGHT * 2} />
-        )
-      }
+      ListFooterComponent={ListFooterComponent || DefaultListFooterComponent}
       showsVerticalScrollIndicator={false}
     />
   )

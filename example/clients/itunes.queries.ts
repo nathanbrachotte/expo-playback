@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { fetchPodcastAndEpisodes, searchPodcast } from "./itunes.fetch"
 import { ToLocalEpisodeSchema, ToLocalPodcastSchema } from "./schemas"
 import { AppleEpisodeResponse } from "../types/purecast.types"
+import { BooleanFilter } from "../utils/types.utils"
 
 export function useGetItunesPodcastQuery(id: string | null) {
   return useQuery({
@@ -27,7 +28,7 @@ export function useGetItunesPodcastAndEpisodesQuery(podcastId: string | null, li
     queryKey: ["episodes", podcastId, limit],
     queryFn: () => fetchPodcastAndEpisodes({ id: podcastId, limit }),
     select: (data: AppleEpisodeResponse) => {
-      console.log("🚀 ~ useGetItunesPodcastAndEpisodesQuery ~ data:", JSON.stringify(data, null, 2))
+      // console.log("🚀 ~ useGetItunesPodcastAndEpisodesQuery ~ data:", JSON.stringify(data, null, 2))
 
       // The query also returns the podcast's data
       return {
@@ -45,7 +46,7 @@ export function useGetItunesPodcastAndEpisodesQuery(podcastId: string | null, li
             }
             return parsedEpisode.data
           })
-          .filter(Boolean),
+          .filter(BooleanFilter),
         podcast: ToLocalPodcastSchema.parse(data.results.find((episode) => episode.wrapperType === "track")),
       }
     },

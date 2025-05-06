@@ -94,6 +94,7 @@ export type RssChannel = z.infer<typeof RssChannelSchema>
 export type RssItem = z.infer<typeof RssItemSchema>
 
 export async function fetchRssFeed(feedUrl: string | null): Promise<RssFeed> {
+  console.log("🚀 ~ fetchRssFeed ~ feedUrl:", feedUrl)
   if (!feedUrl) {
     throw new Error("Feed URL is required")
   }
