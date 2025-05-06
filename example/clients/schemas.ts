@@ -50,7 +50,7 @@ export const ToLocalPodcastSchema = z
 
 export const ToLocalEpisodeSchema = z
   .object({
-    artistIds: z.array(z.string()).optional(),
+    artistIds: z.array(z.union([z.string(), z.number()])).optional(),
     artworkUrl160: z.string().optional(),
     artworkUrl60: z.string(),
     artworkUrl600: z.string().optional(),
@@ -105,6 +105,7 @@ export const ToLocalEpisodeSchema = z
       episodeUrl,
       collectionId,
       trackId,
+      ...rest
     }) => {
       return {
         title: trackName,
@@ -114,7 +115,7 @@ export const ToLocalEpisodeSchema = z
         image100: artworkUrl100 || null,
         image600: artworkUrl600 || null,
         publishedAt: new Date(releaseDate),
-        duration: trackTimeMillis,
+        duration: trackTimeMillis ?? null,
         shouldDownload: false,
         downloadUrl: episodeUrl || "",
         podcastId: collectionId,

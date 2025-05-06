@@ -13,29 +13,42 @@ const uniqueKeySchema = z
     appleId: z.union([z.string(), z.number()]).optional(),
     publishedAt: z.date().optional(),
   })
-  .transform((epi) => ({
+  .transform((episode) => ({
     uniqueKey:
-      epi.id?.toString() || epi.appleId?.toString() || epi.publishedAt?.getDate().toString() || "BIG BIG TROUBLE",
+      episode.publishedAt?.getDate().toString() ||
+      episode.appleId?.toString() ||
+      episode.id?.toString() ||
+      "BIG BIG TROUBLE",
   }))
 
 export function EpisodesList({
   episodes,
   podcastTitle,
   renderItem,
+  ListHeaderComponent,
+  ListFooterComponent,
 }: {
   episodes: SharedEpisodeFields[]
   podcastTitle: string
   renderItem: ListRenderItem<SharedEpisodeFields>
+  ListHeaderComponent?: React.ReactElement
+  ListFooterComponent?: React.ReactElement
 }) {
   return (
     <FlatList
       data={episodes}
-      keyExtractor={(item) => uniqueKeySchema.parse(item).uniqueKey}
+      keyExtractor={(item) => {
+        const uniqueKey = uniqueKeySchema.parse(item).uniqueKey
+        console.log("🚀 ~ keyExtractor ~ uniqueKey:", uniqueKey)
+        return uniqueKey
+      }}
       renderItem={renderItem}
-      // ListHeaderComponent={}
+      ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={
-        // !FIXME: Why is this needed?
-        <PureYStack height={PLAYER_HEIGHT * 2} />
+        ListFooterComponent || (
+          // !FIXME: Why is this needed?
+          <PureYStack height={PLAYER_HEIGHT * 2} />
+        )
       }
       showsVerticalScrollIndicator={false}
     />

@@ -22,17 +22,30 @@ export function useGetItunesPodcastQuery(id: string | null) {
   })
 }
 
-export function useGetItunesPodcastAndEpisodesQuery(podcastId: string | null) {
+export function useGetItunesPodcastAndEpisodesQuery(podcastId: string | null, limit?: number) {
   return useQuery({
-    queryKey: ["episodes", podcastId],
-    queryFn: () => fetchPodcastAndEpisodes({ id: podcastId }),
+    queryKey: ["episodes", podcastId, limit],
+    queryFn: () => fetchPodcastAndEpisodes({ id: podcastId, limit }),
     select: (data: AppleEpisodeResponse) => {
+      console.log("🚀 ~ useGetItunesPodcastAndEpisodesQuery ~ data:", JSON.stringify(data, null, 2))
+
       // The query also returns the podcast's data
       return {
         ...data,
         episodes: data.results
           .filter((episode) => episode.wrapperType === "podcastEpisode")
-          .map((episode) => ToLocalEpisodeSchema.parse(episode)),
+          .map((episode) => {
+            const parsedEpisode = ToLocalEpisodeSchema.safeParse(episode)
+            if (!parsedEpisode.success) {
+              console.error(
+                "🚀 ~ useGetItunesPodcastAndEpisodesQuery ~ parsedEpisode:",
+                JSON.stringify(parsedEpisode.error.format(), null, 2),
+              )
+              return null
+            }
+            return parsedEpisode.data
+          })
+          .filter(Boolean),
         podcast: ToLocalPodcastSchema.parse(data.results.find((episode) => episode.wrapperType === "track")),
       }
     },

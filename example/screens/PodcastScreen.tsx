@@ -16,6 +16,7 @@ import { LoadingSection } from "../components/Sections/LoadingSection"
 import { PodcastScreenRouteProp } from "../types/navigation.types"
 import { DEVICE_WIDTH } from "../utils/constants"
 import { getImageFromEntity } from "../utils/image.utils"
+import { BooleanFilter } from "../utils/types.utils"
 
 // TODO: Fix this shit
 const formatDuration = (seconds: number) => {
@@ -146,8 +147,12 @@ export function LocalEpisodesSection({ id }: { id: string }) {
   )
 }
 
+const LIMIT_ITUNES_INITIAL_FETCH = 15
+
 export function RemotePodcastScreen({ id }: { id: string }) {
-  const { data, isLoading, error } = useGetItunesPodcastAndEpisodesQuery(id ?? null)
+  console.log("🚀 ~ RemotePodcastScreen ~ id:", id)
+  const { data, isLoading, error } = useGetItunesPodcastAndEpisodesQuery(id ?? null, LIMIT_ITUNES_INITIAL_FETCH)
+  console.log("🚀 ~ RemotePodcastScreen ~ data:", data)
 
   const { mutateAsync: savePodcast, isPending: isSaving } = useSavePodcastMutation({
     podcastId: id,
@@ -196,9 +201,9 @@ export function RemotePodcastScreen({ id }: { id: string }) {
 }
 
 export function RemoteEpisodesSection({ id }: { id: string }) {
-  const { data, isLoading } = useGetItunesPodcastAndEpisodesQuery(id)
+  const { data, isLoading } = useGetItunesPodcastAndEpisodesQuery(id, LIMIT_ITUNES_INITIAL_FETCH)
   const podcast = data?.podcast
-  const episodes = data?.episodes
+  const episodes = data?.episodes.filter(BooleanFilter)
 
   if (isLoading || !podcast || !episodes) {
     return (
@@ -208,17 +213,12 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
     )
   }
 
+  const episodesWithPodcastId = episodes.map((episode) => ({ ...episode, podcastId: podcast.appleId }))
+
   return (
     <EpisodesList
       podcastTitle={podcast.title}
-      episodes={
-        episodes.map((episode) => ({
-          ...episode,
-          //
-          podcastId: podcast.appleId,
-          duration: episode.duration || null,
-        })) || []
-      }
+      episodes={episodesWithPodcastId}
       renderItem={({ item }) => {
         // TODO: Use date-fns to render this correctly
         const publishedAt = formatDate(Number(item.publishedAt))
@@ -237,6 +237,11 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
           />
         )
       }}
+      ListFooterComponent={
+        <PureYStack h="$12" centered>
+          <Paragraph>Add to Library to see all available episodes 😊</Paragraph>
+        </PureYStack>
+      }
     />
   )
 }
