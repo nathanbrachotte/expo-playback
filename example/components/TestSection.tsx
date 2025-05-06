@@ -1,11 +1,11 @@
 import React from "react"
 import { Button, H1, Paragraph, YStack } from "tamagui"
 
-import { useGetLiveLocalEpisodeQuery } from "../clients/local.queries"
 import { useSavePodcastMutation } from "../clients/local.mutations"
+import { useGetLiveLocalEpisodeQuery } from "../clients/local.queries"
 import { ToLocalPodcastSchema } from "../clients/schemas"
 
-const SHOW_TEST_SECTION = true
+const SHOW_TEST_SECTION = false
 
 export function TestSection() {
   const { data: localEpisode, error, updatedAt } = useGetLiveLocalEpisodeQuery({ id: "1000704249323" })

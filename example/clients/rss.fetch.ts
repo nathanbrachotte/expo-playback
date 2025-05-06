@@ -24,7 +24,7 @@ const TitleSchema = z.union([z.string(), z.number()])
 export const RssItemSchema = z.object({
   "title": TitleSchema,
   "itunes:title": TitleSchema.optional(),
-  "pubDate": z.string(),
+  "pubDate": z.string().optional(),
   "itunes:duration": z.union([z.string(), z.number()]).optional(),
   "enclosure": z
     .object({
@@ -42,8 +42,8 @@ export const RssItemSchema = z.object({
       z.string(),
     ])
     .optional(),
-  "itunes:explicit": ExplicitSchema,
-  "link": z.string(),
+  "itunes:explicit": ExplicitSchema.optional(),
+  "link": z.string().optional(),
   "itunes:episodeType": z.string().optional(),
   "itunes:season": z.union([z.string(), z.number()]).optional(),
   "itunes:episode": z.union([z.string(), z.number()]).optional(),
@@ -59,26 +59,32 @@ export const RssItemSchema = z.object({
 // Schema for RSS feed channel (podcast)
 const RssChannelSchema = z.object({
   "title": TitleSchema,
-  "link": z.string(),
-  "language": z.string(),
-  "copyright": z.string(),
-  "itunes:author": z.string(),
+  "link": z.string().optional(),
+  "language": z.string().optional(),
+  "copyright": z.string().optional(),
+  "itunes:author": z.string().optional(),
   "itunes:subtitle": z.string().optional(),
   "itunes:summary": z.string().optional(),
   "description": z.string().optional(),
   "itunes:explicit": ExplicitSchema,
-  "itunes:owner": z.object({
-    "itunes:name": z.string(),
-    "itunes:email": z.string(),
-  }),
-  "itunes:image": z.object({
-    href: z.string(),
-  }),
-  "image": z.object({
-    url: z.string(),
-    link: z.string(),
-    title: z.string(),
-  }),
+  "itunes:owner": z
+    .object({
+      "itunes:name": z.string().optional(),
+      "itunes:email": z.string().optional(),
+    })
+    .optional(),
+  "itunes:image": z
+    .object({
+      href: z.string(),
+    })
+    .optional(),
+  "image": z
+    .object({
+      url: z.string().optional(),
+      link: z.string().optional(),
+      title: z.string().optional(),
+    })
+    .optional(),
   "item": z.union([z.array(RssItemSchema), RssItemSchema]),
 })
 

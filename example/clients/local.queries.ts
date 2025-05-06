@@ -61,7 +61,7 @@ export function useGetLocalEpisodesByPodcastIdQuery(podcastId: string | null) {
   })
 }
 
-export const episodeWithPodcastByIdDbQuery = (id: string | null) =>
+export const episodeWithPodcastByIdDbQuery = (episodeId: string | null) =>
   db
     .select({
       episode: {
@@ -72,15 +72,15 @@ export const episodeWithPodcastByIdDbQuery = (id: string | null) =>
       },
     })
     .from(episodesTable)
-    .where(sql`${episodesTable.id} = ${id}`)
+    .where(sql`${episodesTable.id} = ${episodeId}`)
     .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
 
-export async function getEpisodeWithPodcastByExternalId(id: string | null) {
-  if (!id) {
+export async function getEpisodeWithPodcastByExternalId(episodeId: string | null) {
+  if (!episodeId) {
     return null
   }
 
-  const res = await episodeWithPodcastByIdDbQuery(id)
+  const res = await episodeWithPodcastByIdDbQuery(episodeId)
 
   if (res.length !== 1) {
     return null
@@ -89,12 +89,12 @@ export async function getEpisodeWithPodcastByExternalId(id: string | null) {
   return res[0]
 }
 
-export async function getEpisodeWithPodcastById(id: string | null) {
-  if (!id) {
+export async function getEpisodeWithPodcastById(episodeId: string | null) {
+  if (!episodeId) {
     return null
   }
 
-  const res = await episodeWithPodcastByIdDbQuery(id)
+  const res = await episodeWithPodcastByIdDbQuery(episodeId)
 
   if (res.length !== 1) {
     return null

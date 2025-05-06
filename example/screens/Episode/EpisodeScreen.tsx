@@ -1,22 +1,19 @@
 import { useNavigation, useRoute, useNavigationState } from "@react-navigation/native"
 import { ArrowBigRight, Download, Play, Share } from "@tamagui/lucide-icons"
-import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import { Image, useWindowDimensions } from "react-native"
 import RenderHtml from "react-native-render-html"
-import { H4, Paragraph, YStack, XStack, Button, Spinner, useTheme } from "tamagui"
+import { H4, Paragraph, YStack, XStack, Button, useTheme, H3 } from "tamagui"
 import { z } from "zod"
 
-import { useGetEpisodeByIdQuery, useGetPodcastByIdQuery } from "../../clients/both.queries"
 import { useSavePodcastMutation } from "../../clients/local.mutations"
-import { getEpisodeWithPodcastByExternalId, getEpisodeWithPodcastById } from "../../clients/local.queries"
+import { getEpisodeWithPodcastByExternalId, useGetLiveLocalEpisodeQuery } from "../../clients/local.queries"
 import { PureLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
 import { usePlayerContext } from "../../providers/PlayerProvider"
-import { SharedEpisodeFields } from "../../types/db.types"
+import { LocalEpisode, LocalPodcast } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
-import { getAppleIdFromPodcast } from "../../utils/podcasts.utils"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -47,27 +44,14 @@ export function EpisodeDescription({ description }: { description: string }) {
   return <RenderHtml contentWidth={width} source={source} />
 }
 
-function EpisodeDumbScreen({
-  episode,
-  podcast,
-  isLocal,
-}: {
-  episode: SharedEpisodeFields
-  podcast: {
-    id?: number
-    appleId?: number
-  }
-  isLocal: boolean
-}) {
+function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcast: LocalPodcast }) {
   const navigation = useNavigation()
   const { setActiveEpisodeId } = usePlayerContext()
-  const { podcast: podcastFromQuery } = useGetPodcastByIdQuery(
-    podcast.id?.toString() || podcast.appleId?.toString() || null,
-  )
 
   const { mutateAsync: savePodcast } = useSavePodcastMutation({
     podcastId: podcast.id?.toString() || podcast.appleId?.toString() || "",
   })
+
   const routes = useNavigationState((state) => state?.routes || [])
 
   const isPodcastScreenInStack = routes.some((route) => {
@@ -106,7 +90,8 @@ function EpisodeDumbScreen({
     //   setActiveEpisodeId(savedEpisodeId)
     //   return
     // }
-    ExpoPlaybackModule.startBackgroundDownload(1)
+
+    // ExpoPlaybackModule.startBackgroundDownload(1)
     // If episode exists locally, set it as active directly
     // setActiveEpisodeId(1)
   }
@@ -117,20 +102,22 @@ function EpisodeDumbScreen({
     })
   }
 
-  const image = getImageFromEntity(episode, "100")
+  const podcastImage = getImageFromEntity(podcast, "100")
+  const episodeImage = getImageFromEntity(episode, "100")
+  const image = episodeImage || podcastImage
 
   return (
-    <PureLayout header={<H4>Episode</H4>}>
+    <PureLayout>
       <PureYStack gap="$3" flex={1} overflow="hidden">
-        <XStack px="$3" gap="$4" alignItems="center">
+        <PureXStack px="$3" gap="$4" alignItems="center" centered>
           {image ? (
             <Image source={{ uri: image }} style={{ width: 120, height: 120, borderRadius: 12 }} resizeMode="cover" />
           ) : null}
-        </XStack>
+        </PureXStack>
         <YStack flex={1}>
-          <Paragraph px="$3" size="$8" fontWeight="bold">
-            {episode.title} - {episode.podcastId} - {episode.rssId}
-          </Paragraph>
+          <H3 px="$3" fontWeight="bold" textAlign="left">
+            {episode.title}
+          </H3>
           <Paragraph px="$3">
             <Paragraph fontWeight="bold">Release Date:</Paragraph> {new Date(episode.publishedAt).toLocaleDateString()}
           </Paragraph>
@@ -160,18 +147,23 @@ export function EpisodeScreen() {
   const route = useRoute<EpisodeScreenRouteProp>()
   const { episodeId, podcastId } = route.params
   console.log("🚀 ~ EpisodeScreen ~ episodeId:", episodeId)
-  const { podcast } = useGetPodcastByIdQuery(podcastId)
-  const { episode, isLoading, isLocal } = useGetEpisodeByIdQuery({ episodeId, feedUrl: podcast?.rssFeedUrl || null })
+  const { data: localEpisode, error, updatedAt } = useGetLiveLocalEpisodeQuery({ id: episodeId })
+  console.log("🚀 ~ EpisodeScreen ~ localEpisode:", localEpisode)
+  console.log("🚀 ~ EpisodeScreen ~ error:", error)
+  console.log("🚀 ~ EpisodeScreen ~ updatedAt:", updatedAt)
 
-  if (isLoading) {
-    return (
-      <PureLayout header={<H4>Episode</H4>}>
-        <PureYStack f={1} centered>
-          <Spinner />
-        </PureYStack>
-      </PureLayout>
-    )
-  }
+  // if (isLoading) {
+  //   return (
+  //     <PureLayout header={<H4>Episode</H4>}>
+  //       <PureYStack f={1} centered>
+  //         <Spinner />
+  //       </PureYStack>
+  //     </PureLayout>
+  //   )
+  // }
+
+  const episode = localEpisode[0]?.episode
+  const podcast = localEpisode[0]?.podcast
 
   if (!episode || !podcast) {
     return (
@@ -183,5 +175,5 @@ export function EpisodeScreen() {
     )
   }
 
-  return <EpisodeDumbScreen episode={episode} podcast={podcast} isLocal={isLocal} />
+  return <EpisodeDumbScreen episode={episode} podcast={podcast} />
 }

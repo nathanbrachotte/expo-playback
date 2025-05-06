@@ -8,24 +8,7 @@ import { useAllEpisodesQuery } from "../clients/local.queries"
 import { getImageFromEntity } from "../utils/image.utils"
 import { FlatList } from "react-native"
 import { BooleanFilter } from "../utils/types.utils"
-
-// TODO: Fix this shit
-const formatDuration = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
-
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
-}
-
-// TODO: Fix this shit
-const formatDate = (timestamp: number) => {
-  const date = new Date(timestamp)
-  const month = date.toLocaleString("default", { month: "short" })
-  const day = date.getDate()
-  const year = date.getFullYear()
-
-  return `${month} ${day}, ${year}`
-}
+import { getDurationAndDateFromEpisode } from "../utils/episodes.utils"
 
 export function AllEpisodesList() {
   const navigation = useNavigation()
@@ -49,16 +32,12 @@ export function AllEpisodesList() {
     <FlatList
       data={episodesWithPodcasts.map((episode) => episode.episode) ?? []}
       renderItem={({ item }) => {
-        // TODO: Use date-fns to render this correctly
-        const publishedAt = formatDate(Number(item.publishedAt))
-        const duration = formatDuration(item.duration || 0)
-
         return (
           <EpisodeCard
             title={item.title}
             subtitle={item.description}
-            image={getImageFromEntity(item, "100")}
-            extraInfo={`${publishedAt} • ${duration}`}
+            image={getImageFromEntity(item, "100") || getImageFromEntity(episodesWithPodcasts[0].podcast, "100")}
+            extraInfo={getDurationAndDateFromEpisode(item).label}
             //! FIXME: THIS WILL NEVER WORK. DUH.
             podcastTitle={episodesWithPodcasts[0].podcast.title}
             onPress={() => {
@@ -66,7 +45,7 @@ export function AllEpisodesList() {
                 throw new Error("Found episode without an rssId")
               }
 
-              navigation.navigate("Episode", { episodeId: item.rssId, podcastId: String(item.podcastId) })
+              navigation.navigate("Episode", { episodeId: String(item.id), podcastId: String(item.podcastId) })
             }}
           />
         )

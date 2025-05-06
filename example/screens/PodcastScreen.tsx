@@ -167,7 +167,7 @@ export function LocalEpisodesSection({ id }: { id: string }) {
             podcastId={item.podcastId}
             onPress={() => {
               navigation.navigate("Episode", {
-                episodeId: String(item.rssId),
+                episodeId: String(item.id),
                 podcastId: String(item.podcastId),
               })
             }}
