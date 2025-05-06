@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ComponentProps } from "react"
 import { FlatList, ListRenderItem } from "react-native"
 import { z } from "zod"
 
@@ -7,7 +7,7 @@ import { PureYStack } from "./PureStack"
 import { SharedEpisodeFields } from "../types/db.types"
 
 // should i be proud or ashamed?
-const uniqueKeySchema = z
+export const uniqueKeySchema = z
   .object({
     id: z.number().optional(),
     appleId: z.union([z.string(), z.number()]).optional(),
@@ -15,10 +15,7 @@ const uniqueKeySchema = z
   })
   .transform((episode) => ({
     uniqueKey:
-      episode.publishedAt?.getDate().toString() ||
-      episode.appleId?.toString() ||
-      episode.id?.toString() ||
-      "BIG BIG TROUBLE",
+      episode.publishedAt?.toISOString() || episode.appleId?.toString() || episode.id?.toString() || "BIG BIG TROUBLE",
   }))
 
 export function EpisodesList({
@@ -27,21 +24,26 @@ export function EpisodesList({
   renderItem,
   ListHeaderComponent,
   ListFooterComponent,
+  keyExtractor,
 }: {
   episodes: SharedEpisodeFields[]
   podcastTitle: string
   renderItem: ListRenderItem<SharedEpisodeFields>
-  ListHeaderComponent?: React.ReactElement
-  ListFooterComponent?: React.ReactElement
+  ListHeaderComponent?: ComponentProps<typeof FlatList>["ListHeaderComponent"]
+  ListFooterComponent?: ComponentProps<typeof FlatList>["ListFooterComponent"]
+  keyExtractor?: ComponentProps<typeof FlatList>["keyExtractor"]
 }) {
   return (
     <FlatList
       data={episodes}
-      keyExtractor={(item) => {
-        const uniqueKey = uniqueKeySchema.parse(item).uniqueKey
-        console.log("🚀 ~ keyExtractor ~ uniqueKey:", uniqueKey)
-        return uniqueKey
-      }}
+      keyExtractor={
+        keyExtractor ??
+        ((item) => {
+          const uniqueKey = uniqueKeySchema.parse(item).uniqueKey
+          console.log("🚀 ~ keyExtractor ~ uniqueKey:", uniqueKey)
+          return uniqueKey
+        })
+      }
       renderItem={renderItem}
       ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={

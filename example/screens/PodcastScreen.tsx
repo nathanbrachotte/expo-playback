@@ -124,7 +124,7 @@ export function LocalEpisodesSection({ id }: { id: string }) {
       renderItem={({ item }) => {
         // TODO: Use date-fns to render this correctly
         const publishedAt = formatDate(Number(item.publishedAt))
-        const duration = formatDuration(item.duration)
+        const duration = formatDuration(item.duration || 0)
 
         return (
           <EpisodeCard
