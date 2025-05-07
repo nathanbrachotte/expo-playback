@@ -3,7 +3,8 @@ import { desc, sql } from "drizzle-orm"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 
 import { db, schema } from "../db/client"
-import { episodesTable, podcastsTable } from "../db/schema"
+import { episodeMetadatasTable, episodesTable, podcastsTable } from "../db/schema"
+import { useNativeSaveLiveQuery } from "../db/useNativeSaveLiveQuery"
 
 export function useLocalPodcastsQuery() {
   return useQuery({
@@ -105,6 +106,20 @@ export async function getEpisodeWithPodcastById(episodeId: string | null) {
 
 export function useGetLiveLocalEpisodeQuery({ id }: { id: string | null }) {
   return useLiveQuery(episodeWithPodcastByIdDbQuery(id), [id])
+}
+
+export const episodeMetadataByIdDbQuery = (episodeId: number) =>
+  db
+    .select({
+      episodeMetadata: {
+        ...episodeMetadatasTable,
+      },
+    })
+    .from(episodeMetadatasTable)
+    .where(sql`${episodeMetadatasTable.episodeId} = ${episodeId}`)
+
+export function useGetLiveLocalEpisodeMetadataQuery(id: number) {
+  return useNativeSaveLiveQuery(episodeMetadataByIdDbQuery(id), ["episode_metadata"])
 }
 
 // Join episodes with podcasts to get podcast title, and order by published_at desc

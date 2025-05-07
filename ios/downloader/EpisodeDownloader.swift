@@ -1,8 +1,14 @@
 import BackgroundTasks
 import Foundation
 
+public protocol EpisodeDownloaderDelegate {
+    func episodeDownloadProgress(episodeId: Int64, currentProgress: NSNumber)
+    func episodeDownloadFinished(episodeId: Int64)
+}
+
 public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
     public static let shared = EpisodeDownloader()
+    public var episodeDownloaderDelegate: EpisodeDownloaderDelegate?
     private let episodeRepo: EpisodeRepository = EpisodeRepository()
     private let metadataRepo: EpisodeMetadataRepository = EpisodeMetadataRepository()
     
@@ -14,13 +20,23 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
         super.init()
         self.urlSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
     }
-        
+    
     public func downloadEpisode(episodeId: Int64) {
         let episode = episodeRepo.getEpisodeById(episodeIdValue: episodeId)
         let downloadUrl = episode!.downloadUrl
         let downloadTask = urlSession.downloadTask(with: URL(string: downloadUrl)!)
         downloadTask.taskDescription = String(episodeId)
         downloadTask.resume()
+        self.metadataRepo.createOrUpdateMetadata(
+            EpisodeMetadata(
+                episodeId: episodeId,
+                playback: 0,
+                isFinished: false,
+                downloadProgress: 0,
+                fileSize: nil,
+                filePath: nil
+            )
+        )
     }
     
     public func urlSession(
@@ -63,6 +79,8 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
                         filePath: savedURL.absoluteString
                     )
                 )
+                
+                episodeDownloaderDelegate?.episodeDownloadFinished(episodeId: episodeId)
             } catch {
                 // handle filesystem error
             }
@@ -79,7 +97,26 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
                            totalBytesExpectedToWrite: Int64) {
         
         let calculatedProgress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
-        print(NSNumber(value: calculatedProgress))
+        let progress = NSNumber(value: calculatedProgress)
+        
+        if let episodeId = Int64(downloadTask.taskDescription ?? "") {
+            if var metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId) {
+                let newProgress = Int64(progress.doubleValue * 100)
+                if metadata.downloadProgress >= newProgress {return}
+                metadata = EpisodeMetadata(
+                    episodeId: metadata.episodeId,
+                    playback: metadata.playback,
+                    isFinished: metadata.isFinished,
+                    downloadProgress: newProgress,
+                    fileSize: metadata.fileSize,
+                    filePath: metadata.filePath
+                )
+                metadataRepo.createOrUpdateMetadata(metadata)
+                                
+                episodeDownloaderDelegate?.episodeDownloadProgress(episodeId: episodeId, currentProgress: progress)
+            }
+        }
+        
     }
     
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {

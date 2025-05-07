@@ -1,14 +1,12 @@
 import { useNavigation } from "@react-navigation/native"
 import React from "react"
-import { YStack, Paragraph } from "tamagui"
+import { FlatList } from "react-native"
+import { Paragraph, YStack } from "tamagui"
 
 import { EpisodeCard } from "./EpisodeCard"
-import { EpisodesList } from "./PureEpisodeFlatList"
 import { useAllEpisodesQuery } from "../clients/local.queries"
-import { getImageFromEntity } from "../utils/image.utils"
-import { FlatList } from "react-native"
-import { BooleanFilter } from "../utils/types.utils"
 import { getDurationAndDateFromEpisode } from "../utils/episodes.utils"
+import { getImageFromEntity } from "../utils/image.utils"
 
 export function AllEpisodesList() {
   const navigation = useNavigation()

@@ -12,7 +12,7 @@ struct Episode {
     let publishedAt: Int64
     let shouldDownload: Bool
     let downloadUrl: String
-    let duration: Int64
+    let duration: Int64?
 }
 
 class EpisodeRepository {
@@ -30,7 +30,7 @@ class EpisodeRepository {
     private let publishedAt = Expression<Int64>("published_at")
     private let shouldDownload = Expression<Bool>("should_download")
     private let downloadUrl = Expression<String>("download_url")
-    private let duration = Expression<Int64>("duration")
+    private let duration = Expression<Int64?>("duration")
 
     func getAllEpisodes() -> [Episode] {
         var result: [Episode] = []

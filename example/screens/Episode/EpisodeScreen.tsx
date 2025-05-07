@@ -1,14 +1,18 @@
-import { useNavigation, useRoute, useNavigationState } from "@react-navigation/native"
-import { ArrowBigRight, Download, Play, Share } from "@tamagui/lucide-icons"
+import { useNavigation, useNavigationState, useRoute } from "@react-navigation/native"
+import { ArrowBigRight, Check, Download, Play, Share } from "@tamagui/lucide-icons"
 import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import { useCallback } from "react"
 import { Image, useWindowDimensions } from "react-native"
 import RenderHtml from "react-native-render-html"
-import { H4, Paragraph, YStack, XStack, Button, useTheme, H3 } from "tamagui"
+import { Button, H3, H4, Paragraph, Text, useTheme, View, YStack } from "tamagui"
 import { z } from "zod"
 
 import { useSavePodcastMutation } from "../../clients/local.mutations"
-import { getEpisodeWithPodcastByExternalId, useGetLiveLocalEpisodeQuery } from "../../clients/local.queries"
+import {
+  getEpisodeWithPodcastByExternalId,
+  useGetLiveLocalEpisodeMetadataQuery,
+  useGetLiveLocalEpisodeQuery,
+} from "../../clients/local.queries"
 import { PureLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
@@ -44,6 +48,36 @@ export function EpisodeDescription({ description }: { description: string }) {
   }
 
   return <RenderHtml contentWidth={width} source={source} />
+}
+
+function DownloadButton({ episodeId }: { episodeId: number }) {
+  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
+  const downloadProgress = localEpisodeMetadata?.[0]?.episodeMetadata?.downloadProgress ?? 0
+  const isDownloading = downloadProgress > 0 && downloadProgress < 100
+  const isDownloaded = downloadProgress === 100
+  console.log("🚀 ~ DownloadButton ~ isDownloading:", localEpisodeMetadata)
+  return (
+    <Button
+      icon={
+        isDownloading ? (
+          <View width={16} overflow="visible">
+            <Text textAlign="center" width={32} ml={-8}>
+              {downloadProgress}%
+            </Text>
+          </View>
+        ) : isDownloaded ? (
+          <Check color="$green10" />
+        ) : (
+          Download
+        )
+      }
+      onPress={() => {
+        if (!isDownloading && !isDownloaded) {
+          ExpoPlaybackModule.startBackgroundDownload(episodeId)
+        }
+      }}
+    />
+  )
 }
 
 function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcast: LocalPodcast }) {
@@ -92,13 +126,13 @@ function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcas
     //   setActiveEpisodeId(savedEpisodeId)
     //   return
     // }
-    ExpoPlaybackModule.play(1)
+    ExpoPlaybackModule.play(episode.id)
     // If episode exists locally, set it as active directly
     // setActiveEpisodeId(1)
   }, [episode])
 
   const handleDownload = useCallback(() => {
-    ExpoPlaybackModule.startBackgroundDownload(1)
+    ExpoPlaybackModule.startBackgroundDownload(episode.id)
   }, [episode])
 
   const goToPodcast = () => {
@@ -134,7 +168,7 @@ function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcas
       </PureYStack>
       <PureYStack gap="$2" centered>
         <PureXStack gap="$2" centered>
-          <Button icon={Download} onPress={handleDownload} />
+          <DownloadButton episodeId={episode.id} />
           <Button icon={Play} onPress={handlePlay} />
           <Button icon={Share} />
         </PureXStack>

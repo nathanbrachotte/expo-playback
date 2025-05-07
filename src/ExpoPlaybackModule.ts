@@ -1,12 +1,14 @@
 import { requireNativeModule, NativeModule } from "expo-modules-core"
 
+import { TableName } from "../example/db/schema"
+
 export interface SkipSegment {
   startTime: number
   endTime: number
 }
 
 export interface SqLiteTableUpdatedEvent {
-  table: "episode_metadata"
+  table: TableName
 }
 
 export interface PlaybackStatus {

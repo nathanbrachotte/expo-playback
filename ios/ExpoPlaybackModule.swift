@@ -6,14 +6,34 @@ struct SkipSegment: Record {
     @Field var endTime: Double
 }
 
-public class ExpoPlaybackModule: Module {
+public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
     private var player: AVPlayer?
     private var currentEpisodeId: Int64?
     private var skipSegments: [SkipSegment] = []
     private var timeObserverToken: Any?
     
     private func startBackgroundDownload(episodeId: Int64) {
+        EpisodeDownloader.shared.episodeDownloaderDelegate = self
         EpisodeDownloader.shared.downloadEpisode(episodeId: episodeId)
+    }
+    
+    // EpisodeDownloaderDelegate implementation
+    public func episodeDownloadProgress(episodeId: Int64, currentProgress: NSNumber) {
+        self.sendEpisodeMetadataUpdate()
+    }
+    
+    public func episodeDownloadFinished(episodeId: Int64) {
+        self.sendEpisodeMetadataUpdate()
+    }
+    
+    private func sendEpisodeMetadataUpdate() {
+        print("goinnnngngng")
+        self.sendEvent(
+            "onSqLiteTableUpdate",
+            [
+                "table": "episode_metadata"
+            ])
+        
     }
     
     // Each module class must implement the definition function. The definition consists of components
@@ -30,14 +50,14 @@ public class ExpoPlaybackModule: Module {
         
         // Playback control functions
         AsyncFunction("play") { (episodeId: Int64, promise: Promise) in
-
+            
             // resume playback if the same episode is played again
             if self.currentEpisodeId == episodeId {
                 self.player?.play()
                 promise.resolve()
                 return
             }
-
+            
             let metadataRepo = EpisodeMetadataRepository()
             
             // Get first episode using the reusable function
@@ -45,7 +65,7 @@ public class ExpoPlaybackModule: Module {
                 promise.reject(Exception(name: "metadata_not_found", description: "metadata_not_found"))
                 return
             }
-
+            
             let playerItem = AVPlayerItem(url: URL(string: metadata.filePath!)!)
             self.player = AVPlayer(playerItem: playerItem)
             
@@ -79,29 +99,25 @@ public class ExpoPlaybackModule: Module {
                 // }
                 
                 
-               
-                    let metadataRepo = EpisodeMetadataRepository()
-                    if var metadata = metadataRepo.getMetadataForEpisode(
-                        episodeIdValue: self.currentEpisodeId!)
-                    {
-                        metadata = EpisodeMetadata(
-                            episodeId: metadata.episodeId,
-                            playback: Int64(currentTime),
-                            isFinished: metadata.isFinished,
-                            downloadProgress: metadata.downloadProgress,
-                            fileSize: metadata.fileSize,
-                            filePath: metadata.filePath
-                        )
-                        
-                        metadataRepo.createOrUpdateMetadata(metadata)
-                        
-                        self.sendEvent(
-                            "onSqLiteTableUpdate",
-                            [
-                                "table": "episode_metadata"
-                            ])
-                    }
+                
+                let metadataRepo = EpisodeMetadataRepository()
+                if var metadata = metadataRepo.getMetadataForEpisode(
+                    episodeIdValue: self.currentEpisodeId!)
+                {
+                    metadata = EpisodeMetadata(
+                        episodeId: metadata.episodeId,
+                        playback: Int64(currentTime),
+                        isFinished: metadata.isFinished,
+                        downloadProgress: metadata.downloadProgress,
+                        fileSize: metadata.fileSize,
+                        filePath: metadata.filePath
+                    )
                     
+                    metadataRepo.createOrUpdateMetadata(metadata)
+                    
+                    sendEpisodeMetadataUpdate()
+                }
+                
                 
                 
                 // Emit playback status
