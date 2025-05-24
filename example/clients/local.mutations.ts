@@ -4,13 +4,13 @@ import { eq } from "drizzle-orm"
 import { fetchRssFeed } from "./rss.fetch"
 import { extractEpisodesFromRssFeed } from "./rss.queries"
 import { PURE_TOASTS } from "../components/toasts"
-import { db, schema } from "../db/client"
+import { drizzleClient, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
 import { generateRssId } from "../utils/episodes.utils"
 
 async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Omit<SharedEpisodeFields, "">[]) {
   // TODO: transaction
-  const [savedPodcast] = await db
+  const [savedPodcast] = await drizzleClient
     .insert(schema.podcastsTable)
     .values({
       id: podcast.appleId,
@@ -27,7 +27,7 @@ async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Om
     .returning()
 
   //! FIXME: What happens if two episodes have the same rssId (because of different podcasts)?
-  const savedEpisodes = await db.insert(schema.episodesTable).values(
+  const savedEpisodes = await drizzleClient.insert(schema.episodesTable).values(
     episodes.map((episode) => {
       return {
         ...episode,
@@ -75,7 +75,7 @@ export function useRemovePodcastMutation() {
 
   return useMutation({
     mutationFn: async (podcastId: string) => {
-      await db.transaction(async (tx) => {
+      await drizzleClient.transaction(async (tx) => {
         await tx.delete(schema.episodesTable).where(eq(schema.episodesTable.podcastId, Number(podcastId)))
         await tx.delete(schema.podcastsTable).where(eq(schema.podcastsTable.id, Number(podcastId)))
       })

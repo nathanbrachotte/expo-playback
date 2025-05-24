@@ -13,7 +13,11 @@ cd ios && pod install && cd .. # install pods
 
 ## TODO
 
-- [ ] Try: `npm run start` then `Shift + M`/Drizzle, then `run ios`
+- [x] Try: `npm run start` then `Shift + M`/Drizzle, then `s` to switch to build mode and `i`
+  - `npm run start`
+  - `Shift + M`
+  - `s` to switch to build mode
+  - `i` to start iOS
 - [x] Fix navigation going Podcast > Episode > Podcast > Episode etc
 - [x] Fix local episode query not working (always default to episode)
 - [x] Finish player
@@ -22,3 +26,10 @@ cd ios && pod install && cd .. # install pods
 - [ ] Fix starting playing always tries to download
 - [ ] Handle dates and durations
 - [ ]
+
+## SQLite
+
+```ts
+// Log sql from queries
+.toSQL()
+```

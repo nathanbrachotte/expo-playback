@@ -13,7 +13,7 @@ if (!DB_PATH) {
   throw new Error("DB Path not found")
 }
 
-export const expo = openDatabaseSync(
+export const db = openDatabaseSync(
   DB_NAME,
   {
     enableChangeListener: true,
@@ -21,4 +21,4 @@ export const expo = openDatabaseSync(
   DB_PATH,
 )
 
-export const db = drizzle(expo)
+export const drizzleClient = drizzle(db)

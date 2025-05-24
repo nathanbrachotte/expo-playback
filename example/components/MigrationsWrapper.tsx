@@ -1,12 +1,15 @@
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator"
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin"
 import React, { PropsWithChildren, useEffect } from "react"
 
 import { PURE_TOASTS } from "./toasts"
-import { db } from "../db/client"
+import { db, drizzleClient } from "../db/client"
 import migrations from "../drizzle/migrations"
 
 export function MigrationsWrapper({ children }: PropsWithChildren) {
-  const { success, error } = useMigrations(db, migrations)
+  useDrizzleStudio(db)
+
+  const { success, error } = useMigrations(drizzleClient, migrations)
   const lastSuccessRef = React.useRef(success)
 
   useEffect(() => {

@@ -1,12 +1,12 @@
 import { deleteDatabaseSync } from "expo-sqlite"
 
-import { db, DB_NAME, DB_PATH } from "./client"
+import { drizzleClient, DB_NAME, DB_PATH } from "./client"
 
 export const resetDatabase = async () => {
   try {
     // Ensure database is closed before deletion
     try {
-      await db.$client.closeAsync()
+      await drizzleClient.$client.closeAsync()
     } catch (closeError) {
       console.warn("Warning: Error while closing database:", closeError)
       // Continue with deletion even if close fails

@@ -5,7 +5,7 @@ import React from "react"
 import { Button, YStack, XStack, Text, Card, ScrollView, H4 } from "tamagui"
 
 import { PureLayout } from "../components/Layout"
-import { db, schema } from "../db/client"
+import { drizzleClient, schema } from "../db/client"
 import { TableName } from "../db/schema"
 import { useNativeSaveLiveQuery } from "../db/useNativeSaveLiveQuery"
 import migrations from "../drizzle/migrations"
@@ -13,14 +13,17 @@ import migrations from "../drizzle/migrations"
 const tableNames: TableName[] = ["episode_metadata"]
 
 export function DatabaseExplorerScreen() {
-  const { data: podcasts } = useLiveQuery(db.select().from(schema.podcastsTable))
-  const { data: episodes } = useLiveQuery(db.select().from(schema.episodesTable))
-  const { data: episodeMetadata } = useNativeSaveLiveQuery(db.select().from(schema.episodeMetadatasTable), tableNames)
+  const { data: podcasts } = useLiveQuery(drizzleClient.select().from(schema.podcastsTable))
+  const { data: episodes } = useLiveQuery(drizzleClient.select().from(schema.episodesTable))
+  const { data: episodeMetadata } = useNativeSaveLiveQuery(
+    drizzleClient.select().from(schema.episodeMetadatasTable),
+    tableNames,
+  )
 
-  const { success, error } = useMigrations(db, migrations)
+  const { success, error } = useMigrations(drizzleClient, migrations)
 
   const addMockPodcast = async () => {
-    await db.insert(schema.podcastsTable).values({
+    await drizzleClient.insert(schema.podcastsTable).values({
       title: "Test Podcast " + Math.random().toString(36).substring(7),
       description: "This is a test podcast description",
       image30: "https://example.com/test-image.jpg",
@@ -37,7 +40,7 @@ export function DatabaseExplorerScreen() {
     }
     const randomPodcast = podcasts[Math.floor(Math.random() * podcasts.length)]
 
-    await db.insert(schema.episodesTable).values({
+    await drizzleClient.insert(schema.episodesTable).values({
       id: Math.floor(Math.random() * 1000000), // Random ID since it's not auto-increment
       podcastId: randomPodcast.id,
       title: "Test Episode " + Math.random().toString(36).substring(7),
@@ -59,7 +62,7 @@ export function DatabaseExplorerScreen() {
     }
     const randomEpisode = episodes[Math.floor(Math.random() * episodes.length)]
 
-    await db.insert(schema.episodeMetadatasTable).values({
+    await drizzleClient.insert(schema.episodeMetadatasTable).values({
       episodeId: randomEpisode.id,
       playback: Math.floor(Math.random() * 100),
       isFinished: Math.random() > 0.5,
@@ -71,9 +74,9 @@ export function DatabaseExplorerScreen() {
   const resetDatabase = async () => {
     try {
       // Delete all data from tables in reverse order of dependencies
-      await db.delete(schema.episodeMetadatasTable)
-      await db.delete(schema.episodesTable)
-      await db.delete(schema.podcastsTable)
+      await drizzleClient.delete(schema.episodeMetadatasTable)
+      await drizzleClient.delete(schema.episodesTable)
+      await drizzleClient.delete(schema.podcastsTable)
     } catch (error) {
       console.error("Error resetting database:", error)
     }

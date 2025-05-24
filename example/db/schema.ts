@@ -49,9 +49,7 @@ export const episodesTable = sqliteTable(
     rssId: text("rss_id").unique(),
     ...sharedKeys,
   },
-  (t) => ({
-    uniqueRssId: uniqueIndex("unique_rss_id").on(t.rssId),
-  }),
+  (t) => [uniqueIndex("unique_rss_id").on(t.rssId)],
 )
 
 // Everything that the native thread is going to write to

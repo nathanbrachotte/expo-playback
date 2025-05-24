@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { desc, sql } from "drizzle-orm"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 
-import { db, schema } from "../db/client"
+import { db, drizzleClient, schema } from "../db/client"
 import { episodeMetadatasTable, episodesTable, podcastsTable } from "../db/schema"
 import { useNativeSaveLiveQuery } from "../db/useNativeSaveLiveQuery"
 
@@ -10,7 +10,7 @@ export function useLocalPodcastsQuery() {
   return useQuery({
     queryKey: ["savedPodcasts"],
     queryFn: async () => {
-      const podcasts = await db.select().from(schema.podcastsTable)
+      const podcasts = await drizzleClient.select().from(schema.podcastsTable)
       return podcasts
     },
   })
@@ -21,7 +21,7 @@ export async function getPodcastById(id: string | null) {
     return null
   }
 
-  const res = await db
+  const res = await drizzleClient
     .select()
     .from(schema.podcastsTable)
     .where(sql`id = ${id}`)
@@ -46,7 +46,7 @@ async function getEpisodesByPodcastId(podcastId: string | null) {
     return null
   }
 
-  const res = await db
+  const res = await drizzleClient
     .select()
     .from(schema.episodesTable)
     .where(sql`${episodesTable.podcastId} = ${podcastId}`)
@@ -63,7 +63,7 @@ export function useGetLocalEpisodesByPodcastIdQuery(podcastId: string | null) {
 }
 
 export const episodeWithPodcastByIdDbQuery = (episodeId: string | null) =>
-  db
+  drizzleClient
     .select({
       episode: {
         ...episodesTable,
@@ -109,7 +109,7 @@ export function useGetLiveLocalEpisodeQuery({ id }: { id: string | null }) {
 }
 
 export const episodeMetadataByIdDbQuery = (episodeId: number) =>
-  db
+  drizzleClient
     .select({
       episodeMetadata: {
         ...episodeMetadatasTable,
@@ -125,7 +125,7 @@ export function useGetLiveLocalEpisodeMetadataQuery(id: number) {
 // Join episodes with podcasts to get podcast title, and order by published_at desc
 export const useAllEpisodesQuery = () => {
   return useLiveQuery(
-    db
+    drizzleClient
       .select({
         episode: {
           ...episodesTable,
