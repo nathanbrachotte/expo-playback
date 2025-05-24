@@ -5,6 +5,7 @@ import { Player } from "./components/Player/Player"
 import { DatabaseExplorerScreen } from "./screens/DatabaseExplorerScreen"
 import { EpisodeScreen } from "./screens/Episode/EpisodeScreen"
 import { HomeScreen } from "./screens/HomeScreen"
+import { LatestEpisodesScreen } from "./screens/LatestEpisodesScreen"
 import { PodcastScreen } from "./screens/PodcastScreen"
 import { PodcastSearchScreen } from "./screens/PodcastSearchScreen"
 import { SettingsScreen } from "./screens/SettingsScreen"
@@ -18,6 +19,7 @@ export function Routes() {
       <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="PodcastSearch" component={PodcastSearchScreen} />
+        <Stack.Screen name="LatestEpisodes" component={LatestEpisodesScreen} />
         <Stack.Screen name="Podcast" component={PodcastScreen} />
         <Stack.Screen name="Episode" component={EpisodeScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />

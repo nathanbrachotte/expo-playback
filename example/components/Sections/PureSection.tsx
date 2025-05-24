@@ -9,6 +9,7 @@ const Wrapper = styled(YStack, {
 
 const Title = styled(H3, {
   mb: "$1",
+  ml: "$2",
 })
 
 export const PureSection = {

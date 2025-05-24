@@ -4,10 +4,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Button, Slider, Text, YStack, XStack, Image, AnimatePresence, Sheet, H3, H5 } from "tamagui"
 
 import { usePlayerContext } from "../../providers/PlayerProvider"
-import { DEVICE_WIDTH } from "../../utils/constants"
 import { getImageFromEntity } from "../../utils/image.utils"
-import { PureYStack } from "../PureStack"
 import { CoverImage, FULL_PLAYER_IMAGE_SIZE } from "../CoverImage"
+import { PureYStack } from "../PureStack"
 
 export const PLAYER_HEIGHT = 100
 

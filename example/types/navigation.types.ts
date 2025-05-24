@@ -12,6 +12,7 @@ export type RootStackParamList = {
   Podcast: {
     id?: string
   }
+  LatestEpisodes: undefined
   Episode: EpisodeScreenParams
   Settings: undefined
   DatabaseExplorer: undefined
