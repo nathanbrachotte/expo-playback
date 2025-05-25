@@ -1,6 +1,7 @@
-import { Button, Paragraph } from "tamagui"
+import { Button, ButtonProps, Paragraph } from "tamagui"
 
 import { PureXStack } from "./PureStack"
+import React, { ComponentProps } from "react"
 
 export function ButtonList({ icon, text, onPress }: { icon: React.ReactNode; text: string; onPress: () => void }) {
   return (
@@ -12,5 +13,28 @@ export function ButtonList({ icon, text, onPress }: { icon: React.ReactNode; tex
         <Paragraph size="$6">{text}</Paragraph>
       </PureXStack>
     </Button>
+  )
+}
+
+export function GhostButton({
+  Icon,
+  onPress,
+  showBg,
+  ...props
+}: {
+  Icon: ComponentProps<typeof Button>["icon"]
+  showBg?: boolean
+  onPress: () => void
+} & ButtonProps) {
+  return (
+    <Button
+      icon={Icon}
+      onPress={onPress}
+      // disabled={isPlayed}
+      circular
+      size="$3"
+      bg="transparent"
+      {...props}
+    />
   )
 }

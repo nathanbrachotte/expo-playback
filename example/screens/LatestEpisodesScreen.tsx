@@ -1,5 +1,7 @@
+import { H3 } from "tamagui"
+
 import { useLocalPodcastsQuery } from "../clients/local.queries"
-import { AllEpisodesList } from "../components/AllEpisodesSection"
+import { EpisodesFlatlist } from "../components/EpisodesFlatlist"
 import { PureLayout } from "../components/Layout"
 import { PureSection } from "../components/Sections/PureSection"
 
@@ -11,10 +13,9 @@ export function LatestEpisodesScreen() {
   }
 
   return (
-    <PureLayout>
+    <PureLayout header={<H3>Latest episodes</H3>}>
       <PureSection.Wrapper>
-        <PureSection.Title>Latest episodes</PureSection.Title>
-        <AllEpisodesList />
+        <EpisodesFlatlist />
       </PureSection.Wrapper>
     </PureLayout>
   )

@@ -8,7 +8,7 @@ import { useAllEpisodesQuery } from "../clients/local.queries"
 import { getDurationAndDateFromEpisode } from "../utils/episodes.utils"
 import { getImageFromEntity } from "../utils/image.utils"
 
-export function AllEpisodesList() {
+export function EpisodesFlatlist() {
   const navigation = useNavigation()
   const { data: episodesWithPodcasts } = useAllEpisodesQuery()
 

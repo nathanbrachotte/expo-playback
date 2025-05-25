@@ -61,7 +61,7 @@ function EpisodeCardItem({
   title: string
   image: string | null
   podcastTitle: string
-  onPress?: () => void
+  onPress?: VoidFunction
   rssId: string | null
   podcastId: number
   publishedAt: Date
@@ -77,7 +77,7 @@ function EpisodeCardItem({
       title={title}
       image={image}
       extraInfo={extraInfo}
-      podcastTitle={podcastTitle}
+      // podcastTitle={podcastTitle}
       onPress={onPress}
       cardProps={cardProps}
     />

@@ -1,18 +1,16 @@
 import { useNavigation } from "@react-navigation/native"
 import { Bell, CircleDotDashed, Cog, Download, Plus, Search } from "@tamagui/lucide-icons"
 import React from "react"
-import { Button, XStack, H2, ScrollView, YStack, H5, Paragraph } from "tamagui"
+import { Button, XStack, H2, ScrollView, YStack, H5 } from "tamagui"
 
 import { PurecastLogo } from "../assets/PurecastLogo"
 import { useLocalPodcastsQuery } from "../clients/local.queries"
-import { AllEpisodesList } from "../components/AllEpisodesSection"
+import { ButtonList, GhostButton } from "../components/buttons"
 import { PureLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { PureSection } from "../components/Sections/PureSection"
 import { TestSection } from "../components/TestSection"
 import { getImageFromEntity } from "../utils/image.utils"
-import { PureXStack } from "../components/PureStack"
-import { ButtonList } from "../components/ButtonList"
 
 function PodcastsList() {
   const { data: podcastList } = useLocalPodcastsQuery()
@@ -78,27 +76,27 @@ export function HomeScreen() {
       }
       actionSection={
         <XStack flex={1} justifyContent="flex-end" gap="$2">
-          <Button icon={<Search />} size="$3" onPress={() => navigation.navigate("PodcastSearch")} />
-          <Button icon={<Cog />} size="$3" onPress={() => navigation.navigate("Settings")} />
+          <Button icon={Search} size="$3" onPress={() => navigation.navigate("PodcastSearch")} />
+          <Button icon={Cog} size="$3" onPress={() => navigation.navigate("Settings")} />
         </XStack>
       }
     >
       <TestSection />
       {hasSavedPodcasts ? (
         <>
-          <YStack px="$2" gap="$2">
+          <YStack px="$2" mt="$2" gap="$2">
             <ButtonList
-              icon={<Bell size="$2" />}
+              icon={<Bell size="$1.5" />}
               text="Latest episodes"
               onPress={() => navigation.navigate("LatestEpisodes")}
             />
             <ButtonList
-              icon={<Download size="$2" />}
+              icon={<Download size="$1.5" />}
               text="Downloaded episodes"
               onPress={() => navigation.navigate("LatestEpisodes")}
             />
             <ButtonList
-              icon={<CircleDotDashed size="$2" />}
+              icon={<CircleDotDashed size="$1.5" />}
               text="In progress"
               onPress={() => navigation.navigate("LatestEpisodes")}
             />
