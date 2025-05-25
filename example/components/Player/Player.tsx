@@ -1,12 +1,12 @@
 import { ArrowUp, Play, SkipBack, SkipForward } from "@tamagui/lucide-icons"
 import { PropsWithChildren, useState } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { Button, Slider, Text, YStack, XStack, Image, AnimatePresence, Sheet, H3, H5 } from "tamagui"
+import { Button, Slider, Text, YStack, XStack, Image, AnimatePresence, Sheet, H3, H5, Progress } from "tamagui"
 
 import { usePlayerContext } from "../../providers/PlayerProvider"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { CoverImage, FULL_PLAYER_IMAGE_SIZE } from "../CoverImage"
-import { PureYStack } from "../PureStack"
+import { PureXStack, PureYStack } from "../PureStack"
 
 export const PLAYER_HEIGHT = 100
 

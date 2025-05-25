@@ -1,6 +1,6 @@
-import { Check, CircleCheck, Download, Play } from "@tamagui/lucide-icons"
+import { Check, CircleCheck, Download, Ellipsis, Play, Trash2 } from "@tamagui/lucide-icons"
 import React from "react"
-import { YStack, Paragraph, Image, XStack, Card, CardProps, Spinner } from "tamagui"
+import { YStack, Paragraph, Image, XStack, Card, CardProps, Spinner, Progress } from "tamagui"
 
 import { PureXStack, PureYStack } from "./PureStack"
 import { GhostButton } from "./buttons"
@@ -22,14 +22,32 @@ type IconProps = {
   strokeWidth?: number | string
 }
 
-const CustomIcon = ({
-  Component,
-  color,
-}: {
-  Component: React.ComponentType<IconProps> // The actual icon component (e.g. CircleCheck)
-  color?: string // Optional color prop for the icon
-}) => {
+const CustomIcon = ({ Component, color }: { Component: React.ComponentType<IconProps>; color?: string }) => {
   return <Component size="$1" strokeWidth={2.5} color={color} />
+}
+
+export function PlayButton({ isDownloaded, isDownloading }: { isDownloaded: boolean; isDownloading: boolean }) {
+  if (isDownloaded) {
+    return (
+      <PureXStack w="$3" h="$3" centered themeInverse>
+        <GhostButton onPress={() => {}} Icon={<CustomIcon Component={Play} />} />
+      </PureXStack>
+    )
+  }
+
+  if (isDownloading) {
+    return (
+      <PureXStack w="$3" h="$3" centered>
+        <Spinner size="small" />
+      </PureXStack>
+    )
+  }
+
+  return (
+    <PureXStack centered w="$3" h="$3">
+      <GhostButton onPress={() => {}} Icon={<CustomIcon Component={Download} />} />
+    </PureXStack>
+  )
 }
 
 export const EpisodeCard = ({
@@ -43,7 +61,9 @@ export const EpisodeCard = ({
 }: EpisodeCardProps) => {
   const isPlayed = Math.random() > 0.5
   const isDownloaded = Math.random() > 0.5
-  const isDownloading = Math.random() > 0.5
+  const isDownloading = !isDownloaded && Math.random() > 0.5
+  const progress = isPlayed ? 100 : Math.random() * 100
+  const isInProgress = progress > 0 && progress < 95
 
   return (
     <Card
@@ -65,17 +85,16 @@ export const EpisodeCard = ({
           {image && <Image source={{ uri: image }} w="$5" h="$5" borderRadius="$2" />}
           <PureYStack flex={1}>
             {/* Podcast title, in small */}
-            <Paragraph size="$3" numberOfLines={1} opacity={0.5}>
+            <Paragraph size="$3" numberOfLines={1} opacity={0.8}>
               {podcastTitle}
             </Paragraph>
             {/* Episode title, in big */}
-            <Paragraph
-              size="$5"
-              //
-              numberOfLines={1}
-            >
-              {title}
-            </Paragraph>
+            <PureXStack jc="flex-start" gap="$1" ai="center">
+              {isPlayed ? <Check size="$1" color="$green9" /> : null}
+              <Paragraph size="$5" numberOfLines={1} opacity={isPlayed ? 0.6 : 1}>
+                {title}
+              </Paragraph>
+            </PureXStack>
           </PureYStack>
         </PureXStack>
         {subtitle ? (
@@ -96,13 +115,12 @@ export const EpisodeCard = ({
                 <Paragraph fontSize="$1" opacity={1} color="white" fontWeight="bold">
                   Finished
                 </Paragraph>
-                <Check size="$1" color="$green9" />
               </PureXStack>
             ) : null}
           </XStack>
         ) : null}
         <Card.Footer mt="$2" alignItems="center" justifyContent="space-between">
-          <PureXStack centered>
+          <PureXStack centered gap="$2">
             {/* <GhostButton onPress={() => {}} Icon={Plus} /> */}
             <GhostButton
               onPress={() => {}}
@@ -110,25 +128,19 @@ export const EpisodeCard = ({
                 isPlayed ? <CustomIcon Component={Check} color="$green9" /> : <CustomIcon Component={CircleCheck} />
               }
             />
-            <PureXStack centered>
-              <GhostButton
-                showBg
-                onPress={() => {}}
-                Icon={
-                  isDownloaded ? (
-                    <CustomIcon Component={Download} color="$green9" />
-                  ) : isDownloading ? (
-                    <Spinner size="small" />
-                  ) : (
-                    <CustomIcon Component={Download} />
-                  )
-                }
-              />
+            {isDownloaded ? (
+              <GhostButton onPress={() => {}} Icon={<CustomIcon Component={Trash2} color="$red10" />} />
+            ) : null}
+            <GhostButton onPress={() => {}} Icon={<CustomIcon Component={Ellipsis} />} />
+          </PureXStack>
+          {isInProgress ? (
+            <PureXStack flex={1} px="$6" w="100%">
+              <Progress value={progress} size="$1" bg="$color1">
+                <Progress.Indicator animation="quick" bg="$color10" />
+              </Progress>
             </PureXStack>
-          </PureXStack>
-          <PureXStack themeInverse>
-            <GhostButton onPress={() => {}} Icon={Play} bg="$color1" />
-          </PureXStack>
+          ) : null}
+          <PlayButton isDownloaded={isDownloaded} isDownloading={isDownloading} />
         </Card.Footer>
       </PureYStack>
     </Card>

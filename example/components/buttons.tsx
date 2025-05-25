@@ -1,7 +1,7 @@
+import React, { ComponentProps } from "react"
 import { Button, ButtonProps, Paragraph } from "tamagui"
 
 import { PureXStack } from "./PureStack"
-import React, { ComponentProps } from "react"
 
 export function ButtonList({ icon, text, onPress }: { icon: React.ReactNode; text: string; onPress: () => void }) {
   return (
@@ -33,7 +33,6 @@ export function GhostButton({
       // disabled={isPlayed}
       circular
       size="$3"
-      bg="transparent"
       {...props}
     />
   )
