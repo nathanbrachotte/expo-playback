@@ -18,6 +18,7 @@ import { PodcastScreenRouteProp } from "../types/navigation.types"
 import { DEVICE_WIDTH } from "../utils/constants"
 import { getImageFromEntity } from "../utils/image.utils"
 import { formatDate, formatDuration } from "../utils/time.utils"
+import { getEpisodeStateFromMetadata } from "../utils/metadata"
 
 function AboutSection({
   podcast,
@@ -57,6 +58,7 @@ function EpisodeCardItem({
   publishedAt,
   duration,
   cardProps,
+  ...prettyMetadata
 }: {
   title: string
   image: string | null
@@ -67,19 +69,26 @@ function EpisodeCardItem({
   publishedAt: Date
   duration: number | null
   cardProps?: CardProps
+  isFinished?: boolean
+  isDownloaded?: boolean
+  isDownloading?: boolean
+  progress?: number
+  isInProgress?: boolean
 }) {
   const publishedAtString = formatDate(publishedAt)
   const durationString = duration ? formatDuration(duration) : null
 
   const extraInfo = `${publishedAtString} ${durationString ? `• ${durationString}` : ""}`
+
   return (
     <EpisodeCard
-      title={title}
+      bigHeader={title}
+      smallHeader={podcastTitle}
       image={image}
       extraInfo={extraInfo}
-      // podcastTitle={podcastTitle}
       onPress={onPress}
       cardProps={cardProps}
+      {...prettyMetadata}
     />
   )
 }
@@ -112,7 +121,7 @@ export function LocalPodcastScreen({ id }: { id: string }) {
 
   const { mutateAsync: removePodcast, isPending: isRemoving } = useRemovePodcastMutation()
 
-  if (isLocalLoading || !localPodcast) {
+  if (isLocalLoading || !localPodcast || isLocalEpisodesLoading) {
     return <LoadingSection />
   }
 
@@ -160,21 +169,25 @@ export function LocalEpisodesSection({ id }: { id: string }) {
       }}
       data={localEpisodes.map((episode) => ({ ...episode, podcastId: localPodcast.appleId }))}
       renderItem={({ item }) => {
+        const episode = item.episode
+        const prettyMetadata = getEpisodeStateFromMetadata(item.episodeMetadata)
+
         return (
           <EpisodeCardItem
-            title={item.title}
-            image={getImageFromEntity(item, "100")}
-            publishedAt={item.publishedAt}
-            duration={item.duration}
+            title={episode.title}
+            image={getImageFromEntity(episode, "100")}
+            publishedAt={episode.publishedAt}
+            duration={episode.duration}
             podcastTitle={localPodcast.title}
-            rssId={item.rssId}
-            podcastId={item.podcastId}
+            rssId={episode.rssId}
+            podcastId={episode.podcastId}
             onPress={() => {
               navigation.navigate("Episode", {
-                episodeId: String(item.id),
-                podcastId: String(item.podcastId),
+                episodeId: String(episode.id),
+                podcastId: String(episode.podcastId),
               })
             }}
+            {...prettyMetadata}
           />
         )
       }}
@@ -185,7 +198,8 @@ export function LocalEpisodesSection({ id }: { id: string }) {
 const LIMIT_ITUNES_INITIAL_FETCH = 15
 
 export function RemotePodcastScreen({ id }: { id: string }) {
-  const { data, isLoading, error } = useGetItunesPodcastAndEpisodesQuery(id ?? null, LIMIT_ITUNES_INITIAL_FETCH)
+  const { data, isLoading } = useGetItunesPodcastAndEpisodesQuery(id ?? null, LIMIT_ITUNES_INITIAL_FETCH)
+  console.log("🚀 ~ RemotePodcastScreen ~ data:", data)
 
   const { mutateAsync: savePodcast, isPending: isSaving } = useSavePodcastMutation({
     podcastId: id,
@@ -224,6 +238,7 @@ export function RemotePodcastScreen({ id }: { id: string }) {
 
 export function RemoteEpisodesSection({ id }: { id: string }) {
   const { data, isLoading } = useGetItunesPodcastAndEpisodesQuery(id, LIMIT_ITUNES_INITIAL_FETCH)
+  console.log("🚀 ~ RemoteEpisodesSection ~ data:", data)
   const podcast = data?.podcast
   const episodes = data?.episodes
 
@@ -255,6 +270,8 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
             podcastId={item.podcastId}
             cardProps={{
               opacity: 0.5,
+              hoverStyle: { scale: 1 },
+              pressStyle: { scale: 1 },
             }}
           />
         )

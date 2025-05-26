@@ -4,7 +4,7 @@ import { FlatList } from "react-native"
 import { Paragraph, YStack } from "tamagui"
 
 import { EpisodeCard } from "./EpisodeCard"
-import { useAllDownloadedEpisodesQuery, useAllEpisodesQuery } from "../clients/local.queries"
+import { useAllDownloadedEpisodesQuery } from "../clients/local.queries"
 import { getDurationAndDateFromEpisode } from "../utils/episodes.utils"
 import { getImageFromEntity } from "../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../utils/metadata"
@@ -37,11 +37,11 @@ export function EpisodesFlatlist() {
 
         return (
           <EpisodeCard
-            title={episode.title}
+            smallHeader={podcast.title}
+            bigHeader={episode.title}
             subtitle={episode.description}
             image={getImageFromEntity(episode, "100") || getImageFromEntity(podcast, "100")}
             extraInfo={getDurationAndDateFromEpisode(episode).label}
-            podcastTitle={podcast.title}
             onPress={() => {
               if (!episode.rssId) {
                 throw new Error("Found episode without an rssId")

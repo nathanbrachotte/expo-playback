@@ -7,18 +7,18 @@ import { GhostButton } from "./buttons"
 import { Optional } from "../utils/types.utils"
 
 export type EpisodeCardProps = {
-  title: string
   subtitle?: Optional<string>
   image: Optional<string>
   extraInfo?: Optional<string>
-  podcastTitle?: Optional<string>
+  smallHeader?: Optional<string>
+  bigHeader: string
   onPress?: VoidFunction
   cardProps?: CardProps
-  isFinished: boolean
-  isDownloaded: boolean
-  isDownloading: boolean
-  progress: number
-  isInProgress: boolean
+  isFinished?: boolean
+  isDownloaded?: boolean
+  isDownloading?: boolean
+  progress?: number
+  isInProgress?: boolean
 }
 
 type IconProps = {
@@ -56,11 +56,11 @@ export function PlayButton({ isDownloaded, isDownloading }: { isDownloaded: bool
 }
 
 export const EpisodeCard = ({
-  title,
   subtitle,
   image,
   extraInfo,
-  podcastTitle,
+  smallHeader,
+  bigHeader,
   onPress,
   cardProps,
   isFinished,
@@ -89,16 +89,16 @@ export const EpisodeCard = ({
           {image && <Image source={{ uri: image }} w="$5" h="$5" borderRadius="$2" />}
           <PureYStack flex={1}>
             {/* Podcast title, in small */}
-            {podcastTitle ? (
+            {smallHeader ? (
               <Paragraph size="$3" numberOfLines={1} opacity={0.8}>
-                {podcastTitle}
+                {smallHeader}
               </Paragraph>
             ) : null}
             {/* Episode title, in big */}
             <PureXStack jc="flex-start" gap="$1" ai="center">
               {isFinished ? <Check size="$1" color="$green9" /> : null}
               <Paragraph size="$5" numberOfLines={1} opacity={isFinished ? 0.6 : 1}>
-                {title}
+                {bigHeader}
               </Paragraph>
             </PureXStack>
           </PureYStack>
@@ -114,10 +114,12 @@ export const EpisodeCard = ({
           <XStack>
             <Paragraph fontSize="$1" opacity={0.5}>
               {extraInfo}
-              {" - "}
             </Paragraph>
             {isFinished ? (
               <PureXStack centered gap="$1">
+                <Paragraph fontSize="$1" opacity={1}>
+                  {" - "}
+                </Paragraph>
                 <Paragraph fontSize="$1" opacity={1} color="white" fontWeight="bold">
                   Finished
                 </Paragraph>

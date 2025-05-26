@@ -54,10 +54,58 @@ async function getEpisodesByPodcastId(podcastId: string | null) {
   return res
 }
 
+async function getEpisodesWithPodcastAndMetadataByPodcastId(podcastId: string | null) {
+  if (!podcastId) {
+    return null
+  }
+
+  const res = await drizzleClient
+    .select({
+      episode: {
+        ...episodesTable,
+      },
+      podcast: {
+        ...podcastsTable,
+      },
+      episodeMetadata: {
+        ...episodeMetadatasTable,
+      },
+    })
+    .from(episodesTable)
+    .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
+    .innerJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+    .orderBy(desc(episodesTable.publishedAt))
+
+  return res
+}
+
+export function useGetLocalEpisodesWithPodcastAndMetadataByPodcastIdLiveQuery(podcastId: string | null) {
+  return useLiveQuery(
+    drizzleClient
+      .select({
+        episode: {
+          ...episodesTable,
+        },
+        podcast: {
+          ...podcastsTable,
+        },
+        episodeMetadata: {
+          ...episodeMetadatasTable,
+        },
+      })
+      .from(episodesTable)
+      .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
+      .innerJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+      .orderBy(desc(episodesTable.publishedAt))
+      .where(sql`${episodesTable.podcastId} = ${podcastId}`),
+    [podcastId],
+  )
+}
+
 export function useGetLocalEpisodesByPodcastIdQuery(podcastId: string | null) {
   return useQuery({
     queryKey: ["savedEpisodes", podcastId],
-    queryFn: () => getEpisodesByPodcastId(podcastId),
+    queryFn: () => getEpisodesWithPodcastAndMetadataByPodcastId(podcastId),
     enabled: !!podcastId,
   })
 }
