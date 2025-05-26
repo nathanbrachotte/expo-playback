@@ -14,6 +14,11 @@ export type EpisodeCardProps = {
   podcastTitle?: Optional<string>
   onPress?: VoidFunction
   cardProps?: CardProps
+  isFinished: boolean
+  isDownloaded: boolean
+  isDownloading: boolean
+  progress: number
+  isInProgress: boolean
 }
 
 type IconProps = {
@@ -58,13 +63,12 @@ export const EpisodeCard = ({
   podcastTitle,
   onPress,
   cardProps,
+  isFinished,
+  isDownloaded,
+  isDownloading,
+  progress,
+  isInProgress,
 }: EpisodeCardProps) => {
-  const isPlayed = Math.random() > 0.5
-  const isDownloaded = Math.random() > 0.5
-  const isDownloading = !isDownloaded && Math.random() > 0.5
-  const progress = isPlayed ? 100 : Math.random() * 100
-  const isInProgress = progress > 0 && progress < 95
-
   return (
     <Card
       bordered
@@ -85,13 +89,15 @@ export const EpisodeCard = ({
           {image && <Image source={{ uri: image }} w="$5" h="$5" borderRadius="$2" />}
           <PureYStack flex={1}>
             {/* Podcast title, in small */}
-            <Paragraph size="$3" numberOfLines={1} opacity={0.8}>
-              {podcastTitle}
-            </Paragraph>
+            {podcastTitle ? (
+              <Paragraph size="$3" numberOfLines={1} opacity={0.8}>
+                {podcastTitle}
+              </Paragraph>
+            ) : null}
             {/* Episode title, in big */}
             <PureXStack jc="flex-start" gap="$1" ai="center">
-              {isPlayed ? <Check size="$1" color="$green9" /> : null}
-              <Paragraph size="$5" numberOfLines={1} opacity={isPlayed ? 0.6 : 1}>
+              {isFinished ? <Check size="$1" color="$green9" /> : null}
+              <Paragraph size="$5" numberOfLines={1} opacity={isFinished ? 0.6 : 1}>
                 {title}
               </Paragraph>
             </PureXStack>
@@ -110,7 +116,7 @@ export const EpisodeCard = ({
               {extraInfo}
               {" - "}
             </Paragraph>
-            {isPlayed ? (
+            {isFinished ? (
               <PureXStack centered gap="$1">
                 <Paragraph fontSize="$1" opacity={1} color="white" fontWeight="bold">
                   Finished
@@ -125,7 +131,7 @@ export const EpisodeCard = ({
             <GhostButton
               onPress={() => {}}
               Icon={
-                isPlayed ? <CustomIcon Component={Check} color="$green9" /> : <CustomIcon Component={CircleCheck} />
+                isFinished ? <CustomIcon Component={Check} color="$green9" /> : <CustomIcon Component={CircleCheck} />
               }
             />
             {isDownloaded ? (

@@ -20,6 +20,7 @@ import { usePlayerContext } from "../../providers/PlayerProvider"
 import { LocalEpisode, LocalPodcast } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
+import { DownloadButton } from "../../components/buttons"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -48,36 +49,6 @@ export function EpisodeDescription({ description }: { description: string }) {
   }
 
   return <RenderHtml contentWidth={width} source={source} />
-}
-
-function DownloadButton({ episodeId }: { episodeId: number }) {
-  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
-  const downloadProgress = localEpisodeMetadata?.[0]?.episodeMetadata?.downloadProgress ?? 0
-  const isDownloading = downloadProgress > 0 && downloadProgress < 100
-  const isDownloaded = downloadProgress === 100
-  console.log("🚀 ~ DownloadButton ~ isDownloading:", localEpisodeMetadata)
-  return (
-    <Button
-      icon={
-        isDownloading ? (
-          <View width={16} overflow="visible">
-            <Text textAlign="center" width={32} ml={-8}>
-              {downloadProgress}%
-            </Text>
-          </View>
-        ) : isDownloaded ? (
-          <Check color="$green10" />
-        ) : (
-          Download
-        )
-      }
-      onPress={() => {
-        if (!isDownloading && !isDownloaded) {
-          ExpoPlaybackModule.startBackgroundDownload(episodeId)
-        }
-      }}
-    />
-  )
 }
 
 function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcast: LocalPodcast }) {

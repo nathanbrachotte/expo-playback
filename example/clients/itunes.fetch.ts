@@ -30,7 +30,12 @@ export async function searchPodcast(query: string | null) {
     }
   }
   const encodedQuery = encodeURIComponent(query.trim())
-  const response = await fetch(`${ITUNES_API_BASE_URL}/search?media=podcast&term=${encodedQuery}&country=DE`)
+  const queryParams = new URLSearchParams({
+    media: "podcast",
+    term: encodedQuery,
+    country: "FR",
+  })
+  const response = await fetch(`${ITUNES_API_BASE_URL}/search?${queryParams.toString()}`)
 
   if (!response.ok) {
     throw new Error(`API request failed with status ${response.status}`)
@@ -79,7 +84,7 @@ export async function fetchPodcastAndEpisodes({
 
   const queryParams = new URLSearchParams({
     id: podcastId.toString(),
-    // country: "DE", //?
+    country: "DE", //?
     media: "podcast",
     entity: "podcastEpisode", // Remove this and it only returns the podcast
     limit: limit.toString(),

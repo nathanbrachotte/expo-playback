@@ -1,19 +1,19 @@
 import { useNavigation, useRoute } from "@react-navigation/native"
 import { Minus, Plus } from "@tamagui/lucide-icons"
+import React from "react"
 import { FlatList } from "react-native"
-import { H4, Paragraph, Spinner, Button, CardProps } from "tamagui"
+import { Paragraph, Spinner, Button, CardProps, H5 } from "tamagui"
 
 import { useGetItunesPodcastAndEpisodesQuery } from "../clients/itunes.queries"
 import { useRemovePodcastMutation, useSavePodcastMutation } from "../clients/local.mutations"
 import { useGetLocalEpisodesByPodcastIdQuery, useGetLocalPodcastQuery } from "../clients/local.queries"
-import { useGetRssEpisodesQuery } from "../clients/rss.queries"
 import { CoverImage } from "../components/CoverImage"
 import { EpisodeCard } from "../components/EpisodeCard"
 import { PureLayout } from "../components/Layout"
 import { PureXStack, PureYStack } from "../components/PureStack"
 import { ErrorSection } from "../components/Sections/Error"
 import { LoadingSection } from "../components/Sections/LoadingSection"
-import { SharedPodcastFields, SharedEpisodeFields } from "../types/db.types"
+import { SharedPodcastFields } from "../types/db.types"
 import { PodcastScreenRouteProp } from "../types/navigation.types"
 import { DEVICE_WIDTH } from "../utils/constants"
 import { getImageFromEntity } from "../utils/image.utils"
@@ -29,21 +29,21 @@ function AboutSection({
   ActionSection: React.ReactNode
 }) {
   return (
-    <PureXStack px="$3" centered gap="$3">
-      <PureYStack>
-        <CoverImage entity={podcast} size={DEVICE_WIDTH * 0.4} />
-      </PureYStack>
-      <PureYStack flex={1}>
-        <PureYStack flex={1} jc="flex-start" ai="flex-start">
-          <H4 textAlign="center" numberOfLines={2}>
-            {podcast.title}
-          </H4>
-          <Paragraph size="$4">Author(s): {podcast.author}</Paragraph>
-          <Paragraph size="$4">Episodes: {episodeCount}</Paragraph>
+    <>
+      <PureXStack px="$3" gap="$3">
+        <CoverImage entity={podcast} size={DEVICE_WIDTH * 0.3} />
+        <PureYStack flex={1} gap="$2">
+          <PureYStack flex={1} jc="flex-start" ai="flex-start">
+            <H5 numberOfLines={2}>{podcast.title}</H5>
+            <Paragraph size="$4">Author(s): {podcast.author}</Paragraph>
+            <Paragraph size="$4">Episodes: {episodeCount}</Paragraph>
+          </PureYStack>
         </PureYStack>
+      </PureXStack>
+      <PureXStack px="$3" mt="$4">
         {ActionSection}
-      </PureYStack>
-    </PureXStack>
+      </PureXStack>
+    </>
   )
 }
 
@@ -123,7 +123,11 @@ export function LocalPodcastScreen({ id }: { id: string }) {
         podcast={localPodcast}
         episodeCount={localEpisodes?.length || 0}
         ActionSection={
-          <Button onPress={() => removePodcast(String(localPodcast.appleId))} icon={isRemoving ? null : Minus}>
+          <Button
+            size="$2.5"
+            onPress={() => removePodcast(String(localPodcast.appleId))}
+            icon={isRemoving ? null : Minus}
+          >
             {isRemoving ? <Spinner /> : <Paragraph size="$3">Remove from Library</Paragraph>}
           </Button>
         }
@@ -205,7 +209,7 @@ export function RemotePodcastScreen({ id }: { id: string }) {
         podcast={podcast}
         episodeCount={podcast.extraInfo.episodeCount}
         ActionSection={
-          <Button icon={isUpdatingLocal ? null : Plus} onPress={() => savePodcast({ podcast })}>
+          <Button size="$2.5" icon={isUpdatingLocal ? null : Plus} onPress={() => savePodcast({ podcast })}>
             {isUpdatingLocal ? <Spinner /> : <Paragraph size="$3">Add to Library</Paragraph>}
           </Button>
         }

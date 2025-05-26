@@ -4,21 +4,22 @@ import { FlatList } from "react-native"
 import { Paragraph, YStack } from "tamagui"
 
 import { EpisodeCard } from "./EpisodeCard"
-import { useAllEpisodesQuery } from "../clients/local.queries"
+import { useAllDownloadedEpisodesQuery, useAllEpisodesQuery } from "../clients/local.queries"
 import { getDurationAndDateFromEpisode } from "../utils/episodes.utils"
 import { getImageFromEntity } from "../utils/image.utils"
+import { getEpisodeStateFromMetadata } from "../utils/metadata"
 
 export function EpisodesFlatlist() {
   const navigation = useNavigation()
-  const { data: episodesWithPodcasts } = useAllEpisodesQuery()
+  const { data: episodesWithPodcastsAndMetadata } = useAllDownloadedEpisodesQuery()
 
-  const isLoading = !episodesWithPodcasts
+  const isLoading = !episodesWithPodcastsAndMetadata
 
   if (isLoading) {
     return <Paragraph>Loading episodes...</Paragraph>
   }
 
-  if (!episodesWithPodcasts || episodesWithPodcasts.length === 0) {
+  if (!episodesWithPodcastsAndMetadata || episodesWithPodcastsAndMetadata.length === 0) {
     return (
       <YStack flex={1} gap="$4">
         <Paragraph>No episodes found</Paragraph>
@@ -28,23 +29,27 @@ export function EpisodesFlatlist() {
 
   return (
     <FlatList
-      data={episodesWithPodcasts.map((episode) => episode.episode) ?? []}
+      data={episodesWithPodcastsAndMetadata}
       renderItem={({ item }) => {
+        const episode = item.episode
+        const podcast = item.podcast
+        const prettyMetadata = getEpisodeStateFromMetadata(item.episodeMetadata)
+
         return (
           <EpisodeCard
-            title={item.title}
-            subtitle={item.description}
-            image={getImageFromEntity(item, "100") || getImageFromEntity(episodesWithPodcasts[0].podcast, "100")}
-            extraInfo={getDurationAndDateFromEpisode(item).label}
-            //! FIXME: THIS WILL NEVER WORK. DUH.
-            podcastTitle={episodesWithPodcasts[0].podcast.title}
+            title={episode.title}
+            subtitle={episode.description}
+            image={getImageFromEntity(episode, "100") || getImageFromEntity(podcast, "100")}
+            extraInfo={getDurationAndDateFromEpisode(episode).label}
+            podcastTitle={podcast.title}
             onPress={() => {
-              if (!item.rssId) {
+              if (!episode.rssId) {
                 throw new Error("Found episode without an rssId")
               }
 
-              navigation.navigate("Episode", { episodeId: String(item.id), podcastId: String(item.podcastId) })
+              navigation.navigate("Episode", { episodeId: String(episode.id), podcastId: String(podcast.id) })
             }}
+            {...prettyMetadata}
           />
         )
       }}

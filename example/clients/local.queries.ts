@@ -139,3 +139,24 @@ export const useAllEpisodesQuery = () => {
       .orderBy(desc(episodesTable.publishedAt)),
   )
 }
+
+export function useAllDownloadedEpisodesQuery() {
+  return useLiveQuery(
+    drizzleClient
+      .select({
+        episode: {
+          ...episodesTable,
+        },
+        podcast: {
+          ...podcastsTable,
+        },
+        episodeMetadata: {
+          ...episodeMetadatasTable,
+        },
+      })
+      .from(episodesTable)
+      .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
+      .innerJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+      .orderBy(desc(episodesTable.publishedAt)),
+  )
+}
