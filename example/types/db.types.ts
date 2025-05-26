@@ -1,4 +1,4 @@
-import { episodesTable, podcastsTable } from "../db/schema"
+import { episodeMetadatasTable, episodesTable, podcastsTable } from "../db/schema"
 
 // TODO: Infer type from DB
 export type LocalEpisode = typeof episodesTable.$inferSelect
@@ -12,3 +12,6 @@ export type LocalPodcastInsert = typeof podcastsTable.$inferInsert
 
 // This is to be able to consume both fetched and local podcasts in the app
 export type SharedPodcastFields = Omit<LocalPodcast, "createdAt" | "updatedAt" | "id">
+
+export type LocalEpisodeMetadata = typeof episodeMetadatasTable.$inferSelect
+export type LocalEpisodeMetadataInsert = typeof episodeMetadatasTable.$inferInsert
