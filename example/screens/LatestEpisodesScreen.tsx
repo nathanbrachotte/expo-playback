@@ -14,7 +14,7 @@ export function LatestEpisodesScreen() {
 
   return (
     <PureLayout header={<H3>Latest episodes</H3>}>
-      <PureSection.Wrapper>
+      <PureSection.Wrapper flex={1}>
         <EpisodesFlatlist />
       </PureSection.Wrapper>
     </PureLayout>
