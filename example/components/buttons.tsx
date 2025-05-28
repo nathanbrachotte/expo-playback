@@ -61,32 +61,35 @@ export function PlayButton({
   isDownloaded,
   isDownloading,
   episodeId,
+  onPress,
+  ...props
 }: {
   isDownloaded?: boolean
   isDownloading?: boolean
   episodeId: number
-}) {
+} & ButtonProps) {
   if (isDownloaded) {
     return (
-      <PureXStack w="$3" h="$3" centered themeInverse>
-        <GhostButton onPress={() => {}} Icon={<CustomButtonIcon Component={Play} />} />
+      <PureXStack centered themeInverse>
+        <GhostButton onPress={() => {}} Icon={<CustomButtonIcon Component={Play} />} {...props} />
       </PureXStack>
     )
   }
 
   if (isDownloading) {
     return (
-      <PureXStack w="$3" h="$3" centered>
+      <PureXStack centered>
         <Spinner size="small" />
       </PureXStack>
     )
   }
 
   return (
-    <PureXStack centered w="$3" h="$3">
+    <PureXStack centered>
       <GhostButton
         onPress={() => ExpoPlaybackModule.startBackgroundDownload(episodeId)}
         Icon={<CustomButtonIcon Component={Download} />}
+        {...props}
       />
     </PureXStack>
   )

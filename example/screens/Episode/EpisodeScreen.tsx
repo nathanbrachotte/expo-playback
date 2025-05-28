@@ -1,10 +1,10 @@
 import { useNavigation, useNavigationState, useRoute } from "@react-navigation/native"
-import { ArrowBigRight, Play, Share } from "@tamagui/lucide-icons"
+import { ArrowBigRight, Ellipsis, Play, Share } from "@tamagui/lucide-icons"
 import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import { useCallback } from "react"
-import { Image, useWindowDimensions } from "react-native"
+import { useWindowDimensions } from "react-native"
 import RenderHtml from "react-native-render-html"
-import { Button, H3, H4, Paragraph, useTheme, YStack } from "tamagui"
+import { Button, H3, H4, Paragraph, useTheme, Image } from "tamagui"
 import { z } from "zod"
 
 import { useSavePodcastMutation } from "../../clients/local.mutations"
@@ -12,11 +12,12 @@ import { getEpisodeWithPodcastByExternalId, useGetLiveLocalEpisodeQuery } from "
 import { PureLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
-import { DownloadButton } from "../../components/buttons"
+import { ButtonList, CustomButtonIcon, DownloadButton, GhostButton, PlayButton } from "../../components/buttons"
 import { usePlayerContext } from "../../providers/PlayerProvider"
-import { LocalEpisode, LocalPodcast } from "../../types/db.types"
+import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
+import { getEpisodeStateFromMetadata, getIsDownloadedFromMetadata } from "../../utils/metadata"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -47,14 +48,8 @@ export function EpisodeDescription({ description }: { description: string }) {
   return <RenderHtml contentWidth={width} source={source} />
 }
 
-function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcast: LocalPodcast }) {
+function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
   const navigation = useNavigation()
-  const { setActiveEpisodeId } = usePlayerContext()
-
-  const { mutateAsync: savePodcast } = useSavePodcastMutation({
-    podcastId: podcast.id?.toString() || podcast.appleId?.toString() || "",
-  })
-
   const routes = useNavigationState((state) => state?.routes || [])
 
   const isPodcastScreenInStack = routes.some((route) => {
@@ -62,6 +57,50 @@ function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcas
     return result.success && result.data.params.id === (podcast.id?.toString() || podcast.appleId?.toString())
   })
 
+  const goToPodcast = () => {
+    navigation.navigate("Podcast", {
+      id: podcast.id?.toString() || podcast.appleId?.toString(),
+    })
+  }
+
+  if (isPodcastScreenInStack) {
+    return null
+  }
+
+  return (
+    <Button
+      onPress={goToPodcast}
+      borderRadius="$4"
+      pl="$2"
+      pr="$3"
+      // variant="outlined"
+    >
+      <PureXStack gap="$3" ai="center" jc="flex-start">
+        <Image source={{ uri: getImageFromEntity(podcast, "100") || "" }} w="$3" h="$3" borderRadius="$2" />
+        <Paragraph size="$6">{podcast.title}</Paragraph>
+      </PureXStack>
+    </Button>
+  )
+}
+
+function PlayEpisodeButton({
+  episode,
+  podcast,
+  episodeMetadata,
+}: {
+  episode: LocalEpisode
+  podcast: LocalPodcast
+  episodeMetadata: LocalEpisodeMetadata | null
+}) {
+  console.log("🚀 ~ PlayEpisodeButton ~ podcast:", JSON.stringify(podcast, null, 2))
+  console.log("🚀 ~ PlayEpisodeButton ~ episode:", JSON.stringify(episode, null, 2))
+  const { setActiveEpisodeId } = usePlayerContext()
+
+  const { mutateAsync: savePodcast } = useSavePodcastMutation({
+    podcastId: podcast.id?.toString() || podcast.appleId?.toString() || "",
+  })
+
+  // TODO: Erik, figure out what's needed from this still, but most could be extracted to the button imo
   const handlePlay = useCallback(async () => {
     // @ts-ignore ds
     console.log("🚀 ~ downloadAndPlay ~ episode:", JSON.stringify(episode, null, 2))
@@ -98,52 +137,75 @@ function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcas
     // setActiveEpisodeId(1)
   }, [episode])
 
-  const handleDownload = useCallback(() => {
-    ExpoPlaybackModule.startBackgroundDownload(episode.id)
-  }, [episode])
-
-  const goToPodcast = () => {
-    navigation.navigate("Podcast", {
-      id: podcast.id?.toString() || podcast.appleId?.toString(),
-    })
+  if (!episodeMetadata) {
+    return (
+      <PlayButton
+        isDownloaded={false}
+        isDownloading={false}
+        episodeId={episode.id}
+        size="$5"
+        //
+        theme={"green"}
+      />
+    )
   }
 
+  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(episodeMetadata)
+
+  return (
+    <PlayButton
+      isDownloaded={isDownloaded}
+      isDownloading={isDownloading}
+      size="$5"
+      episodeId={episode.id}
+      onPress={handlePlay}
+    />
+  )
+}
+
+function EpisodeDumbScreen({
+  episode,
+  podcast,
+  episodeMetadata,
+}: {
+  episode: LocalEpisode
+  podcast: LocalPodcast
+  episodeMetadata: LocalEpisodeMetadata | null
+}) {
   const podcastImage = getImageFromEntity(podcast, "100")
   const episodeImage = getImageFromEntity(episode, "100")
   const image = episodeImage || podcastImage
 
   return (
     <PureLayout>
-      <PureYStack gap="$3" flex={1} overflow="hidden">
-        <PureXStack px="$3" gap="$4" alignItems="center" centered>
-          {image ? (
-            <Image source={{ uri: image }} style={{ width: 120, height: 120, borderRadius: 12 }} resizeMode="cover" />
-          ) : null}
-        </PureXStack>
-        <YStack flex={1}>
-          <H3 px="$3" fontWeight="bold" textAlign="left">
-            {episode.title}
-          </H3>
-          <Paragraph px="$3">
-            <Paragraph fontWeight="bold">Release Date:</Paragraph> {new Date(episode.publishedAt).toLocaleDateString()}
-          </Paragraph>
-
-          <PureScrollView>
-            <EpisodeDescription description={episode.description} />
-          </PureScrollView>
-        </YStack>
+      <PureYStack m="$-8" mb="$0">
+        {image ? <Image alignSelf="center" source={{ uri: image }} w="$16" h="$16" borderRadius="$2" /> : null}
       </PureYStack>
-      <PureYStack gap="$2" centered>
-        <PureXStack gap="$2" centered>
-          <DownloadButton episodeId={episode.id} />
-          <Button icon={Play} onPress={handlePlay} />
-          <Button icon={Share} />
+      <PureYStack flex={1} mt="$4">
+        <H3 px="$3" fontWeight="bold" textAlign="left">
+          {episode.title}
+        </H3>
+        <PureXStack px="$2" mt="$2" justifyContent="space-between">
+          <PureXStack>
+            <PodcastButton podcast={podcast} />
+          </PureXStack>
+          <PureXStack gap="$2" centered>
+            <GhostButton
+              Icon={<CustomButtonIcon Component={Ellipsis} />}
+              onPress={() => {}}
+              // episode={episode}
+              // podcast={podcast}
+              // episodeMetadata={episodeMetadata}
+            />
+            <PlayEpisodeButton episode={episode} podcast={podcast} episodeMetadata={episodeMetadata} />
+          </PureXStack>
         </PureXStack>
-        {!isPodcastScreenInStack && (
-          <Button onPress={goToPodcast} icon={ArrowBigRight} width="$14">
-            <Button.Text>Podcast</Button.Text>
-          </Button>
-        )}
+        <Paragraph px="$3">
+          <Paragraph fontWeight="bold">Release Date:</Paragraph> {new Date(episode.publishedAt).toLocaleDateString()}
+        </Paragraph>
+        <PureScrollView>
+          <EpisodeDescription description={episode.description} />
+        </PureScrollView>
       </PureYStack>
     </PureLayout>
   )
@@ -166,6 +228,7 @@ export function EpisodeScreen() {
 
   const episode = localEpisode[0]?.episode
   const podcast = localEpisode[0]?.podcast
+  const episodeMetadata = localEpisode[0]?.episodeMetadata
 
   if (!episode || !podcast) {
     return (
@@ -177,5 +240,5 @@ export function EpisodeScreen() {
     )
   }
 
-  return <EpisodeDumbScreen episode={episode} podcast={podcast} />
+  return <EpisodeDumbScreen episode={episode} podcast={podcast} episodeMetadata={episodeMetadata} />
 }

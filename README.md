@@ -27,6 +27,9 @@ cd ios && pod install && cd .. # install pods
 - [ ] Handle dates and durations
 - [ ] Hook the "mark as played" / "unplay" button
 - [ ] Hook the Download button
+- [ ] Player empty state
+- [ ] Update weird transparent gradient
+- [ ] Make "play" button also show "pause" if actively playing
 
 ## SQLite
 

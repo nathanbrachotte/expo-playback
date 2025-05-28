@@ -112,7 +112,7 @@ export function useGetLocalEpisodesByPodcastIdQuery(podcastId: string | null) {
   })
 }
 
-export const episodeWithPodcastByIdDbQuery = (episodeId: string | null) =>
+export const episodeWithExtrasByIdDbQuery = (episodeId: string | null) =>
   drizzleClient
     .select({
       episode: {
@@ -121,17 +121,21 @@ export const episodeWithPodcastByIdDbQuery = (episodeId: string | null) =>
       podcast: {
         ...podcastsTable,
       },
+      episodeMetadata: {
+        ...episodeMetadatasTable,
+      },
     })
     .from(episodesTable)
-    .where(sql`${episodesTable.id} = ${episodeId}`)
     .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
+    .leftJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+    .where(sql`${episodesTable.id} = ${episodeId}`)
 
 export async function getEpisodeWithPodcastByExternalId(episodeId: string | null) {
   if (!episodeId) {
     return null
   }
 
-  const res = await episodeWithPodcastByIdDbQuery(episodeId)
+  const res = await episodeWithExtrasByIdDbQuery(episodeId)
 
   if (res.length !== 1) {
     return null
@@ -145,7 +149,7 @@ export async function getEpisodeWithPodcastById(episodeId: string | null) {
     return null
   }
 
-  const res = await episodeWithPodcastByIdDbQuery(episodeId)
+  const res = await episodeWithExtrasByIdDbQuery(episodeId)
 
   if (res.length !== 1) {
     return null
@@ -155,7 +159,7 @@ export async function getEpisodeWithPodcastById(episodeId: string | null) {
 }
 
 export function useGetLiveLocalEpisodeQuery({ id }: { id: string | null }) {
-  return useLiveQuery(episodeWithPodcastByIdDbQuery(id), [id])
+  return useLiveQuery(episodeWithExtrasByIdDbQuery(id), [id])
 }
 
 export const episodeMetadataByIdDbQuery = (episodeId: number) =>
