@@ -22,10 +22,11 @@ cd ios && pod install && cd .. # install pods
 - [x] Fix local episode query not working (always default to episode)
 - [x] Finish player
 - [x] Fix UI "jumping" when navigation (It's not the header)
-- [ ] Change the mechanism to save the podcast locally, it should be taking all episodes from RSS feed and not itunes. Not doing rn since Erik is working on this file and he'll get mad at me if I do.
+- [x] Change the mechanism to save the podcast locally, it should be taking all episodes from RSS feed and not itunes. Not doing rn since Erik is working on this file and he'll get mad at me if I do.
 - [ ] Fix starting playing always tries to download
 - [ ] Handle dates and durations
-- [ ]
+- [ ] Hook the "mark as played" / "unplay" button
+- [ ] Hook the Download button
 
 ## SQLite
 

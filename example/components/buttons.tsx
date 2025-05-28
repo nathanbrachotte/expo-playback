@@ -1,7 +1,7 @@
-import { Check, Download } from "@tamagui/lucide-icons"
+import { Check, Download, Play } from "@tamagui/lucide-icons"
 import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import React, { ComponentProps } from "react"
-import { Button, ButtonProps, Paragraph } from "tamagui"
+import { Button, ButtonProps, Paragraph, Spinner } from "tamagui"
 
 import { PureXStack } from "./PureStack"
 import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
@@ -41,13 +41,65 @@ export function GhostButton({
   )
 }
 
-export function DownloadButton({ episodeId }: { episodeId: number }) {
+type IconProps = {
+  color?: string
+  size?: string | number
+  strokeWidth?: number | string
+}
+
+export const CustomButtonIcon = ({
+  Component,
+  color,
+}: {
+  Component: React.ComponentType<IconProps>
+  color?: string
+}) => {
+  return <Component size="$1" strokeWidth={2.5} color={color} />
+}
+
+export function PlayButton({
+  isDownloaded,
+  isDownloading,
+  episodeId,
+}: {
+  isDownloaded?: boolean
+  isDownloading?: boolean
+  episodeId: number
+}) {
+  if (isDownloaded) {
+    return (
+      <PureXStack w="$3" h="$3" centered themeInverse>
+        <GhostButton onPress={() => {}} Icon={<CustomButtonIcon Component={Play} />} />
+      </PureXStack>
+    )
+  }
+
+  if (isDownloading) {
+    return (
+      <PureXStack w="$3" h="$3" centered>
+        <Spinner size="small" />
+      </PureXStack>
+    )
+  }
+
+  return (
+    <PureXStack centered w="$3" h="$3">
+      <GhostButton
+        onPress={() => ExpoPlaybackModule.startBackgroundDownload(episodeId)}
+        Icon={<CustomButtonIcon Component={Download} />}
+      />
+    </PureXStack>
+  )
+}
+
+/**
+ * @deprecated Use PlayButton
+ */
+export function DownloadButton({ episodeId, showLabel = false }: { episodeId: number; showLabel?: boolean }) {
   const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
   const downloadProgress = localEpisodeMetadata?.[0]?.episodeMetadata?.downloadProgress ?? 0
   const isDownloading = downloadProgress > 0 && downloadProgress < 100
   const isDownloaded = downloadProgress === 100
-
-  console.log("🚀 ~ DownloadButton ~ isDownloading:", localEpisodeMetadata)
 
   return (
     <Button

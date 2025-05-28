@@ -33,7 +33,7 @@ export function EpisodesFlatlist() {
       renderItem={({ item }) => {
         const episode = item.episode
         const podcast = item.podcast
-        const prettyMetadata = getEpisodeStateFromMetadata(item.episodeMetadata)
+        const prettyMetadata = item.episodeMetadata ? getEpisodeStateFromMetadata(item.episodeMetadata) : null
 
         return (
           <EpisodeCard
@@ -49,6 +49,7 @@ export function EpisodesFlatlist() {
 
               navigation.navigate("Episode", { episodeId: String(episode.id), podcastId: String(podcast.id) })
             }}
+            episodeId={episode.id}
             {...prettyMetadata}
           />
         )

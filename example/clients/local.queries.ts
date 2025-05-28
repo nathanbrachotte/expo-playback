@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { desc, sql } from "drizzle-orm"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 
-import { db, drizzleClient, schema } from "../db/client"
+import { drizzleClient, schema } from "../db/client"
 import { episodeMetadatasTable, episodesTable, podcastsTable } from "../db/schema"
 import { useNativeSaveLiveQuery } from "../db/useNativeSaveLiveQuery"
 
@@ -73,9 +73,10 @@ async function getEpisodesWithPodcastAndMetadataByPodcastId(podcastId: string | 
     })
     .from(episodesTable)
     .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
-    .innerJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+    .leftJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+    .where(sql`${episodesTable.podcastId} = ${podcastId}`)
     .orderBy(desc(episodesTable.publishedAt))
-
+  console.log("🚀 ~ getEpisodesWithPodcastAndMetadataByPodcastId ~ res:", res)
   return res
 }
 
@@ -103,6 +104,7 @@ export function useGetLocalEpisodesWithPodcastAndMetadataByPodcastIdLiveQuery(po
 }
 
 export function useGetLocalEpisodesByPodcastIdQuery(podcastId: string | null) {
+  console.log("🚀 ~ useGetLocalEpisodesByPodcastIdQuery ~ podcastId:", podcastId)
   return useQuery({
     queryKey: ["savedEpisodes", podcastId],
     queryFn: () => getEpisodesWithPodcastAndMetadataByPodcastId(podcastId),
@@ -204,7 +206,7 @@ export function useAllDownloadedEpisodesQuery() {
       })
       .from(episodesTable)
       .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
-      .innerJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+      .leftJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
       .orderBy(desc(episodesTable.publishedAt)),
   )
 }

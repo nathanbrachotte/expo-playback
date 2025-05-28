@@ -1,9 +1,9 @@
-import { Check, CircleCheck, Download, Ellipsis, Play, Trash2 } from "@tamagui/lucide-icons"
+import { Check, CircleCheck, Ellipsis, Trash2 } from "@tamagui/lucide-icons"
 import React from "react"
-import { YStack, Paragraph, Image, XStack, Card, CardProps, Spinner, Progress } from "tamagui"
+import { YStack, Paragraph, Image, XStack, Card, CardProps, Progress } from "tamagui"
 
 import { PureXStack, PureYStack } from "./PureStack"
-import { GhostButton } from "./buttons"
+import { CustomButtonIcon, GhostButton, PlayButton } from "./buttons"
 import { Optional } from "../utils/types.utils"
 
 export type EpisodeCardProps = {
@@ -19,40 +19,7 @@ export type EpisodeCardProps = {
   isDownloading?: boolean
   progress?: number
   isInProgress?: boolean
-}
-
-type IconProps = {
-  color?: string
-  size?: string | number
-  strokeWidth?: number | string
-}
-
-const CustomIcon = ({ Component, color }: { Component: React.ComponentType<IconProps>; color?: string }) => {
-  return <Component size="$1" strokeWidth={2.5} color={color} />
-}
-
-export function PlayButton({ isDownloaded, isDownloading }: { isDownloaded: boolean; isDownloading: boolean }) {
-  if (isDownloaded) {
-    return (
-      <PureXStack w="$3" h="$3" centered themeInverse>
-        <GhostButton onPress={() => {}} Icon={<CustomIcon Component={Play} />} />
-      </PureXStack>
-    )
-  }
-
-  if (isDownloading) {
-    return (
-      <PureXStack w="$3" h="$3" centered>
-        <Spinner size="small" />
-      </PureXStack>
-    )
-  }
-
-  return (
-    <PureXStack centered w="$3" h="$3">
-      <GhostButton onPress={() => {}} Icon={<CustomIcon Component={Download} />} />
-    </PureXStack>
-  )
+  episodeId?: number
 }
 
 export const EpisodeCard = ({
@@ -68,6 +35,7 @@ export const EpisodeCard = ({
   isDownloading,
   progress,
   isInProgress,
+  episodeId,
 }: EpisodeCardProps) => {
   return (
     <Card
@@ -133,13 +101,17 @@ export const EpisodeCard = ({
             <GhostButton
               onPress={() => {}}
               Icon={
-                isFinished ? <CustomIcon Component={Check} color="$green9" /> : <CustomIcon Component={CircleCheck} />
+                isFinished ? (
+                  <CustomButtonIcon Component={Check} color="$green9" />
+                ) : (
+                  <CustomButtonIcon Component={CircleCheck} />
+                )
               }
             />
             {isDownloaded ? (
-              <GhostButton onPress={() => {}} Icon={<CustomIcon Component={Trash2} color="$red10" />} />
+              <GhostButton onPress={() => {}} Icon={<CustomButtonIcon Component={Trash2} color="$red10" />} />
             ) : null}
-            <GhostButton onPress={() => {}} Icon={<CustomIcon Component={Ellipsis} />} />
+            <GhostButton onPress={() => {}} Icon={<CustomButtonIcon Component={Ellipsis} />} />
           </PureXStack>
           {isInProgress ? (
             <PureXStack flex={1} px="$6" w="100%">
@@ -148,7 +120,9 @@ export const EpisodeCard = ({
               </Progress>
             </PureXStack>
           ) : null}
-          <PlayButton isDownloaded={isDownloaded} isDownloading={isDownloading} />
+          {episodeId ? (
+            <PlayButton isDownloaded={isDownloaded} isDownloading={isDownloading} episodeId={episodeId} />
+          ) : null}
         </Card.Footer>
       </PureYStack>
     </Card>
