@@ -1,15 +1,15 @@
 import { useNavigation } from "@react-navigation/native"
 import { Bell, CircleDotDashed, Cog, Download, Plus, Search } from "@tamagui/lucide-icons"
 import React from "react"
-import { Button, XStack, H2, ScrollView, YStack, H5 } from "tamagui"
+import { Button, XStack, H2, ScrollView, YStack, H5, Paragraph } from "tamagui"
 
 import { PurecastLogo } from "../assets/PurecastLogo"
-import { useLocalPodcastsQuery } from "../clients/local.queries"
-import { ButtonList, GhostButton } from "../components/buttons"
+import { useAllDownloadedEpisodesQuery, useAllEpisodesQuery, useLocalPodcastsQuery } from "../clients/local.queries"
 import { PureLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { PureSection } from "../components/Sections/PureSection"
 import { TestSection } from "../components/TestSection"
+import { ButtonList } from "../components/buttons"
 import { getImageFromEntity } from "../utils/image.utils"
 
 function PodcastsList() {
@@ -63,6 +63,8 @@ export function EmptyState() {
 export function HomeScreen() {
   const navigation = useNavigation()
   const { data: podcastList } = useLocalPodcastsQuery()
+  const { data: episodesWithPodcastsAndMetadata } = useAllDownloadedEpisodesQuery()
+  const { data: allEpisodes } = useAllEpisodesQuery()
 
   const hasSavedPodcasts = podcastList && podcastList?.length > 0
 
@@ -82,6 +84,9 @@ export function HomeScreen() {
       }
     >
       <TestSection />
+      <Paragraph>Podcasts: {podcastList?.length}</Paragraph>
+      <Paragraph>Episodes: {episodesWithPodcastsAndMetadata?.length}</Paragraph>
+      <Paragraph>All episodes: {allEpisodes?.length}</Paragraph>
       {hasSavedPodcasts ? (
         <>
           <YStack px="$2" mt="$2" gap="$2">

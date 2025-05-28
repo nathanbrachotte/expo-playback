@@ -1,26 +1,22 @@
 import { useNavigation, useNavigationState, useRoute } from "@react-navigation/native"
-import { ArrowBigRight, Check, Download, Play, Share } from "@tamagui/lucide-icons"
+import { ArrowBigRight, Play, Share } from "@tamagui/lucide-icons"
 import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import { useCallback } from "react"
 import { Image, useWindowDimensions } from "react-native"
 import RenderHtml from "react-native-render-html"
-import { Button, H3, H4, Paragraph, Text, useTheme, View, YStack } from "tamagui"
+import { Button, H3, H4, Paragraph, useTheme, YStack } from "tamagui"
 import { z } from "zod"
 
 import { useSavePodcastMutation } from "../../clients/local.mutations"
-import {
-  getEpisodeWithPodcastByExternalId,
-  useGetLiveLocalEpisodeMetadataQuery,
-  useGetLiveLocalEpisodeQuery,
-} from "../../clients/local.queries"
+import { getEpisodeWithPodcastByExternalId, useGetLiveLocalEpisodeQuery } from "../../clients/local.queries"
 import { PureLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
+import { DownloadButton } from "../../components/buttons"
 import { usePlayerContext } from "../../providers/PlayerProvider"
 import { LocalEpisode, LocalPodcast } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
-import { DownloadButton } from "../../components/buttons"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -156,11 +152,7 @@ function EpisodeDumbScreen({ episode, podcast }: { episode: LocalEpisode; podcas
 export function EpisodeScreen() {
   const route = useRoute<EpisodeScreenRouteProp>()
   const { episodeId, podcastId } = route.params
-  console.log("🚀 ~ EpisodeScreen ~ episodeId:", episodeId)
   const { data: localEpisode, error, updatedAt } = useGetLiveLocalEpisodeQuery({ id: episodeId })
-  console.log("🚀 ~ EpisodeScreen ~ localEpisode:", localEpisode)
-  console.log("🚀 ~ EpisodeScreen ~ error:", error)
-  console.log("🚀 ~ EpisodeScreen ~ updatedAt:", updatedAt)
 
   // if (isLoading) {
   //   return (
