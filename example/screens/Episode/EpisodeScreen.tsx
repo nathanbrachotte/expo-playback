@@ -1,5 +1,5 @@
 import { useNavigation, useNavigationState, useRoute } from "@react-navigation/native"
-import { ArrowBigRight, Ellipsis, Play, Share } from "@tamagui/lucide-icons"
+import { Ellipsis } from "@tamagui/lucide-icons"
 import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import { useCallback } from "react"
 import { useWindowDimensions } from "react-native"
@@ -12,12 +12,12 @@ import { getEpisodeWithPodcastByExternalId, useGetLiveLocalEpisodeQuery } from "
 import { PureLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
-import { ButtonList, CustomButtonIcon, DownloadButton, GhostButton, PlayButton } from "../../components/buttons"
+import { CustomButtonIcon, GhostButton, PlayButton } from "../../components/buttons"
 import { usePlayerContext } from "../../providers/PlayerProvider"
 import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
-import { getEpisodeStateFromMetadata, getIsDownloadedFromMetadata } from "../../utils/metadata"
+import { getEpisodeStateFromMetadata } from "../../utils/metadata"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -138,16 +138,7 @@ function PlayEpisodeButton({
   }, [episode])
 
   if (!episodeMetadata) {
-    return (
-      <PlayButton
-        isDownloaded={false}
-        isDownloading={false}
-        episodeId={episode.id}
-        size="$5"
-        //
-        theme={"green"}
-      />
-    )
+    return <PlayButton isDownloaded={false} isDownloading={false} episodeId={episode.id} size="$5" />
   }
 
   const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(episodeMetadata)

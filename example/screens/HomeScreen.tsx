@@ -11,6 +11,8 @@ import { PureSection } from "../components/Sections/PureSection"
 import { TestSection } from "../components/TestSection"
 import { ButtonList } from "../components/buttons"
 import { getImageFromEntity } from "../utils/image.utils"
+import { usePlayerContext } from "../providers/PlayerProvider"
+import { PureScrollView } from "../components/PureScrollview"
 
 function PodcastsList() {
   const { data: podcastList } = useLocalPodcastsQuery()
@@ -63,8 +65,6 @@ export function EmptyState() {
 export function HomeScreen() {
   const navigation = useNavigation()
   const { data: podcastList } = useLocalPodcastsQuery()
-  const { data: episodesWithPodcastsAndMetadata } = useAllDownloadedEpisodesQuery()
-  const { data: allEpisodes } = useAllEpisodesQuery()
 
   const hasSavedPodcasts = podcastList && podcastList?.length > 0
 
@@ -83,34 +83,34 @@ export function HomeScreen() {
         </XStack>
       }
     >
-      <TestSection />
-      <Paragraph>Podcasts: {podcastList?.length}</Paragraph>
-      <Paragraph>Episodes: {episodesWithPodcastsAndMetadata?.length}</Paragraph>
-      <Paragraph>All episodes: {allEpisodes?.length}</Paragraph>
-      {hasSavedPodcasts ? (
-        <>
-          <YStack px="$2" mt="$2" gap="$2">
-            <ButtonList
-              icon={<Bell size="$1.5" />}
-              text="Latest episodes"
-              onPress={() => navigation.navigate("LatestEpisodes")}
-            />
-            <ButtonList
-              icon={<Download size="$1.5" />}
-              text="Downloaded episodes"
-              onPress={() => navigation.navigate("LatestEpisodes")}
-            />
-            <ButtonList
-              icon={<CircleDotDashed size="$1.5" />}
-              text="In progress"
-              onPress={() => navigation.navigate("LatestEpisodes")}
-            />
-          </YStack>
-          <PodcastsSection />
-        </>
-      ) : (
-        <EmptyState />
-      )}
+      <PureScrollView>
+        <TestSection />
+
+        {hasSavedPodcasts ? (
+          <>
+            <YStack px="$2" mt="$2" gap="$2">
+              <ButtonList
+                icon={<Bell size="$1.5" />}
+                text="Latest episodes"
+                onPress={() => navigation.navigate("LatestEpisodes")}
+              />
+              <ButtonList
+                icon={<Download size="$1.5" />}
+                text="Downloaded episodes"
+                onPress={() => navigation.navigate("LatestEpisodes")}
+              />
+              <ButtonList
+                icon={<CircleDotDashed size="$1.5" />}
+                text="In progress"
+                onPress={() => navigation.navigate("LatestEpisodes")}
+              />
+            </YStack>
+            <PodcastsSection />
+          </>
+        ) : (
+          <EmptyState />
+        )}
+      </PureScrollView>
     </PureLayout>
   )
 }
