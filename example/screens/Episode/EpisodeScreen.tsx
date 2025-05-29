@@ -21,8 +21,7 @@ import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../../types/db
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata"
-import { DurationAndDateSection } from "../../components/Dates"
-import { EpisodeTitle } from "../../components/episode"
+import { DurationAndDateSection, EpisodeTitle } from "../../components/episode"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -81,10 +80,9 @@ function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
       borderRadius="$4"
       pl="$2"
       pr="$3"
-      minWidth="$12"
       // variant="outlined"
     >
-      <PureXStack gap="$3" ai="center" jc="flex-start" width="100%">
+      <PureXStack gap="$3" ai="center" jc="flex-start">
         <Image
           source={{ uri: getImageFromEntity(podcast, "100") || "" }}
           w="$3"
@@ -92,7 +90,7 @@ function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
           borderRadius="$2"
           flexShrink={0}
         />
-        <Paragraph size="$6" numberOfLines={1} flex={1} minWidth={0}>
+        <Paragraph size="$6" numberOfLines={1} flex={1} maxWidth="100%">
           {podcast.title}
         </Paragraph>
       </PureXStack>

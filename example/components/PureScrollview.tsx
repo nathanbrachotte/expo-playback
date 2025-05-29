@@ -50,7 +50,14 @@ export function PureScrollView({
       <BaseScrollView playerAware={playerAware} {...scrollViewProps}>
         {children}
       </BaseScrollView>
-      <YStack position="absolute" bottom={0} left={0} right={0} height={gradientHeight} pointerEvents="none">
+      <YStack
+        position="absolute"
+        bottom={0}
+        left={0}
+        right={0}
+        height={gradientHeight}
+        pointerEvents="none"
+      >
         <LinearGradient
           colors={gradientColors || ["transparent", "$background"]}
           style={{ flex: 1 }}

@@ -15,9 +15,8 @@ import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata"
-import { DurationAndDateSection } from "../../components/Dates"
 import { EpisodeCard } from "../../components/EpisodeCard"
-import { EpisodeDescription } from "../../components/episode"
+import { DurationAndDateSection, EpisodeDescription } from "../../components/episode"
 
 export function LocalPodcastScreen({ id }: { id: string }) {
   const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(id)

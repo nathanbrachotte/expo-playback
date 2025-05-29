@@ -11,8 +11,7 @@ import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { EpisodeCard } from "../../components/EpisodeCard"
-import { DurationAndDateSection } from "../../components/Dates"
-import { EpisodeDescription } from "../../components/episode"
+import { DurationAndDateSection, EpisodeDescription } from "../../components/episode"
 
 const LIMIT_ITUNES_INITIAL_FETCH = 15
 
@@ -91,7 +90,6 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
           <EpisodeCard
             smallHeader={podcast.title}
             bigHeader={item.title}
-            subtitle={item.description}
             image={getImageFromEntity(item, "100")}
             cardProps={{
               opacity: 0.5,

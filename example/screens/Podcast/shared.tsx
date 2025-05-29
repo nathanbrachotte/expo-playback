@@ -1,12 +1,10 @@
 import React from "react"
-import { Paragraph, H5, CardProps } from "tamagui"
+import { Paragraph, H5 } from "tamagui"
 
 import { CoverImage } from "../../components/CoverImage"
-import { EpisodeCard } from "../../components/EpisodeCard"
 import { PureXStack, PureYStack } from "../../components/PureStack"
 import { SharedPodcastFields } from "../../types/db.types"
 import { DEVICE_WIDTH } from "../../utils/constants"
-import { DurationAndDateSection } from "../../components/Dates"
 
 export function AboutSection({
   podcast,

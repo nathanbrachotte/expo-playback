@@ -11,8 +11,7 @@ import { LoadingSection } from "../components/Sections/Loading"
 import { getImageFromEntity } from "../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../utils/metadata"
 import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
-import { DurationAndDateSection } from "../components/Dates"
-import { EpisodeDescription } from "../components/episode"
+import { DurationAndDateSection, EpisodeDescription } from "../components/episode"
 
 export function EpisodesFlatlist() {
   const navigation = useNavigation()

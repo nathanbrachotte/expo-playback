@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native"
 import { Bell, CircleDotDashed, Cog, Download, Plus, Search } from "@tamagui/lucide-icons"
 import React from "react"
-import { Button, XStack, H2, ScrollView, YStack, H5 } from "tamagui"
+import { Button, XStack, H2, ScrollView, YStack, H5, H3 } from "tamagui"
 
 import { PurecastLogo } from "../assets/PurecastLogo"
 import { useLocalPodcastsQuery } from "../clients/local.queries"
@@ -50,7 +50,7 @@ export function EmptyState() {
 
   return (
     <YStack flex={1} p="$2" jc="center" ai="center">
-      <H2>Welcome!</H2>
+      <H3>Welcome!</H3>
       <H5 textAlign="center">You seem to be new to Purecast.</H5>
       <H5 textAlign="center"> Get started here ⬇️</H5>
       <Button mt="$3" mb="$12" onPress={() => navigation.navigate("PodcastSearch")} icon={<Plus />}>
@@ -81,7 +81,7 @@ export function HomeScreen() {
         </XStack>
       }
     >
-      <PureScrollView>
+      <PureScrollView scrollViewProps={{ contentContainerStyle: { flex: 1 } }}>
         {hasSavedPodcasts ? (
           <>
             <YStack px="$2" mt="$2" gap="$2">

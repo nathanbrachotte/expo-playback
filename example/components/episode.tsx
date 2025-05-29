@@ -1,7 +1,7 @@
 import { Check } from "@tamagui/lucide-icons"
 import React, { ComponentProps } from "react"
-import { getVariable, getVariableValue, Paragraph } from "tamagui"
-
+import { getVariable, Paragraph } from "tamagui"
+import { formatDate, formatDuration, formatRemainingTime } from "../utils/time.utils"
 import { PureXStack, PureYStack } from "./PureStack"
 import { Optional } from "../utils/types.utils"
 
@@ -43,5 +43,43 @@ export function EpisodeDescription({ description }: { description: string }) {
         {description}
       </Paragraph>
     </PureYStack>
+  )
+}
+
+export function DurationAndDateSection({
+  duration,
+  date,
+  isFinished,
+  progress,
+  size = "$2",
+}: {
+  duration: number | null
+  date: Date | null
+  isFinished?: Optional<boolean>
+  progress?: Optional<number>
+  size?: ComponentProps<typeof Paragraph>["size"]
+}) {
+  return (
+    <PureXStack>
+      <Paragraph size={size}>{date ? formatDate(date) : ""}</Paragraph>
+      <Paragraph size={size}>{" • "}</Paragraph>
+      <Paragraph size={size}>{duration ? formatDuration(duration) : ""}</Paragraph>
+      {isFinished ? (
+        <PureXStack centered gap="$1">
+          <Paragraph size={size}>{" • "}</Paragraph>
+          <Paragraph fontWeight="bold" size={size}>
+            Finished
+          </Paragraph>
+        </PureXStack>
+      ) : null}
+      {duration && progress ? (
+        <PureXStack centered gap="$1">
+          <Paragraph size={size}>{" • "}</Paragraph>
+          <Paragraph fontWeight="bold" size={size}>
+            {formatRemainingTime(progress, duration)}
+          </Paragraph>
+        </PureXStack>
+      ) : null}
+    </PureXStack>
   )
 }
