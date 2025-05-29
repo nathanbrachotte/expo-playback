@@ -26,6 +26,7 @@ cd ios && pod install && cd .. # install pods
 - [ ] Add way to copy episodeId easily
 - [ ] Add "..." ios action sheet
 - [ ] Don't render HTML in Cards
+- [ ] Player
 - [ ] Fix starting playing always tries to download
 - [ ] Handle dates and durations
 - [ ] Hook the "mark as played" / "unplay" button
