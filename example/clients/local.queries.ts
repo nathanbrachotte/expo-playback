@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query"
 import { desc, sql } from "drizzle-orm"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 
@@ -215,7 +215,9 @@ export function useAllDownloadedEpisodesLiveQuery() {
   )
 }
 
-async function getAllDownloadedEpisodes() {
+async function getAllDownloadedEpisodes({ pageParam = 0 }: { pageParam?: number }) {
+  const limit = 20
+  const offset = pageParam * limit
   const res = await drizzleClient
     .select({
       episode: {
@@ -232,12 +234,24 @@ async function getAllDownloadedEpisodes() {
     .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
     .leftJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
     .orderBy(desc(episodesTable.publishedAt))
+    .limit(limit)
+    .offset(offset)
   return res
 }
 
 export function useAllDownloadedEpisodesQuery() {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["allDownloadedEpisodes"],
     queryFn: getAllDownloadedEpisodes,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      // Assuming lastPage is an array of episodes
+      // If lastPage has less than 20 items, it means there are no more pages
+      if (lastPage.length < 20) {
+        return undefined
+      }
+      // Otherwise, increment the page number (which acts as the offset multiplier)
+      return allPages.length
+    },
   })
 }

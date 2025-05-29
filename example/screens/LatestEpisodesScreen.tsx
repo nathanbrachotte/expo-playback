@@ -15,7 +15,14 @@ import { getEpisodeStateFromMetadata } from "../utils/metadata"
 
 export function EpisodesFlatlist() {
   const navigation = useNavigation()
-  const { data: episodesWithPodcastsAndMetadata, error, isLoading } = useAllDownloadedEpisodesQuery()
+  const {
+    data: episodesWithPodcastsAndMetadata,
+    error,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useAllDownloadedEpisodesQuery()
 
   if (error) {
     return <ErrorSection />
@@ -25,7 +32,11 @@ export function EpisodesFlatlist() {
     return <LoadingSection />
   }
 
-  if (!episodesWithPodcastsAndMetadata || episodesWithPodcastsAndMetadata.length === 0) {
+  // Flatten the pages into a single array
+  const allEpisodes = episodesWithPodcastsAndMetadata?.pages.flat() ?? []
+  console.log("🚀 ~ EpisodesFlatlist ~ allEpisodes:", JSON.stringify(allEpisodes.slice(0, 1), null, 2))
+
+  if (allEpisodes.length === 0) {
     return (
       <YStack flex={1} gap="$4">
         <Paragraph>No episodes found</Paragraph>
@@ -35,7 +46,20 @@ export function EpisodesFlatlist() {
 
   return (
     <FlatList
-      data={episodesWithPodcastsAndMetadata}
+      data={allEpisodes}
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
+        }
+      }}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={() =>
+        isFetchingNextPage ? (
+          <YStack padding="$4" alignItems="center" bg="red">
+            <Paragraph>Loading more...</Paragraph>
+          </YStack>
+        ) : null
+      }
       renderItem={({ item }) => {
         const episode = item.episode
         const podcast = item.podcast
