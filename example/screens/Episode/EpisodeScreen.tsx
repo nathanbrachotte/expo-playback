@@ -81,16 +81,20 @@ function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
       borderRadius="$4"
       pl="$2"
       pr="$3"
+      minWidth="$12"
       // variant="outlined"
     >
-      <PureXStack gap="$3" ai="center" jc="flex-start">
+      <PureXStack gap="$3" ai="center" jc="flex-start" width="100%">
         <Image
           source={{ uri: getImageFromEntity(podcast, "100") || "" }}
           w="$3"
           h="$3"
           borderRadius="$2"
+          flexShrink={0}
         />
-        <Paragraph size="$6">{podcast.title}</Paragraph>
+        <Paragraph size="$6" numberOfLines={1} flex={1} minWidth={0}>
+          {podcast.title}
+        </Paragraph>
       </PureXStack>
     </Button>
   )
@@ -204,10 +208,10 @@ function EpisodeDumbScreen({
           />
         </PureXStack>
         <PureXStack mt="$2" justifyContent="space-between">
-          <PureXStack>
+          <PureXStack maxWidth="70%">
             <PodcastButton podcast={podcast} />
           </PureXStack>
-          <PureXStack gap="$2" centered>
+          <PureXStack gap="$2" centered width="30%" justifyContent="flex-end">
             <GhostButton
               Icon={<CustomButtonIcon Component={Ellipsis} />}
               onPress={() => {}}
