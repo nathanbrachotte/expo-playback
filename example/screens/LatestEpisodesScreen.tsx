@@ -11,7 +11,7 @@ import { LoadingSection } from "../components/Sections/Loading"
 import { getDurationAndDateFromEpisode } from "../utils/episodes.utils"
 import { getImageFromEntity } from "../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../utils/metadata"
-import { SECTION_PADDING, SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
+import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
 
 export function EpisodesFlatlist() {
   const navigation = useNavigation()
@@ -52,11 +52,13 @@ export function EpisodesFlatlist() {
         }
       }}
       onEndReachedThreshold={0.3}
-      contentContainerStyle={{ paddingHorizontal: SECTION_PADDING_VALUE }}
+      contentContainerStyle={{ paddingHorizontal: SECTION_PADDING_VALUE / 2 }}
       renderItem={({ item }) => {
         const episode = item.episode
         const podcast = item.podcast
-        const prettyMetadata = item.episodeMetadata ? getEpisodeStateFromMetadata(item.episodeMetadata) : null
+        const prettyMetadata = item.episodeMetadata
+          ? getEpisodeStateFromMetadata(item.episodeMetadata)
+          : null
 
         return (
           <EpisodeCard
@@ -70,7 +72,10 @@ export function EpisodesFlatlist() {
                 throw new Error("Found episode without an rssId")
               }
 
-              navigation.navigate("Episode", { episodeId: String(episode.id), podcastId: String(podcast.id) })
+              navigation.navigate("Episode", {
+                episodeId: String(episode.id),
+                podcastId: String(podcast.id),
+              })
             }}
             episodeId={episode.id}
             {...prettyMetadata}

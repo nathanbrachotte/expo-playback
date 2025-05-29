@@ -1,8 +1,7 @@
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator"
-import * as ExpoPlayback from "expo-playback"
 import React from "react"
-import { Button, YStack, XStack, Text, Card, ScrollView, H4 } from "tamagui"
+import { Button, YStack, XStack, Text, Card, ScrollView, Heading } from "tamagui"
 
 import { PureLayout } from "../components/Layout"
 import { drizzleClient, schema } from "../db/client"
@@ -51,7 +50,8 @@ export function DatabaseExplorerScreen() {
       shouldDownload: true,
       updatedAt: new Date(),
       duration: Math.floor(Math.random() * 3600), // Random duration up to 1 hour
-      downloadUrl: "https://file-examples.com/storage/fe6c3da4a667eaec4b5b466/2017/11/file_example_MP3_2MG.mp3",
+      downloadUrl:
+        "https://file-examples.com/storage/fe6c3da4a667eaec4b5b466/2017/11/file_example_MP3_2MG.mp3",
     } satisfies typeof schema.episodesTable.$inferInsert)
   }
 
@@ -102,7 +102,7 @@ export function DatabaseExplorerScreen() {
   }
 
   return (
-    <PureLayout header={<H4 fontWeight="bold">Database Explorer</H4>}>
+    <PureLayout header={<Heading>Database Explorer</Heading>}>
       <YStack p="$4" gap="$4">
         <XStack gap="$2">
           <Button onPress={resetDatabase} theme="red">
