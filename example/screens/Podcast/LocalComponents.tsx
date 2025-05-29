@@ -8,7 +8,7 @@ import { useGetItunesPodcastAndEpisodesQuery } from "../../clients/itunes.querie
 import { useSavePodcastMutation } from "../../clients/local.mutations"
 import { PureLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
-import { LoadingSection } from "../../components/Sections/LoadingSection"
+import { LoadingSection } from "../../components/Sections/Loading"
 import { getImageFromEntity } from "../../utils/image.utils"
 
 const LIMIT_ITUNES_INITIAL_FETCH = 15

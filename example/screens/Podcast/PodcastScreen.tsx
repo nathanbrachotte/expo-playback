@@ -10,8 +10,8 @@ import { useRemovePodcastMutation } from "../../clients/local.mutations"
 import { useGetLocalEpisodesByPodcastIdQuery, useGetLocalPodcastQuery } from "../../clients/local.queries"
 import { PureLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
-import { ErrorSection } from "../../components/Sections/Error"
-import { LoadingSection } from "../../components/Sections/LoadingSection"
+import { ErrorScreen } from "../../components/Sections/Error"
+import { LoadingScreen, LoadingSection } from "../../components/Sections/Loading"
 import { PodcastScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata"
@@ -24,11 +24,11 @@ export function PodcastScreen() {
   const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(id ?? null)
 
   if (isLocalLoading) {
-    return <LoadingSection />
+    return <LoadingScreen />
   }
 
   if (!id) {
-    return <ErrorSection />
+    return <ErrorScreen />
   }
 
   if (localPodcast && !isLocalLoading) {
@@ -45,7 +45,7 @@ export function LocalPodcastScreen({ id }: { id: string }) {
   const { mutateAsync: removePodcast, isPending: isRemoving } = useRemovePodcastMutation()
 
   if (isLocalLoading || !localPodcast || isLocalEpisodesLoading) {
-    return <LoadingSection />
+    return <LoadingScreen />
   }
 
   return (

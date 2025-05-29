@@ -1,18 +1,17 @@
 import { useNavigation } from "@react-navigation/native"
 import { Bell, CircleDotDashed, Cog, Download, Plus, Search } from "@tamagui/lucide-icons"
 import React from "react"
-import { Button, XStack, H2, ScrollView, YStack, H5, Paragraph } from "tamagui"
+import { Button, XStack, H2, ScrollView, YStack, H5 } from "tamagui"
 
 import { PurecastLogo } from "../assets/PurecastLogo"
-import { useAllDownloadedEpisodesQuery, useAllEpisodesQuery, useLocalPodcastsQuery } from "../clients/local.queries"
+import { useLocalPodcastsQuery } from "../clients/local.queries"
 import { PureLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
+import { PureScrollView } from "../components/PureScrollview"
 import { PureSection } from "../components/Sections/PureSection"
 import { TestSection } from "../components/TestSection"
 import { ButtonList } from "../components/buttons"
 import { getImageFromEntity } from "../utils/image.utils"
-import { usePlayerContext } from "../providers/PlayerProvider"
-import { PureScrollView } from "../components/PureScrollview"
 
 function PodcastsList() {
   const { data: podcastList } = useLocalPodcastsQuery()

@@ -194,7 +194,7 @@ export const useAllEpisodesQuery = () => {
   )
 }
 
-export function useAllDownloadedEpisodesQuery() {
+export function useAllDownloadedEpisodesLiveQuery() {
   return useLiveQuery(
     drizzleClient
       .select({
@@ -213,4 +213,31 @@ export function useAllDownloadedEpisodesQuery() {
       .leftJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
       .orderBy(desc(episodesTable.publishedAt)),
   )
+}
+
+async function getAllDownloadedEpisodes() {
+  const res = await drizzleClient
+    .select({
+      episode: {
+        ...episodesTable,
+      },
+      podcast: {
+        ...podcastsTable,
+      },
+      episodeMetadata: {
+        ...episodeMetadatasTable,
+      },
+    })
+    .from(episodesTable)
+    .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
+    .leftJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+    .orderBy(desc(episodesTable.publishedAt))
+  return res
+}
+
+export function useAllDownloadedEpisodesQuery() {
+  return useQuery({
+    queryKey: ["allDownloadedEpisodes"],
+    queryFn: getAllDownloadedEpisodes,
+  })
 }
