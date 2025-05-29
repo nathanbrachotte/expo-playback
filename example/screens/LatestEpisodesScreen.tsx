@@ -12,6 +12,7 @@ import { getImageFromEntity } from "../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../utils/metadata"
 import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
 import { DurationAndDateSection } from "../components/Dates"
+import { EpisodeDescription } from "../components/episode"
 
 export function EpisodesFlatlist() {
   const navigation = useNavigation()
@@ -64,14 +65,17 @@ export function EpisodesFlatlist() {
           <EpisodeCard
             smallHeader={podcast.title}
             bigHeader={episode.title}
-            subtitle={episode.description}
             image={getImageFromEntity(episode, "100") || getImageFromEntity(podcast, "100")}
             extraInfo={
-              <DurationAndDateSection
-                duration={episode.duration}
-                date={episode.publishedAt}
-                isFinished={prettyMetadata?.isFinished}
-              />
+              <>
+                <EpisodeDescription description={episode.description} />
+                <DurationAndDateSection
+                  duration={episode.duration}
+                  date={episode.publishedAt}
+                  isFinished={prettyMetadata?.isFinished}
+                  progress={prettyMetadata?.progress}
+                />
+              </>
             }
             onPress={() => {
               if (!episode.rssId) {

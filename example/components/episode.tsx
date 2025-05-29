@@ -2,7 +2,7 @@ import { Check } from "@tamagui/lucide-icons"
 import React, { ComponentProps } from "react"
 import { getVariable, getVariableValue, Paragraph } from "tamagui"
 
-import { PureXStack } from "./PureStack"
+import { PureXStack, PureYStack } from "./PureStack"
 import { Optional } from "../utils/types.utils"
 
 type BaseTitleProps = {
@@ -33,5 +33,15 @@ export function EpisodeTitle({
         {title}
       </Component>
     </PureXStack>
+  )
+}
+
+export function EpisodeDescription({ description }: { description: string }) {
+  return (
+    <PureYStack flex={1} mt="$2">
+      <Paragraph numberOfLines={2} size="$1" lineHeight={16}>
+        {description}
+      </Paragraph>
+    </PureYStack>
   )
 }

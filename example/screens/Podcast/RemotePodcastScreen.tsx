@@ -3,13 +3,16 @@ import React from "react"
 import { FlatList } from "react-native"
 import { Paragraph, Spinner, Button } from "tamagui"
 
-import { AboutSection, PodcastScreenEpisodeCard } from "./shared"
+import { AboutSection } from "./shared"
 import { useGetItunesPodcastAndEpisodesQuery } from "../../clients/itunes.queries"
 import { useSavePodcastMutation } from "../../clients/local.mutations"
 import { PureLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { getImageFromEntity } from "../../utils/image.utils"
+import { EpisodeCard } from "../../components/EpisodeCard"
+import { DurationAndDateSection } from "../../components/Dates"
+import { EpisodeDescription } from "../../components/episode"
 
 const LIMIT_ITUNES_INITIAL_FETCH = 15
 
@@ -85,19 +88,22 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
       data={episodesWithPodcastId}
       renderItem={({ item }) => {
         return (
-          <PodcastScreenEpisodeCard
-            title={item.title}
+          <EpisodeCard
+            smallHeader={podcast.title}
+            bigHeader={item.title}
+            subtitle={item.description}
             image={getImageFromEntity(item, "100")}
-            publishedAt={item.publishedAt}
-            duration={item.duration}
-            podcastTitle={podcast.title}
-            rssId={item.rssId}
-            podcastId={item.podcastId}
             cardProps={{
               opacity: 0.5,
               hoverStyle: { scale: 1 },
               pressStyle: { scale: 1 },
             }}
+            extraInfo={
+              <>
+                <EpisodeDescription description={item.description} />
+                <DurationAndDateSection duration={item.duration} date={item.publishedAt} />
+              </>
+            }
           />
         )
       }}

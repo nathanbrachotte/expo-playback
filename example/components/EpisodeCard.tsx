@@ -8,7 +8,6 @@ import { Optional } from "../utils/types.utils"
 import { EpisodeTitle } from "./episode"
 
 export type EpisodeCardProps = {
-  subtitle?: Optional<string>
   image: Optional<string>
   extraInfo?: Optional<React.ReactNode>
   smallHeader?: Optional<string>
@@ -24,7 +23,6 @@ export type EpisodeCardProps = {
 }
 
 export const EpisodeCard = ({
-  subtitle,
   image,
   extraInfo,
   smallHeader,
@@ -72,15 +70,8 @@ export const EpisodeCard = ({
             />
           </PureYStack>
         </PureXStack>
-        {subtitle ? (
-          <PureYStack flex={1} mt="$2">
-            <Paragraph numberOfLines={2} size="$1" lineHeight={16}>
-              {subtitle}
-            </Paragraph>
-          </PureYStack>
-        ) : null}
-        {extraInfo ? <PureXStack>{extraInfo}</PureXStack> : null}
-        <Card.Footer mt="$2" alignItems="center" justifyContent="space-between">
+        {extraInfo ? <PureYStack mt="$1">{extraInfo}</PureYStack> : null}
+        <Card.Footer alignItems="center" justifyContent="space-between">
           <PureXStack centered gap="$2">
             {/* <GhostButton onPress={() => {}} Icon={Plus} /> */}
             <GhostButton

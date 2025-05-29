@@ -19,19 +19,25 @@ export function formatDuration(milliseconds: number): string {
 
   // Construct the duration object for @goomba/date-fns
   const durationObject = {
-    hours: hours,
-    minutes: minutes,
+    hours,
+    minutes,
     seconds: 0, // Explicitly set seconds to 0 as we've rounded to minutes
   }
 
   // Format string to display hours and minutes, e.g., "1h 30m", "0h 5m"
-  const formatString = "h 'h' m 'm'"
+  const formatString = hours > 0 ? "h 'h' m 'm'" : "m 'm'"
 
   const formatted = formatDurationFn(durationObject, formatString)
 
   return formatted === null ? "0m" : formatted
 }
 
+/**
+ * If the date is today, return "Today"
+ * If the date is yesterday, return "Yesterday"
+ * If the date is in the last 7 days, return the day of the week
+ * If the date is more than 7 days ago, return the date in the format "MM/DD/YYYY"
+ */
 export function formatDate(timestamp: Date) {
   const today = new Date()
   const yesterday = new Date(today)
@@ -48,8 +54,24 @@ export function formatDate(timestamp: Date) {
   }
 
   if (timestamp.getTime() > lastWeek.getTime()) {
-    return timestamp.toLocaleDateString()
+    return format(timestamp, "EEEE")
   }
 
   return format(timestamp, "MMMM d, yyyy")
+}
+
+/**
+ * Formats the remaining time of an episode in progress
+ * @param currentPositionMs - Current position in milliseconds
+ * @param durationMs - Total duration in milliseconds
+ * @returns Formatted string like "30m left" or "1h 15m left"
+ */
+export function formatRemainingTime(currentPositionMs: number, durationMs: number): string {
+  if (currentPositionMs < 0 || durationMs <= 0) {
+    throw new Error("Invalid parameters")
+  }
+
+  const remainingMs = Math.max(0, durationMs - currentPositionMs)
+  const formattedDuration = formatDuration(remainingMs)
+  return `${formattedDuration} left`
 }

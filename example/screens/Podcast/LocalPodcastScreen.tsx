@@ -4,7 +4,7 @@ import React from "react"
 import { FlatList } from "react-native"
 import { Paragraph, Spinner, Button } from "tamagui"
 
-import { AboutSection, PodcastScreenEpisodeCard } from "./shared"
+import { AboutSection } from "./shared"
 import { useRemovePodcastMutation } from "../../clients/local.mutations"
 import {
   useGetLocalEpisodesByPodcastIdQuery,
@@ -15,6 +15,9 @@ import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata"
+import { DurationAndDateSection } from "../../components/Dates"
+import { EpisodeCard } from "../../components/EpisodeCard"
+import { EpisodeDescription } from "../../components/episode"
 
 export function LocalPodcastScreen({ id }: { id: string }) {
   const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(id)
@@ -79,21 +82,27 @@ export function LocalEpisodesSection({ id }: { id: string }) {
           : null
 
         return (
-          <PodcastScreenEpisodeCard
-            title={episode.title}
+          <EpisodeCard
+            bigHeader={episode.title}
+            smallHeader={localPodcast.title}
             image={getImageFromEntity(episode, "100") || getImageFromEntity(localPodcast, "100")}
-            publishedAt={episode.publishedAt}
-            duration={episode.duration}
-            podcastTitle={localPodcast.title}
-            rssId={episode.rssId}
-            podcastId={episode.podcastId}
-            episodeId={episode.id}
+            extraInfo={
+              <>
+                <EpisodeDescription description={episode.description} />
+                <DurationAndDateSection
+                  duration={episode.duration}
+                  date={episode.publishedAt}
+                  progress={prettyMetadata?.progress}
+                />
+              </>
+            }
             onPress={() => {
               navigation.navigate("Episode", {
                 episodeId: String(episode.id),
                 podcastId: String(episode.podcastId),
               })
             }}
+            episodeId={episode.id}
             {...prettyMetadata}
           />
         )
