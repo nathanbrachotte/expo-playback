@@ -8,10 +8,10 @@ import { EpisodeCard } from "../components/EpisodeCard"
 import { PureLayout } from "../components/Layout"
 import { ErrorSection } from "../components/Sections/Error"
 import { LoadingSection } from "../components/Sections/Loading"
-import { PureSection } from "../components/Sections/PureSection"
 import { getDurationAndDateFromEpisode } from "../utils/episodes.utils"
 import { getImageFromEntity } from "../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../utils/metadata"
+import { SECTION_PADDING, SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
 
 export function EpisodesFlatlist() {
   const navigation = useNavigation()
@@ -34,7 +34,6 @@ export function EpisodesFlatlist() {
 
   // Flatten the pages into a single array
   const allEpisodes = episodesWithPodcastsAndMetadata?.pages.flat() ?? []
-  console.log("🚀 ~ EpisodesFlatlist ~ allEpisodes:", JSON.stringify(allEpisodes.slice(0, 1), null, 2))
 
   if (allEpisodes.length === 0) {
     return (
@@ -52,14 +51,8 @@ export function EpisodesFlatlist() {
           fetchNextPage()
         }
       }}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={() =>
-        isFetchingNextPage ? (
-          <YStack padding="$4" alignItems="center" bg="red">
-            <Paragraph>Loading more...</Paragraph>
-          </YStack>
-        ) : null
-      }
+      onEndReachedThreshold={0.3}
+      contentContainerStyle={{ paddingHorizontal: SECTION_PADDING_VALUE }}
       renderItem={({ item }) => {
         const episode = item.episode
         const podcast = item.podcast
@@ -91,9 +84,7 @@ export function EpisodesFlatlist() {
 export function LatestEpisodesScreen() {
   return (
     <PureLayout header={<H3>Latest episodes</H3>}>
-      <PureSection.Wrapper flex={1}>
-        <EpisodesFlatlist />
-      </PureSection.Wrapper>
+      <EpisodesFlatlist />
     </PureLayout>
   )
 }

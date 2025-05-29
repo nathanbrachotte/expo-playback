@@ -6,7 +6,15 @@ import { Button, ButtonProps, Paragraph, Spinner } from "tamagui"
 import { PureXStack } from "./PureStack"
 import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
 
-export function ButtonList({ icon, text, onPress }: { icon: React.ReactNode; text: string; onPress: () => void }) {
+export function ButtonList({
+  icon,
+  text,
+  onPress,
+}: {
+  icon: React.ReactNode
+  text: string
+  onPress: () => void
+}) {
   return (
     <Button onPress={onPress} borderRadius="$4" w="100%" justifyContent="flex-start" px="$2" h="$6">
       <PureXStack gap="$3" ai="center" jc="flex-start">
@@ -33,9 +41,9 @@ export function GhostButton({
     <Button
       icon={Icon}
       onPress={onPress}
-      // disabled={isPlayed}
       circular
       size="$3"
+      bg={showBg ? "$background" : "transparent"}
       {...props}
     />
   )
@@ -98,7 +106,13 @@ export function PlayButton({
 /**
  * @deprecated Use PlayButton
  */
-export function DownloadButton({ episodeId, showLabel = false }: { episodeId: number; showLabel?: boolean }) {
+export function DownloadButton({
+  episodeId,
+  showLabel = false,
+}: {
+  episodeId: number
+  showLabel?: boolean
+}) {
   const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
   const downloadProgress = localEpisodeMetadata?.[0]?.episodeMetadata?.downloadProgress ?? 0
   const isDownloading = downloadProgress > 0 && downloadProgress < 100

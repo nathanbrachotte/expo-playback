@@ -9,7 +9,6 @@ import { PureLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { PureScrollView } from "../components/PureScrollview"
 import { PureSection } from "../components/Sections/PureSection"
-import { TestSection } from "../components/TestSection"
 import { ButtonList } from "../components/buttons"
 import { getImageFromEntity } from "../utils/image.utils"
 
@@ -83,8 +82,6 @@ export function HomeScreen() {
       }
     >
       <PureScrollView>
-        <TestSection />
-
         {hasSavedPodcasts ? (
           <>
             <YStack px="$2" mt="$2" gap="$2">

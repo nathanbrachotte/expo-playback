@@ -1,6 +1,8 @@
 import React from "react"
-import { Button, H1, Paragraph, YStack } from "tamagui"
+import { Button, H1, H2, Paragraph } from "tamagui"
 
+import { PureLayout } from "./Layout"
+import { PureYStack } from "./PureStack"
 import { useSavePodcastMutation } from "../clients/local.mutations"
 import {
   useAllDownloadedEpisodesQuery,
@@ -10,12 +12,13 @@ import {
 } from "../clients/local.queries"
 import { ToLocalPodcastSchema } from "../clients/schemas"
 import { usePlayerContext } from "../providers/PlayerProvider"
-import { PureYStack } from "./PureStack"
 
-const SHOW_TEST_SECTION = false
-
-export function TestSection() {
-  const { data: localEpisode, error, updatedAt } = useGetLiveLocalEpisodeQuery({ id: "1000704249323" })
+export function TestAreaScreen() {
+  const {
+    data: localEpisode,
+    error,
+    updatedAt,
+  } = useGetLiveLocalEpisodeQuery({ id: "1000704249323" })
   const { data: episodesWithPodcastsAndMetadata } = useAllDownloadedEpisodesQuery()
   const { data: allEpisodes } = useAllEpisodesQuery()
   const { activeEpisode, setActiveEpisodeId } = usePlayerContext()
@@ -25,15 +28,10 @@ export function TestSection() {
     podcastId: "1019768302",
   })
 
-  if (!SHOW_TEST_SECTION) {
-    return null
-  }
-
   return (
-    <YStack bg="$red5">
-      <H1>Test section</H1>
+    <PureLayout header={<H2>Test section</H2>}>
       <Paragraph>Podcasts: {podcastList?.length}</Paragraph>
-      <Paragraph>Episodes: {episodesWithPodcastsAndMetadata?.length}</Paragraph>
+      <Paragraph>Episodes: {episodesWithPodcastsAndMetadata?.pages.flat().length}</Paragraph>
       <Paragraph>All episodes: {allEpisodes?.length}</Paragraph>
       <Paragraph>Amount result: {JSON.stringify(localEpisode.length, null, 2)}</Paragraph>
       <Paragraph>Local episode by id: {JSON.stringify(localEpisode, null, 2)}</Paragraph>
@@ -60,7 +58,8 @@ export function TestSection() {
                 collectionId: 1019768302,
                 collectionName: "FloodCast",
                 collectionPrice: 0,
-                collectionViewUrl: "https://podcasts.apple.com/de/podcast/floodcast/id1019768302?uo=4",
+                collectionViewUrl:
+                  "https://podcasts.apple.com/de/podcast/floodcast/id1019768302?uo=4",
                 contentAdvisoryRating: "Clean",
                 country: "DEU",
                 currency: "EUR",
@@ -87,6 +86,6 @@ export function TestSection() {
         </Button>
         <Button onPress={() => setActiveEpisodeId(191)}>Set active episode</Button>
       </PureYStack>
-    </YStack>
+    </PureLayout>
   )
 }

@@ -16,6 +16,8 @@ export type RootStackParamList = {
   Episode: EpisodeScreenParams
   Settings: undefined
   DatabaseExplorer: undefined
+  Playground: undefined
+  TestArea: undefined
 }
 
 declare global {
