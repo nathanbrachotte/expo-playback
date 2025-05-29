@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, H1, H2, Paragraph } from "tamagui"
+import { Button, H2, Heading, Paragraph } from "tamagui"
 
 import { PureLayout } from "./Layout"
 import { PureYStack } from "./PureStack"
@@ -29,7 +29,7 @@ export function TestAreaScreen() {
   })
 
   return (
-    <PureLayout header={<H2>Test section</H2>}>
+    <PureLayout header={<Heading>Test Area</Heading>}>
       <Paragraph>Podcasts: {podcastList?.length}</Paragraph>
       <Paragraph>Episodes: {episodesWithPodcastsAndMetadata?.pages.flat().length}</Paragraph>
       <Paragraph>All episodes: {allEpisodes?.length}</Paragraph>

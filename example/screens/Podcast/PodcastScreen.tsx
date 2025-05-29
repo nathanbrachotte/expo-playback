@@ -7,11 +7,14 @@ import { Paragraph, Spinner, Button } from "tamagui"
 import { RemotePodcastScreen } from "./LocalComponents"
 import { AboutSection, EpisodeCardItem } from "./shared"
 import { useRemovePodcastMutation } from "../../clients/local.mutations"
-import { useGetLocalEpisodesByPodcastIdQuery, useGetLocalPodcastQuery } from "../../clients/local.queries"
+import {
+  useGetLocalEpisodesByPodcastIdQuery,
+  useGetLocalPodcastQuery,
+} from "../../clients/local.queries"
 import { PureLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
 import { ErrorScreen } from "../../components/Sections/Error"
-import { LoadingScreen, LoadingSection } from "../../components/Sections/Loading"
+import { LoadingScreen } from "../../components/Sections/Loading"
 import { PodcastScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata"
@@ -40,7 +43,8 @@ export function PodcastScreen() {
 
 export function LocalPodcastScreen({ id }: { id: string }) {
   const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(id)
-  const { data: localEpisodes, isLoading: isLocalEpisodesLoading } = useGetLocalEpisodesByPodcastIdQuery(id)
+  const { data: localEpisodes, isLoading: isLocalEpisodesLoading } =
+    useGetLocalEpisodesByPodcastIdQuery(id)
 
   const { mutateAsync: removePodcast, isPending: isRemoving } = useRemovePodcastMutation()
 
@@ -75,7 +79,8 @@ export function LocalPodcastScreen({ id }: { id: string }) {
 export function LocalEpisodesSection({ id }: { id: string }) {
   const navigation = useNavigation()
   const { data: localPodcast, isLoading: isLocalPodcastLoading } = useGetLocalPodcastQuery(id)
-  const { data: localEpisodes, isLoading: isLocalEpisodesLoading } = useGetLocalEpisodesByPodcastIdQuery(id)
+  const { data: localEpisodes, isLoading: isLocalEpisodesLoading } =
+    useGetLocalEpisodesByPodcastIdQuery(id)
 
   if (isLocalEpisodesLoading || isLocalPodcastLoading || !localEpisodes || !localPodcast) {
     return (
@@ -94,7 +99,9 @@ export function LocalEpisodesSection({ id }: { id: string }) {
       renderItem={({ item }) => {
         const episode = item.episode
 
-        const prettyMetadata = item.episodeMetadata ? getEpisodeStateFromMetadata(item.episodeMetadata) : null
+        const prettyMetadata = item.episodeMetadata
+          ? getEpisodeStateFromMetadata(item.episodeMetadata)
+          : null
 
         return (
           <EpisodeCardItem
