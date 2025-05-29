@@ -1,11 +1,61 @@
 import { Check, CircleCheck, Ellipsis, Trash2 } from "@tamagui/lucide-icons"
-import React from "react"
+import React, { useState } from "react"
 import { Paragraph, Image, Card, CardProps, Progress } from "tamagui"
 
 import { PureXStack, PureYStack } from "./PureStack"
 import { CustomButtonIcon, GhostButton, PlayButton } from "./buttons"
 import { Optional } from "../utils/types.utils"
 import { EpisodeTitle } from "./episode"
+import { ActionSheet, ActionSheetAction } from "./ActionSheet"
+
+export function CardActionSheet({
+  episodeId,
+  isDownloaded,
+  onDelete,
+  onMarkAsFinished,
+}: {
+  episodeId?: number
+  isDownloaded?: boolean
+  onDelete?: () => void
+  onMarkAsFinished?: () => void
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const actions: ActionSheetAction[] = [
+    {
+      label: "Mark as finished",
+      onPress: () => onMarkAsFinished?.(),
+      Icon: Check,
+    },
+  ]
+
+  if (isDownloaded) {
+    actions.push({
+      label: "Delete download",
+      onPress: () => onDelete?.(),
+      isDestructive: true,
+      Icon: <Trash2 color="$red10" />,
+    })
+  }
+
+  return (
+    <>
+      <GhostButton
+        onPress={() => setIsOpen(true)}
+        Icon={<CustomButtonIcon Component={Ellipsis} />}
+      />
+      <ActionSheet
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        actions={actions}
+        cancelAction={{
+          label: "Cancel",
+          onPress: () => {},
+        }}
+      />
+    </>
+  )
+}
 
 export type EpisodeCardProps = {
   image: Optional<string>
@@ -20,6 +70,8 @@ export type EpisodeCardProps = {
   progress?: number
   isInProgress?: boolean
   episodeId?: number
+  onDelete?: () => void
+  onMarkAsFinished?: () => void
 }
 
 export const EpisodeCard = ({
@@ -35,6 +87,8 @@ export const EpisodeCard = ({
   progress,
   isInProgress,
   episodeId,
+  onDelete,
+  onMarkAsFinished,
 }: EpisodeCardProps) => {
   return (
     <Card
@@ -90,7 +144,13 @@ export const EpisodeCard = ({
                 Icon={<CustomButtonIcon Component={Trash2} color="$red10" />}
               />
             ) : null}
-            <GhostButton onPress={() => {}} Icon={<CustomButtonIcon Component={Ellipsis} />} />
+            {/* Menu */}
+            <CardActionSheet
+              episodeId={episodeId}
+              isDownloaded={isDownloaded}
+              onDelete={onDelete}
+              onMarkAsFinished={onMarkAsFinished}
+            />
           </PureXStack>
           {isInProgress ? (
             <PureXStack flex={1} px="$6" w="100%">

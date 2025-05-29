@@ -72,7 +72,7 @@ function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
   }
 
   if (isPodcastScreenInStack) {
-    return null
+    return <PureXStack />
   }
 
   return (
@@ -188,7 +188,7 @@ function EpisodeDumbScreen({
 
   return (
     <PLayout.Screen>
-      <PLayout.Container>
+      <PLayout.Container px="$3">
         <PureYStack m="$-8" mb="$0">
           {image ? (
             <Image alignSelf="center" source={{ uri: image }} w="$16" h="$16" borderRadius="$2" />

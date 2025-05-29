@@ -1,9 +1,9 @@
 import { useNavigation, useNavigationState } from "@react-navigation/native"
 import { ChevronLeft } from "@tamagui/lucide-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { YStack, XStack, Button, AnimatePresence, ViewStyle } from "tamagui"
+import { Button, AnimatePresence, YStackProps } from "tamagui"
 
-import { PureYStack, PureYStackProps } from "./PureStack"
+import { PureXStack, PureYStack, PureYStackProps } from "./PureStack"
 
 /**
  * @deprecated Use PLayout.Screen instead
@@ -26,9 +26,9 @@ export function PureLayout({
 
   return (
     // SafeAreaView is not working, so we need to use YStack to get the insets, see: https://reactnative.dev/docs/safeareaview
-    <YStack bg="$background" flex={1} pt={insets.top} pl={insets.left} pr={insets.right}>
-      <XStack justifyContent="space-between" alignItems="center" px="$3" py="$2">
-        <XStack flex={0.5} justifyContent="flex-start" minWidth={40}>
+    <PureYStack bg="$background" flex={1} pt={insets.top} pl={insets.left} pr={insets.right}>
+      <PureXStack justifyContent="space-between" alignItems="center" px="$3" py="$2">
+        <PureXStack flex={0.5} justifyContent="flex-start" minWidth={40}>
           <AnimatePresence>
             {!isFirstScreen && (
               <Button
@@ -42,31 +42,31 @@ export function PureLayout({
               />
             )}
           </AnimatePresence>
-        </XStack>
+        </PureXStack>
 
-        <XStack flex={2} justifyContent="center" alignItems="center">
+        <PureXStack flex={2} justifyContent="center" alignItems="center">
           {header}
-        </XStack>
+        </PureXStack>
 
-        <XStack flex={0.5} justifyContent="flex-end" minWidth={40}>
+        <PureXStack flex={0.5} justifyContent="flex-end" minWidth={40}>
           {actionSection}
-        </XStack>
-      </XStack>
+        </PureXStack>
+      </PureXStack>
 
       <PureYStack flex={1} {...containerStyle}>
         {children}
       </PureYStack>
-    </YStack>
+    </PureYStack>
   )
 }
 
 const Screen = PureLayout
 
-const Container = ({ children }: { children: React.ReactNode }) => {
+const Container = ({ children, ...props }: { children: React.ReactNode } & YStackProps) => {
   return (
-    <YStack flex={1} px="$2">
+    <PureYStack flex={1} px="$2" {...props}>
       {children}
-    </YStack>
+    </PureYStack>
   )
 }
 
