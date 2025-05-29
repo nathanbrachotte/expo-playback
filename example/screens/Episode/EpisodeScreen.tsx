@@ -12,7 +12,7 @@ import {
   getEpisodeWithPodcastByExternalId,
   useGetLiveLocalEpisodeQuery,
 } from "../../clients/local.queries"
-import { PureLayout } from "../../components/Layout"
+import { PLayout, PureLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
 import { CustomButtonIcon, GhostButton, PlayButton } from "../../components/buttons"
@@ -55,6 +55,7 @@ export function EpisodeDescription({ description }: { description: string }) {
 function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
   const navigation = useNavigation()
   const routes = useNavigationState((state) => state?.routes || [])
+  const { width } = useWindowDimensions()
 
   const isPodcastScreenInStack = routes.some((route) => {
     const result = podcastRouteSchema.safeParse(route)
@@ -80,9 +81,10 @@ function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
       borderRadius="$4"
       pl="$2"
       pr="$3"
-      // variant="outlined"
+      alignSelf="flex-start"
+      maxWidth={width * 0.7}
     >
-      <PureXStack gap="$3" ai="center" jc="flex-start">
+      <PureXStack gap="$3" ai="center">
         <Image
           source={{ uri: getImageFromEntity(podcast, "100") || "" }}
           w="$3"
@@ -90,7 +92,7 @@ function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
           borderRadius="$2"
           flexShrink={0}
         />
-        <Paragraph size="$6" numberOfLines={1} flex={1} maxWidth="100%">
+        <Paragraph size="$6" numberOfLines={1} maxWidth={width * 0.7 - 80}>
           {podcast.title}
         </Paragraph>
       </PureXStack>
@@ -185,19 +187,21 @@ function EpisodeDumbScreen({
   const image = episodeImage || podcastImage
 
   return (
-    <PureLayout>
-      <PureYStack m="$-8" mb="$0">
-        {image ? (
-          <Image alignSelf="center" source={{ uri: image }} w="$16" h="$16" borderRadius="$2" />
-        ) : null}
-      </PureYStack>
-      <PureYStack flex={1} mt="$4" px="$2">
-        <EpisodeTitle
-          title={episode.title}
-          isFinished={episodeMetadata?.isFinished}
-          Component={H3}
-          componentProps={{ size: "$8", fontWeight: "bold", textAlign: "left" }}
-        />
+    <PLayout.Screen>
+      <PLayout.Container>
+        <PureYStack m="$-8" mb="$0">
+          {image ? (
+            <Image alignSelf="center" source={{ uri: image }} w="$16" h="$16" borderRadius="$2" />
+          ) : null}
+        </PureYStack>
+        <PureYStack mt="$2">
+          <EpisodeTitle
+            title={episode.title}
+            isFinished={episodeMetadata?.isFinished}
+            Component={H3}
+            componentProps={{ size: "$8", fontWeight: "bold", textAlign: "left" }}
+          />
+        </PureYStack>
         <PureXStack>
           <DurationAndDateSection
             duration={episode.duration}
@@ -205,10 +209,8 @@ function EpisodeDumbScreen({
             isFinished={episodeMetadata?.isFinished}
           />
         </PureXStack>
-        <PureXStack mt="$2" justifyContent="space-between">
-          <PureXStack maxWidth="70%">
-            <PodcastButton podcast={podcast} />
-          </PureXStack>
+        <PureXStack mt="$3" justifyContent="space-between">
+          <PodcastButton podcast={podcast} />
           <PureXStack gap="$2" centered width="30%" justifyContent="flex-end">
             <GhostButton
               Icon={<CustomButtonIcon Component={Ellipsis} />}
@@ -225,11 +227,13 @@ function EpisodeDumbScreen({
           </PureXStack>
         </PureXStack>
 
-        <PureScrollView>
-          <EpisodeDescription description={episode.description} />
-        </PureScrollView>
-      </PureYStack>
-    </PureLayout>
+        <PureYStack mt="$1" flex={1}>
+          <PureScrollView>
+            <EpisodeDescription description={episode.description} />
+          </PureScrollView>
+        </PureYStack>
+      </PLayout.Container>
+    </PLayout.Screen>
   )
 }
 

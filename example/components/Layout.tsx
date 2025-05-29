@@ -5,6 +5,9 @@ import { YStack, XStack, Button, AnimatePresence, ViewStyle } from "tamagui"
 
 import { PureYStack, PureYStackProps } from "./PureStack"
 
+/**
+ * @deprecated Use PLayout.Screen instead
+ */
 export function PureLayout({
   children,
   header,
@@ -55,4 +58,19 @@ export function PureLayout({
       </PureYStack>
     </YStack>
   )
+}
+
+const Screen = PureLayout
+
+const Container = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <YStack flex={1} px="$2">
+      {children}
+    </YStack>
+  )
+}
+
+export const PLayout = {
+  Screen,
+  Container,
 }

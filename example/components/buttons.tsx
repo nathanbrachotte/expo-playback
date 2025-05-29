@@ -79,7 +79,12 @@ export function PlayButton({
   if (isDownloaded) {
     return (
       <PureXStack centered themeInverse>
-        <GhostButton onPress={() => {}} Icon={<CustomButtonIcon Component={Play} />} {...props} />
+        <GhostButton
+          showBg
+          onPress={() => {}}
+          Icon={<CustomButtonIcon Component={Play} />}
+          {...props}
+        />
       </PureXStack>
     )
   }
@@ -95,6 +100,7 @@ export function PlayButton({
   return (
     <PureXStack centered>
       <GhostButton
+        showBg
         onPress={() => ExpoPlaybackModule.startBackgroundDownload(episodeId)}
         Icon={<CustomButtonIcon Component={Download} />}
         {...props}
