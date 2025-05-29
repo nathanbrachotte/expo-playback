@@ -12,6 +12,7 @@ import { getDurationAndDateFromEpisode } from "../utils/episodes.utils"
 import { getImageFromEntity } from "../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../utils/metadata"
 import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
+import { DurationAndDateSection } from "../components/Dates"
 
 export function EpisodesFlatlist() {
   const navigation = useNavigation()
@@ -66,7 +67,13 @@ export function EpisodesFlatlist() {
             bigHeader={episode.title}
             subtitle={episode.description}
             image={getImageFromEntity(episode, "100") || getImageFromEntity(podcast, "100")}
-            extraInfo={getDurationAndDateFromEpisode(episode).label}
+            extraInfo={
+              <DurationAndDateSection
+                duration={episode.duration}
+                date={episode.publishedAt}
+                isFinished={prettyMetadata?.isFinished}
+              />
+            }
             onPress={() => {
               if (!episode.rssId) {
                 throw new Error("Found episode without an rssId")

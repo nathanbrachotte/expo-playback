@@ -33,5 +33,23 @@ export function formatDuration(milliseconds: number): string {
 }
 
 export function formatDate(timestamp: Date) {
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  const lastWeek = new Date(today)
+  lastWeek.setDate(lastWeek.getDate() - 7)
+
+  if (timestamp.toDateString() === today.toDateString()) {
+    return "Today"
+  }
+
+  if (timestamp.toDateString() === yesterday.toDateString()) {
+    return "Yesterday"
+  }
+
+  if (timestamp.getTime() > lastWeek.getTime()) {
+    return timestamp.toLocaleDateString()
+  }
+
   return format(timestamp, "MMMM d, yyyy")
 }

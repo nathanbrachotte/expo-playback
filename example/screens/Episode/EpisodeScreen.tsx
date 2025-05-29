@@ -8,7 +8,10 @@ import { Button, H3, H4, Paragraph, useTheme, Image } from "tamagui"
 import { z } from "zod"
 
 import { useSavePodcastMutation } from "../../clients/local.mutations"
-import { getEpisodeWithPodcastByExternalId, useGetLiveLocalEpisodeQuery } from "../../clients/local.queries"
+import {
+  getEpisodeWithPodcastByExternalId,
+  useGetLiveLocalEpisodeQuery,
+} from "../../clients/local.queries"
 import { PureLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
@@ -18,6 +21,8 @@ import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../../types/db
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata"
+import { DurationAndDateSection } from "../../components/Dates"
+import { EpisodeTitle } from "../../components/episode"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -54,7 +59,10 @@ function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
 
   const isPodcastScreenInStack = routes.some((route) => {
     const result = podcastRouteSchema.safeParse(route)
-    return result.success && result.data.params.id === (podcast.id?.toString() || podcast.appleId?.toString())
+    return (
+      result.success &&
+      result.data.params.id === (podcast.id?.toString() || podcast.appleId?.toString())
+    )
   })
 
   const goToPodcast = () => {
@@ -76,7 +84,12 @@ function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
       // variant="outlined"
     >
       <PureXStack gap="$3" ai="center" jc="flex-start">
-        <Image source={{ uri: getImageFromEntity(podcast, "100") || "" }} w="$3" h="$3" borderRadius="$2" />
+        <Image
+          source={{ uri: getImageFromEntity(podcast, "100") || "" }}
+          w="$3"
+          h="$3"
+          borderRadius="$2"
+        />
         <Paragraph size="$6">{podcast.title}</Paragraph>
       </PureXStack>
     </Button>
@@ -138,7 +151,9 @@ function PlayEpisodeButton({
   }, [episode])
 
   if (!episodeMetadata) {
-    return <PlayButton isDownloaded={false} isDownloading={false} episodeId={episode.id} size="$5" />
+    return (
+      <PlayButton isDownloaded={false} isDownloading={false} episodeId={episode.id} size="$5" />
+    )
   }
 
   const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(episodeMetadata)
@@ -170,13 +185,25 @@ function EpisodeDumbScreen({
   return (
     <PureLayout>
       <PureYStack m="$-8" mb="$0">
-        {image ? <Image alignSelf="center" source={{ uri: image }} w="$16" h="$16" borderRadius="$2" /> : null}
+        {image ? (
+          <Image alignSelf="center" source={{ uri: image }} w="$16" h="$16" borderRadius="$2" />
+        ) : null}
       </PureYStack>
-      <PureYStack flex={1} mt="$4">
-        <H3 px="$3" fontWeight="bold" textAlign="left">
-          {episode.title}
-        </H3>
-        <PureXStack px="$2" mt="$2" justifyContent="space-between">
+      <PureYStack flex={1} mt="$4" px="$2">
+        <EpisodeTitle
+          title={episode.title}
+          isFinished={episodeMetadata?.isFinished}
+          Component={H3}
+          componentProps={{ size: "$8", fontWeight: "bold", textAlign: "left" }}
+        />
+        <PureXStack>
+          <DurationAndDateSection
+            duration={episode.duration}
+            date={episode.publishedAt}
+            isFinished={episodeMetadata?.isFinished}
+          />
+        </PureXStack>
+        <PureXStack mt="$2" justifyContent="space-between">
           <PureXStack>
             <PodcastButton podcast={podcast} />
           </PureXStack>
@@ -188,12 +215,14 @@ function EpisodeDumbScreen({
               // podcast={podcast}
               // episodeMetadata={episodeMetadata}
             />
-            <PlayEpisodeButton episode={episode} podcast={podcast} episodeMetadata={episodeMetadata} />
+            <PlayEpisodeButton
+              episode={episode}
+              podcast={podcast}
+              episodeMetadata={episodeMetadata}
+            />
           </PureXStack>
         </PureXStack>
-        <Paragraph px="$3">
-          <Paragraph fontWeight="bold">Release Date:</Paragraph> {new Date(episode.publishedAt).toLocaleDateString()}
-        </Paragraph>
+
         <PureScrollView>
           <EpisodeDescription description={episode.description} />
         </PureScrollView>

@@ -1,15 +1,16 @@
 import { Check, CircleCheck, Ellipsis, Trash2 } from "@tamagui/lucide-icons"
 import React from "react"
-import { YStack, Paragraph, Image, XStack, Card, CardProps, Progress } from "tamagui"
+import { Paragraph, Image, Card, CardProps, Progress } from "tamagui"
 
 import { PureXStack, PureYStack } from "./PureStack"
 import { CustomButtonIcon, GhostButton, PlayButton } from "./buttons"
 import { Optional } from "../utils/types.utils"
+import { EpisodeTitle } from "./episode"
 
 export type EpisodeCardProps = {
   subtitle?: Optional<string>
   image: Optional<string>
-  extraInfo?: Optional<string>
+  extraInfo?: Optional<React.ReactNode>
   smallHeader?: Optional<string>
   bigHeader: string
   onPress?: VoidFunction
@@ -63,38 +64,22 @@ export const EpisodeCard = ({
               </Paragraph>
             ) : null}
             {/* Episode title, in big */}
-            <PureXStack jc="flex-start" gap="$1" ai="center">
-              {isFinished ? <Check size="$1" color="$green9" /> : null}
-              <Paragraph size="$5" numberOfLines={1} opacity={isFinished ? 0.6 : 1}>
-                {bigHeader}
-              </Paragraph>
-            </PureXStack>
+            <EpisodeTitle
+              title={bigHeader}
+              isFinished={isFinished}
+              Component={Paragraph}
+              componentProps={{ size: "$5", numberOfLines: 1, opacity: isFinished ? 0.6 : 1 }}
+            />
           </PureYStack>
         </PureXStack>
         {subtitle ? (
-          <YStack flex={1} mt="$2">
+          <PureYStack flex={1} mt="$2">
             <Paragraph numberOfLines={2} size="$1" lineHeight={16}>
               {subtitle}
             </Paragraph>
-          </YStack>
+          </PureYStack>
         ) : null}
-        {extraInfo ? (
-          <XStack>
-            <Paragraph fontSize="$1" opacity={0.5}>
-              {extraInfo}
-            </Paragraph>
-            {isFinished ? (
-              <PureXStack centered gap="$1">
-                <Paragraph fontSize="$1" opacity={1}>
-                  {" - "}
-                </Paragraph>
-                <Paragraph fontSize="$1" opacity={1} color="white" fontWeight="bold">
-                  Finished
-                </Paragraph>
-              </PureXStack>
-            ) : null}
-          </XStack>
-        ) : null}
+        {extraInfo ? <PureXStack>{extraInfo}</PureXStack> : null}
         <Card.Footer mt="$2" alignItems="center" justifyContent="space-between">
           <PureXStack centered gap="$2">
             {/* <GhostButton onPress={() => {}} Icon={Plus} /> */}
@@ -109,7 +94,10 @@ export const EpisodeCard = ({
               }
             />
             {isDownloaded ? (
-              <GhostButton onPress={() => {}} Icon={<CustomButtonIcon Component={Trash2} color="$red10" />} />
+              <GhostButton
+                onPress={() => {}}
+                Icon={<CustomButtonIcon Component={Trash2} color="$red10" />}
+              />
             ) : null}
             <GhostButton onPress={() => {}} Icon={<CustomButtonIcon Component={Ellipsis} />} />
           </PureXStack>
@@ -121,7 +109,11 @@ export const EpisodeCard = ({
             </PureXStack>
           ) : null}
           {episodeId ? (
-            <PlayButton isDownloaded={isDownloaded} isDownloading={isDownloading} episodeId={episodeId} />
+            <PlayButton
+              isDownloaded={isDownloaded}
+              isDownloading={isDownloading}
+              episodeId={episodeId}
+            />
           ) : null}
         </Card.Footer>
       </PureYStack>

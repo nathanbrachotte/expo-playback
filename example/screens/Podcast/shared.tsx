@@ -6,7 +6,7 @@ import { EpisodeCard } from "../../components/EpisodeCard"
 import { PureXStack, PureYStack } from "../../components/PureStack"
 import { SharedPodcastFields } from "../../types/db.types"
 import { DEVICE_WIDTH } from "../../utils/constants"
-import { formatDuration, formatDate } from "../../utils/time.utils"
+import { DurationAndDateSection } from "../../components/Dates"
 
 export function AboutSection({
   podcast,
@@ -36,7 +36,7 @@ export function AboutSection({
   )
 }
 
-export function EpisodeCardItem({
+export function PodcastScreenEpisodeCard({
   title,
   image,
   podcastTitle,
@@ -65,17 +65,12 @@ export function EpisodeCardItem({
   isInProgress?: boolean
   episodeId?: number
 }) {
-  const publishedAtString = formatDate(publishedAt)
-  const durationString = duration ? formatDuration(duration) : null
-
-  const extraInfo = `${publishedAtString} ${durationString ? `• ${durationString}` : ""}`
-
   return (
     <EpisodeCard
       bigHeader={title}
       smallHeader={podcastTitle}
       image={image}
-      extraInfo={extraInfo}
+      extraInfo={<DurationAndDateSection duration={duration} date={publishedAt} />}
       onPress={onPress}
       cardProps={cardProps}
       episodeId={episodeId}

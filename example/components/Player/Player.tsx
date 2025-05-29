@@ -1,12 +1,13 @@
 import { ArrowUp, Play, SkipBack, SkipForward } from "@tamagui/lucide-icons"
 import { PropsWithChildren, useState } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { Button, Slider, Text, YStack, XStack, Image, AnimatePresence, Sheet, H3, H5, Progress } from "tamagui"
+import { Button, Slider, Text, Image, AnimatePresence, Sheet, H3, H5, Progress } from "tamagui"
 
 import { usePlayerContext } from "../../providers/PlayerProvider"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { CoverImage, FULL_PLAYER_IMAGE_SIZE } from "../CoverImage"
-import { PureXStack, PureYStack } from "../PureStack"
+import { PureYStack, PureXStack } from "../PureStack"
+import { PlayerSkipBackButton, PlayerPlayButton, PlayerSkipForwardButton } from "./PlayerButtons"
 
 export const PLAYER_HEIGHT = 100
 
@@ -14,23 +15,19 @@ function PlayerBackground({ children }: PropsWithChildren) {
   const insets = useSafeAreaInsets()
 
   return (
-    <YStack height={PLAYER_HEIGHT} pb={insets.bottom} bg="$background">
+    <PureYStack height={PLAYER_HEIGHT} pb={insets.bottom} bg="$background">
       {children}
-    </YStack>
+    </PureYStack>
   )
 }
 
-function PlayerControls() {
-  return (
-    <XStack ai="center" gap="$1">
-      <Button size="$3" icon={<SkipBack size={16} />} onPress={() => {}} />
-      <Button size="$5" circular theme="blue" icon={<Play size={24} />} onPress={() => {}} />
-      <Button size="$3" icon={<SkipForward size={16} />} onPress={() => {}} />
-    </XStack>
-  )
-}
-
-function PlayerSheet({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: (isOpen: boolean) => void }) {
+function PlayerSheet({
+  isOpen,
+  onOpenChange,
+}: {
+  isOpen: boolean
+  onOpenChange: (isOpen: boolean) => void
+}) {
   const { activeEpisode } = usePlayerContext()
   const { title } = activeEpisode?.episode ?? {}
   const { title: podcastTitle } = activeEpisode?.podcast ?? {}
@@ -42,7 +39,14 @@ function PlayerSheet({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: 
   const imageSource = episodeImage ?? podcastImage ?? false
 
   return (
-    <Sheet modal open={isOpen} onOpenChange={onOpenChange} snapPoints={[90]} dismissOnSnapToBottom animation="quick">
+    <Sheet
+      modal
+      open={isOpen}
+      onOpenChange={onOpenChange}
+      snapPoints={[90]}
+      dismissOnSnapToBottom
+      animation="quick"
+    >
       <Sheet.Overlay
         animation="quick"
         enterStyle={{ opacity: 0 }}
@@ -62,7 +66,14 @@ function PlayerSheet({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: 
         <CoverImage entity={activeEpisode?.episode ?? {}} />
 
         {/* Controls */}
-        <YStack mb={insets.bottom} justifyContent="flex-end" alignItems="center" f={1} gap="$4" px="$4">
+        <PureYStack
+          mb={insets.bottom}
+          justifyContent="flex-end"
+          alignItems="center"
+          f={1}
+          gap="$4"
+          px="$4"
+        >
           <Slider
             size="$2"
             defaultValue={[0]}
@@ -79,16 +90,20 @@ function PlayerSheet({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: 
           </Slider>
 
           {/* // TODO: Fix layout */}
-          <XStack mt="$1">
+          <PureXStack mt="$1">
             <Text fontSize="$2" flex={1}>
               0:00
             </Text>
             <Text fontSize="$2" flex={1}>
               0:00
             </Text>
-          </XStack>
-          <PlayerControls />
-        </YStack>
+          </PureXStack>
+          <PureXStack ai="center" gap="$1">
+            <PlayerSkipBackButton />
+            <PlayerPlayButton />
+            <PlayerSkipForwardButton />
+          </PureXStack>
+        </PureYStack>
       </Sheet.Frame>
     </Sheet>
   )
@@ -113,7 +128,7 @@ export function Player() {
       <PlayerSheet isOpen={isSheetOpen} onOpenChange={setIsSheetOpen} />
       <AnimatePresence>
         {activeEpisode && (
-          <YStack
+          <PureYStack
             bg="$background"
             onPress={openSheet}
             px="$5"
@@ -132,19 +147,28 @@ export function Player() {
             y={0}
             opacity={1}
           >
-            <XStack justifyContent="space-between" alignItems="center">
+            <PureXStack justifyContent="space-between" alignItems="center">
               {episodeImage ? (
-                <Image source={{ uri: episodeImage }} width={50} height={50} borderRadius="$2" resizeMode="cover" />
+                <Image
+                  source={{ uri: episodeImage }}
+                  width={50}
+                  height={50}
+                  borderRadius="$2"
+                  resizeMode="cover"
+                />
               ) : (
-                <YStack width={50} height={50} bg="$blue8" borderRadius="$2" overflow="hidden" />
+                <PureYStack
+                  width={50}
+                  height={50}
+                  bg="$blue8"
+                  borderRadius="$2"
+                  overflow="hidden"
+                />
               )}
 
-              {/* Controls */}
-              <PlayerControls />
-
               <Button size="$3" icon={<ArrowUp size={16} />} onPress={openSheet} />
-            </XStack>
-          </YStack>
+            </PureXStack>
+          </PureYStack>
         )}
       </AnimatePresence>
     </PlayerBackground>

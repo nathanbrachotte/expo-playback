@@ -3,18 +3,21 @@ import React from "react"
 import { FlatList } from "react-native"
 import { Paragraph, Spinner, Button } from "tamagui"
 
-import { AboutSection, EpisodeCardItem } from "./shared"
+import { AboutSection, PodcastScreenEpisodeCard } from "./shared"
 import { useGetItunesPodcastAndEpisodesQuery } from "../../clients/itunes.queries"
 import { useSavePodcastMutation } from "../../clients/local.mutations"
 import { PureLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
-import { LoadingSection } from "../../components/Sections/Loading"
+import { LoadingScreen } from "../../components/Sections/Loading"
 import { getImageFromEntity } from "../../utils/image.utils"
 
 const LIMIT_ITUNES_INITIAL_FETCH = 15
 
 export function RemotePodcastScreen({ id }: { id: string }) {
-  const { data, isLoading } = useGetItunesPodcastAndEpisodesQuery(id ?? null, LIMIT_ITUNES_INITIAL_FETCH)
+  const { data, isLoading } = useGetItunesPodcastAndEpisodesQuery(
+    id ?? null,
+    LIMIT_ITUNES_INITIAL_FETCH,
+  )
 
   const { mutateAsync: savePodcast, isPending: isSaving } = useSavePodcastMutation({
     podcastId: id,
@@ -28,7 +31,7 @@ export function RemotePodcastScreen({ id }: { id: string }) {
   const isUpdatingLocal = isSaving || isSaving
 
   if (isLoading || !podcast || !episodes) {
-    return <LoadingSection />
+    return <LoadingScreen />
   }
 
   return (
@@ -38,7 +41,11 @@ export function RemotePodcastScreen({ id }: { id: string }) {
         podcast={podcast}
         episodeCount={podcast.extraInfo.episodeCount}
         ActionSection={
-          <Button size="$2.5" icon={isUpdatingLocal ? null : Plus} onPress={() => savePodcast({ podcast })}>
+          <Button
+            size="$2.5"
+            icon={isUpdatingLocal ? null : Plus}
+            onPress={() => savePodcast({ podcast })}
+          >
             {isUpdatingLocal ? <Spinner /> : <Paragraph size="$3">Add to Library</Paragraph>}
           </Button>
         }
@@ -65,7 +72,10 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
     )
   }
 
-  const episodesWithPodcastId = episodes.map((episode) => ({ ...episode, podcastId: podcast.appleId }))
+  const episodesWithPodcastId = episodes.map((episode) => ({
+    ...episode,
+    podcastId: podcast.appleId,
+  }))
 
   return (
     <FlatList
@@ -75,7 +85,7 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
       data={episodesWithPodcastId}
       renderItem={({ item }) => {
         return (
-          <EpisodeCardItem
+          <PodcastScreenEpisodeCard
             title={item.title}
             image={getImageFromEntity(item, "100")}
             publishedAt={item.publishedAt}
