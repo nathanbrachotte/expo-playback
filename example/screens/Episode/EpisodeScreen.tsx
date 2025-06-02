@@ -209,9 +209,12 @@ function EpisodeDumbScreen({
             isFinished={episodeMetadata?.isFinished}
           />
         </PureXStack>
-        <PureXStack mt="$3" justifyContent="space-between">
-          <PodcastButton podcast={podcast} />
-          <PureXStack gap="$2" centered width="30%" justifyContent="flex-end">
+        <PureXStack mt="$2" justifyContent="space-between" ai="center">
+          {/* PureXStack - Important for layout to work */}
+          <PureXStack>
+            <PodcastButton podcast={podcast} />
+          </PureXStack>
+          <PureXStack gap="$2" centered width="30%">
             <GhostButton
               Icon={<CustomButtonIcon Component={Ellipsis} />}
               onPress={() => {}}
