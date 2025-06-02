@@ -1,6 +1,7 @@
-import { Check, CircleCheck, Ellipsis, Trash2 } from "@tamagui/lucide-icons"
+import { Check, CircleCheck, Ellipsis, Trash2, Copy } from "@tamagui/lucide-icons"
 import React, { useState } from "react"
 import { Paragraph, Image, Card, CardProps, Progress } from "tamagui"
+import * as Clipboard from "expo-clipboard"
 
 import { PureXStack, PureYStack } from "./PureStack"
 import { CustomButtonIcon, GhostButton, PlayButton } from "./buttons"
@@ -28,6 +29,16 @@ export function CardActionSheet({
       Icon: Check,
     },
   ]
+
+  if (__DEV__ && episodeId) {
+    actions.push({
+      label: "Copy episode ID",
+      onPress: async () => {
+        await Clipboard.setStringAsync(episodeId.toString())
+      },
+      Icon: Copy,
+    })
+  }
 
   if (isDownloaded) {
     actions.push({

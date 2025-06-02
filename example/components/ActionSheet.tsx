@@ -74,6 +74,7 @@ export function ActionSheet({
                   }}
                   bg="transparent"
                   size="$5"
+                  borderRadius={0}
                   justifyContent="flex-start"
                   icon={action.Icon}
                 >
