@@ -5,7 +5,7 @@ import { Button, XStack, H2, ScrollView, YStack, H5, H3 } from "tamagui"
 
 import { PurecastLogo } from "../assets/PurecastLogo"
 import { useLocalPodcastsQuery } from "../clients/local.queries"
-import { PureLayout } from "../components/Layout"
+import { PLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { PureScrollView } from "../components/PureScrollview"
 import { PureSection } from "../components/Sections/PureSection"
@@ -67,7 +67,7 @@ export function HomeScreen() {
   const hasSavedPodcasts = podcastList && podcastList?.length > 0
 
   return (
-    <PureLayout
+    <PLayout.Screen
       header={
         <XStack justifyContent="center" alignItems="center" gap="$2">
           <H2>Purecast</H2>
@@ -107,6 +107,6 @@ export function HomeScreen() {
           <EmptyState />
         )}
       </PureScrollView>
-    </PureLayout>
+    </PLayout.Screen>
   )
 }

@@ -226,12 +226,12 @@ function EpisodeDumbScreen({
             />
           </PureXStack>
         </PureXStack>
+        <PureYStack mt="$2" mx="$-3" flex={1}>
+          <PureScrollView>
+            <EpisodeDescription description={episode.description} />
+          </PureScrollView>
+        </PureYStack>
       </PLayout.Container>
-      <PureYStack mt="$1" flex={1}>
-        <PureScrollView>
-          <EpisodeDescription description={episode.description} />
-        </PureScrollView>
-      </PureYStack>
     </PLayout.Screen>
   )
 }
