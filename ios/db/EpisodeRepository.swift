@@ -38,21 +38,7 @@ class EpisodeRepository {
 
         do {
             for row in try db.prepare(episodes) {
-                let episode = Episode(
-                    id: row[id],
-                    podcastId: row[podcastId],
-                    title: row[title],
-                    description: row[description],
-                    image30: row[image30],
-                    image60: row[image60],
-                    image100: row[image100],
-                    image600: row[image600],
-                    publishedAt: row[publishedAt],
-                    shouldDownload: row[shouldDownload],
-                    downloadUrl: row[downloadUrl],
-                    duration: row[duration]
-                )
-                result.append(episode)
+                result.append(rowToEpisode(row: row))
             }
         } catch {
             print("❌ Error fetching episodes: \(error)")
@@ -68,21 +54,7 @@ class EpisodeRepository {
         do {
             let query = episodes.filter(podcastId == podcastIdValue)
             for row in try db.prepare(query) {
-                let episode = Episode(
-                    id: row[id],
-                    podcastId: row[podcastId],
-                    title: row[title],
-                    description: row[description],
-                    image30: row[image30],
-                    image60: row[image60],
-                    image100: row[image100],
-                    image600: row[image600],
-                    publishedAt: row[publishedAt],
-                    shouldDownload: row[shouldDownload],
-                    downloadUrl: row[downloadUrl],
-                    duration: row[duration]
-                )
-                result.append(episode)
+                result.append(rowToEpisode(row: row))
             }
         } catch {
             print("❌ Error fetching episodes for podcast \(podcastIdValue): \(error)")
@@ -96,23 +68,27 @@ class EpisodeRepository {
         do {
             let query = episodes.filter(id == episodeIdValue)
             guard let row = try db.prepare(query).makeIterator().next() else {return nil}
-            return Episode(
-                    id: row[id],
-                    podcastId: row[podcastId],
-                    title: row[title],
-                    description: row[description],
-                    image30: row[image30],
-                    image60: row[image60],
-                    image100: row[image100],
-                    image600: row[image600],
-                    publishedAt: row[publishedAt],
-                    shouldDownload: row[shouldDownload],
-                    downloadUrl: row[downloadUrl],
-                    duration: row[duration]
-                )
+            return rowToEpisode(row: row)
         } catch {
             print("❌ Error fetching episodes for podcast: \(error)")
         }
         return nil
+    }
+    
+    func rowToEpisode(row: Row) -> Episode {
+        return Episode(
+                id: row[id],
+                podcastId: row[podcastId],
+                title: row[title],
+                description: row[description],
+                image30: row[image30],
+                image60: row[image60],
+                image100: row[image100],
+                image600: row[image600],
+                publishedAt: row[publishedAt],
+                shouldDownload: row[shouldDownload],
+                downloadUrl: row[downloadUrl],
+                duration: row[duration]
+            )
     }
 }

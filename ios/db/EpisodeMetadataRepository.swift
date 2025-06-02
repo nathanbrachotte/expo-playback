@@ -1,12 +1,12 @@
 import SQLite
 
 struct EpisodeMetadata {
-    let episodeId: Int64
-    let playback: Int64
-    let isFinished: Bool
-    let downloadProgress: Int64
-    let fileSize: Int64?
-    let filePath: String?
+    var episodeId: Int64
+    var playback: Int64
+    var isFinished: Bool
+    var downloadProgress: Int64
+    var fileSize: Int64?
+    var filePath: String?
 }
 
 class EpisodeMetadataRepository {
