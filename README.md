@@ -23,15 +23,17 @@ cd ios && pod install && cd .. # install pods
 - [x] Finish player
 - [x] Fix UI "jumping" when navigation (It's not the header)
 - [x] Change the mechanism to save the podcast locally, it should be taking all episodes from RSS feed and not itunes. Not doing rn since Erik is working on this file and he'll get mad at me if I do.
-- [ ] Add way to copy episodeId easily
-- [ ] Add "..." ios action sheet
+- [x] Add way to copy episodeId easily
+- [x] Add "..." ios action sheet
+  - [ ] Add it everwhere
+- [ ] Performances in search
 - [ ] Don't render HTML in Cards
-- [ ] Player
+- [x] Player
 - [ ] Fix starting playing always tries to download
-- [ ] Handle dates and durations
+- [x] Handle dates and durations
 - [ ] Hook the "mark as played" / "unplay" button
 - [ ] Hook the Download button
-- [ ] Player empty state
+- [x] Player empty state
 - [ ] Update weird transparent gradient
 - [ ] Make "play" button also show "pause" if actively playing
 
