@@ -81,7 +81,9 @@ export function PlayButton({
       <PureXStack centered themeInverse>
         <GhostButton
           showBg
-          onPress={() => {}}
+          onPress={() => {
+            ExpoPlaybackModule.play(episodeId)
+          }}
           Icon={<CustomButtonIcon Component={Play} />}
           {...props}
         />

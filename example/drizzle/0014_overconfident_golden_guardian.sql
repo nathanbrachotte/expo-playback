@@ -1,0 +1,1 @@
+ALTER TABLE `episode_metadata` RENAME COLUMN "file_path" TO "relative_file_path";

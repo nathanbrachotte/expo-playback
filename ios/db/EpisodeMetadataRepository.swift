@@ -6,7 +6,7 @@ struct EpisodeMetadata {
     var isFinished: Bool
     var downloadProgress: Int64
     var fileSize: Int64?
-    var filePath: String?
+    var relativeFilePath: String?
 }
 
 class EpisodeMetadataRepository {
@@ -18,7 +18,7 @@ class EpisodeMetadataRepository {
     private let isFinished = Expression<Bool>("is_finished")
     private let downloadProgress = Expression<Int64>("download_progress")
     private let fileSize = Expression<Int64?>("file_size")
-    private let filePath = Expression<String?>("file_path")
+    private let relativeFilePath = Expression<String?>("relative_file_path")
 
     func getMetadataForEpisode(episodeIdValue: Int64) -> EpisodeMetadata? {
         guard let db = db else { return nil }
@@ -32,7 +32,7 @@ class EpisodeMetadataRepository {
                     isFinished: row[isFinished],
                     downloadProgress: row[downloadProgress],
                     fileSize: row[fileSize],
-                    filePath: row[filePath]
+                    relativeFilePath: row[relativeFilePath]
                 )
             }
         } catch {
@@ -57,7 +57,7 @@ class EpisodeMetadataRepository {
                     isFinished <- metadata.isFinished,
                     downloadProgress <- metadata.downloadProgress,
                     fileSize <- metadata.fileSize,
-                    filePath <- metadata.filePath
+                    relativeFilePath <- metadata.relativeFilePath
                 ))
             } else {
                 // Insert new record
@@ -67,7 +67,7 @@ class EpisodeMetadataRepository {
                     isFinished <- metadata.isFinished,
                     downloadProgress <- metadata.downloadProgress,
                     fileSize <- metadata.fileSize,
-                    filePath <- metadata.filePath
+                    relativeFilePath <- metadata.relativeFilePath
                 ))
             }
             return metadata

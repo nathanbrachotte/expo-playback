@@ -116,7 +116,6 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playback, mode: .default, policy: .default, options: [])
             try session.setActive(true)
-            setupRemoteTransportControls()
         } catch let error {
             print(error.localizedDescription)
         }
@@ -126,6 +125,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         let commandCenter = MPRemoteCommandCenter.shared()
         
         // Play Command
+        commandCenter.playCommand.isEnabled = true
         commandCenter.playCommand.addTarget { [weak self] event in
             guard let self = self else { return .commandFailed }
             self.player?.play()
@@ -133,6 +133,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         }
         
         // Pause Command
+        commandCenter.pauseCommand.isEnabled = true
         commandCenter.pauseCommand.addTarget { [weak self] event in
             guard let self = self else { return .commandFailed }
             self.player?.pause()
@@ -140,6 +141,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         }
         
         // Toggle Play/Pause Command
+        commandCenter.togglePlayPauseCommand.isEnabled = true
         commandCenter.togglePlayPauseCommand.addTarget { [weak self] event in
             guard let self = self else { return .commandFailed }
             if self.player?.rate == 0 {
@@ -151,6 +153,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         }
         
         // Seeking Commands
+        commandCenter.changePlaybackPositionCommand.isEnabled = true
         commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
             guard let self = self,
                   let event = event as? MPChangePlaybackPositionCommandEvent else {
@@ -162,6 +165,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         }
         
         // Skip Forward/Backward Commands
+        commandCenter.skipForwardCommand.isEnabled = true
         commandCenter.skipForwardCommand.addTarget { [weak self] event in
             guard let self = self,
                   let event = event as? MPSkipIntervalCommandEvent else {
@@ -173,7 +177,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             self.player?.seek(to: time)
             return .success
         }
-        
+        commandCenter.skipBackwardCommand.isEnabled = true
         commandCenter.skipBackwardCommand.addTarget { [weak self] event in
             guard let self = self,
                   let event = event as? MPSkipIntervalCommandEvent else {
@@ -215,8 +219,11 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             throw Exception(name: "podcast_not_found", description: "podcast_not_found")
         }
         
-        let playerItem = AVPlayerItem(url: URL(string: metadata.filePath!)!)
+        guard let episodeFileURL = try? EpisodeDownloader.getEpisodeFileURL(relativeFilePath: metadata.relativeFilePath!) else {
+            throw Exception(name: "podcast_not_downloaded", description: "podcast_not_downloaded")
+        }
         
+        let playerItem = AVPlayerItem(url: episodeFileURL)
 //        let title = AVMutableMetadataItem()
 //        title.identifier = .commonIdentifierTitle
 //        title.value = episode.title as NSString
@@ -236,7 +243,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
 //        image.dataType = kCMMetadataBaseDataType_JPEG as String
 //        image.extendedLanguageTag = "und"
 //
-//        playerItem.asset.metadata = [title, artist, image]
+//        playerItem.asset.meta = [title, artist, image]
         
         self.player = AVPlayer(playerItem: playerItem)
         self.player!.actionAtItemEnd = AVPlayer.ActionAtItemEnd.none
@@ -296,6 +303,9 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
                     "duration": self.player?.currentItem?.duration.seconds ?? 0,
                 ])
         }
+        
+        
+        setupRemoteTransportControls()
         
     }
     

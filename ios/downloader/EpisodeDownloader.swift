@@ -8,6 +8,15 @@ public protocol EpisodeDownloaderDelegate {
 
 public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
     public static let shared = EpisodeDownloader()
+    
+    public static func getEpisodeFileURL(relativeFilePath: String) throws -> URL {
+        let documentsURL = try FileManager.default.url(for: .documentDirectory,
+                                                       in: .userDomainMask,
+                                                       appropriateFor: nil,
+                                                       create: false)
+        
+        return documentsURL.appendingPathComponent(relativeFilePath)
+    }
     public var episodeDownloaderDelegate: EpisodeDownloaderDelegate?
     private let episodeRepo: EpisodeRepository = EpisodeRepository()
     private let metadataRepo: EpisodeMetadataRepository = EpisodeMetadataRepository()
@@ -34,7 +43,7 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
                 isFinished: false,
                 downloadProgress: 0,
                 fileSize: nil,
-                filePath: nil
+                relativeFilePath: nil
             )
         )
     }
@@ -51,21 +60,17 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
         let episode = episodeRepo.getEpisodeById(episodeIdValue: episodeId)
         
         do {
-            let documentsURL = try FileManager.default.url(for: .documentDirectory,
-                                                           in: .userDomainMask,
-                                                           appropriateFor: nil,
-                                                           create: false)
-            
             // Generate a random filename
             let randomString = UUID().uuidString
             let fileExtension = URL(string: episode!.downloadUrl)?.pathExtension ?? "mp3"
-            let savedURL = documentsURL.appendingPathComponent("\(randomString).\(fileExtension)")
+            let fileName = "\(randomString).\(fileExtension)"
+            let episodeFileURL = try EpisodeDownloader.getEpisodeFileURL(relativeFilePath: fileName)
             
             do {
-                try FileManager.default.moveItem(at: location, to: savedURL)
+                try FileManager.default.moveItem(at: location, to: episodeFileURL)
                 
                 // Get the actual file size after moving
-                let fileAttributes = try FileManager.default.attributesOfItem(atPath: savedURL.path)
+                let fileAttributes = try FileManager.default.attributesOfItem(atPath: episodeFileURL.path)
                 let fileSize = fileAttributes[.size] as? Int64 ?? 0
                 
                 // Update episode metadata with new file location and state
@@ -76,7 +81,7 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
                         isFinished: false,
                         downloadProgress: 100,
                         fileSize: fileSize,
-                        filePath: savedURL.absoluteString
+                        relativeFilePath: fileName
                     )
                 )
                 
@@ -103,14 +108,7 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
             if var metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId) {
                 let newProgress = Int64(progress.doubleValue * 100)
                 if metadata.downloadProgress >= newProgress {return}
-                metadata = EpisodeMetadata(
-                    episodeId: metadata.episodeId,
-                    playback: metadata.playback,
-                    isFinished: metadata.isFinished,
-                    downloadProgress: newProgress,
-                    fileSize: metadata.fileSize,
-                    filePath: metadata.filePath
-                )
+                metadata.downloadProgress = newProgress
                 metadataRepo.createOrUpdateMetadata(metadata)
                                 
                 episodeDownloaderDelegate?.episodeDownloadProgress(episodeId: episodeId, currentProgress: progress)
