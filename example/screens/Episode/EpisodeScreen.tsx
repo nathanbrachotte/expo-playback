@@ -21,7 +21,11 @@ import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../../types/db
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata"
-import { DurationAndDateSection, EpisodeTitle } from "../../components/episode"
+import {
+  DurationAndDateSection,
+  EpisodeDescriptionHtml,
+  EpisodeTitle,
+} from "../../components/episode"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -29,28 +33,6 @@ const podcastRouteSchema = z.object({
     id: z.string().optional(),
   }),
 })
-
-export function EpisodeDescription({ description }: { description: string }) {
-  const { width } = useWindowDimensions()
-  const theme = useTheme()
-
-  const source = {
-    html: `
-      <body style="
-        background-color: ${theme.background.val};
-        color: ${theme.color.val};
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        font-size: 16px;
-        line-height: 1.5;
-        padding: 16px;
-      ">
-        ${description}
-      </body>
-    `,
-  }
-
-  return <RenderHtml contentWidth={width} source={source} />
-}
 
 function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
   const navigation = useNavigation()
@@ -231,7 +213,7 @@ function EpisodeDumbScreen({
         </PureXStack>
         <PureYStack mt="$2" mx="$-3" flex={1}>
           <PureScrollView>
-            <EpisodeDescription description={episode.description} />
+            <EpisodeDescriptionHtml description={episode.description} />
           </PureScrollView>
         </PureYStack>
       </PLayout.Container>

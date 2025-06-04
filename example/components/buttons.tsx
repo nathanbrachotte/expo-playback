@@ -1,7 +1,7 @@
 import { Check, Download, Play } from "@tamagui/lucide-icons"
 import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import React, { ComponentProps } from "react"
-import { Button, ButtonProps, Paragraph, Spinner } from "tamagui"
+import { Button, ButtonProps, getVariable, Paragraph, Spinner } from "tamagui"
 
 import { PureXStack } from "./PureStack"
 import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
@@ -58,11 +58,13 @@ type IconProps = {
 export const CustomButtonIcon = ({
   Component,
   color,
+  size,
 }: {
   Component: React.ComponentType<IconProps>
   color?: string
+  size?: number
 }) => {
-  return <Component size="$1" strokeWidth={2.5} color={color} />
+  return <Component size={size} strokeWidth={2.5} color={color} />
 }
 
 export function PlayButton({
@@ -70,21 +72,29 @@ export function PlayButton({
   isDownloading,
   episodeId,
   onPress,
+  size = "$4",
+  // Component
   ...props
 }: {
   isDownloaded?: boolean
   isDownloading?: boolean
   episodeId: number
+  size?: React.ComponentProps<typeof Button>["size"]
+  // Component: React.ComponentType<typeof Button>
 } & ButtonProps) {
+  // Make iconSize scale based on size
+  const iconSize = getVariable(size) * 0.5
+
   if (isDownloaded) {
     return (
       <PureXStack centered themeInverse>
         <GhostButton
+          size={size}
           showBg
           onPress={() => {
             ExpoPlaybackModule.play(episodeId)
           }}
-          Icon={<CustomButtonIcon Component={Play} />}
+          Icon={<CustomButtonIcon Component={Play} size={iconSize} />}
           {...props}
         />
       </PureXStack>
@@ -100,11 +110,12 @@ export function PlayButton({
   }
 
   return (
-    <PureXStack centered>
+    <PureXStack centered themeInverse>
       <GhostButton
+        size={size}
         showBg
         onPress={() => ExpoPlaybackModule.startBackgroundDownload(episodeId)}
-        Icon={<CustomButtonIcon Component={Download} />}
+        Icon={<CustomButtonIcon Component={Download} size={iconSize} />}
         {...props}
       />
     </PureXStack>

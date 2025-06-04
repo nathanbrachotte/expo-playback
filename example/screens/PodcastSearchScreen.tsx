@@ -46,6 +46,7 @@ export function PodcastSearchScreen() {
             value={searchQuery}
             onChangeText={setSearchQuery}
             autoCapitalize="none"
+            placeholderTextColor="$color10"
           />
           {searchQuery ? (
             <Button
@@ -120,7 +121,10 @@ function SearchResultCard({
   })
 
   if (!("appleId" in entry)) {
-    console.warn("🚀 ~ PodcastSearchScreen ~ data.map ~ Wrong shape result:", JSON.stringify(entry, null, 2))
+    console.warn(
+      "🚀 ~ PodcastSearchScreen ~ data.map ~ Wrong shape result:",
+      JSON.stringify(entry, null, 2),
+    )
     return null
   }
 

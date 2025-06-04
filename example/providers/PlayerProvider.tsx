@@ -1,11 +1,13 @@
 import * as FileSystem from "expo-file-system"
 import * as ExpoPlayback from "expo-playback"
 import { createContext, useContext, useEffect, useState } from "react"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
-import { useGetLiveLocalEpisodeQuery } from "../clients/local.queries"
+import { useGetLiveLocalEpisodeQuery, useGetLatestEpisodeQuery } from "../clients/local.queries"
 import { LocalEpisode } from "../types/db.types"
 
 const AUDIO_DIRECTORY = FileSystem.documentDirectory + "audio/"
+const ACTIVE_EPISODE_KEY = "@player/active_episode_id"
 
 async function ensureAudioDirectory() {
   try {
@@ -24,31 +26,65 @@ async function ensureAudioDirectory() {
 
 type PlayerContextType = {
   togglePlayPause: VoidFunction
-  activeEpisode: {
-    episode: LocalEpisode
-    podcast: ReturnType<typeof useGetLiveLocalEpisodeQuery>["data"][0]["podcast"]
-  }
+  activeEpisode: ReturnType<typeof useGetLiveLocalEpisodeQuery>["data"][number]
   setActiveEpisodeId: (id: LocalEpisode["id"] | null) => void
   skipBackward: VoidFunction
   skipForward: VoidFunction
   onSliderValueChange: (id: number[]) => void
+  progress: number
+  isPlaying: boolean
 }
 
 const PlayerContext = createContext<PlayerContextType | null>(null)
 
 export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
-  const [activeEpisodeId, setActiveEpisodeId] = useState<LocalEpisode["id"] | null>(null)
-  const { data } = useGetLiveLocalEpisodeQuery({ id: activeEpisodeId?.toString() ?? null })
-  console.log("🚀 ~ PlayerProvider ~ data:", data)
+  const [activeEpisodeId, setActiveEpisodeIdState] = useState<LocalEpisode["id"] | null>(null)
+  const { data: activeEpisodeData } = useGetLiveLocalEpisodeQuery({
+    id: activeEpisodeId?.toString() ?? null,
+  })
+  const { data: latestEpisodeData } = useGetLatestEpisodeQuery()
 
-  const episode = data[0]?.episode
-  // !FIXME: Use audio url?? Or local stuff?
-  const url = episode?.downloadUrl
+  // Load persisted episode ID on mount
+  useEffect(() => {
+    async function loadPersistedEpisode() {
+      try {
+        const persistedId = await AsyncStorage.getItem(ACTIVE_EPISODE_KEY)
+        if (persistedId) {
+          setActiveEpisodeIdState(Number(persistedId))
+          return
+        }
+
+        if (latestEpisodeData?.[0]?.episode?.id) {
+          // If no persisted episode, use the latest one
+          setActiveEpisodeIdState(latestEpisodeData[0].episode.id)
+        }
+      } catch (error) {
+        console.error("Error loading persisted episode:", error)
+      }
+    }
+    loadPersistedEpisode()
+  }, [latestEpisodeData])
+
+  // Persist episode ID when it changes
+  const setActiveEpisodeId = async (id: LocalEpisode["id"] | null) => {
+    try {
+      if (id) {
+        await AsyncStorage.setItem(ACTIVE_EPISODE_KEY, id.toString())
+      } else {
+        await AsyncStorage.removeItem(ACTIVE_EPISODE_KEY)
+      }
+      setActiveEpisodeIdState(id)
+    } catch (error) {
+      console.error("Error persisting episode ID:", error)
+    }
+  }
+
+  const activeEpisode = activeEpisodeData?.[0]?.episode
+  const activeEpisodeDuration = activeEpisodeData?.[0]?.episode?.duration
+  const activeEpisodePlaybackPosition = activeEpisodeData?.[0]?.episodeMetadata?.playback
+  const url = activeEpisode?.downloadUrl
 
   const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     async function setupAudio() {
@@ -67,11 +103,8 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
         // Listen for playback status updates
         const statusSubscription = ExpoPlayback.addPlaybackStatusListener((status) => {
           setIsPlaying(status.isPlaying)
-          setCurrentTime(status.currentTime)
-          setDuration(status.duration)
-          // if (status.duration > 0) {
-          //   setIsLoading(false)
-          // }
+          // TODO: Set time to metadata
+          // setCurrentTime(status.currentTime)
         })
 
         // Listen for skip segment events
@@ -98,24 +131,35 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Player controls
   const togglePlayPause = () => {
+    if (!activeEpisodeId) return
+
     if (isPlaying) {
       ExpoPlayback.pause()
     } else {
-      ExpoPlayback.play()
+      ExpoPlayback.play(activeEpisodeId)
     }
   }
 
   const skipBackward = () => {
-    const newTime = Math.max(0, currentTime - 15)
+    if (!activeEpisodePlaybackPosition) {
+      return
+    }
+
+    const newTime = Math.max(0, activeEpisodePlaybackPosition - 15)
     ExpoPlayback.seekTo(newTime)
   }
 
   const skipForward = () => {
-    const newTime = Math.min(duration, currentTime + 30)
+    if (!activeEpisodePlaybackPosition) {
+      return
+    }
+
+    const newTime = Math.min(activeEpisodeDuration ?? 0, activeEpisodePlaybackPosition + 30)
     ExpoPlayback.seekTo(newTime)
   }
 
   const onSliderValueChange = (value: number[]) => {
+    // TODO: Update progress in the database
     ExpoPlayback.seekTo(value[0])
   }
 
@@ -123,11 +167,13 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     <PlayerContext.Provider
       value={{
         togglePlayPause,
-        activeEpisode: data[0],
+        activeEpisode: activeEpisodeData?.[0],
         setActiveEpisodeId,
         skipBackward,
         skipForward,
         onSliderValueChange,
+        progress: activeEpisodePlaybackPosition ?? 0,
+        isPlaying,
       }}
     >
       {children}

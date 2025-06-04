@@ -1,9 +1,11 @@
 import { Check } from "@tamagui/lucide-icons"
 import React, { ComponentProps } from "react"
-import { getVariable, Paragraph } from "tamagui"
+import { getVariable, Paragraph, useTheme } from "tamagui"
 import { formatDate, formatDuration, formatRemainingTime } from "../utils/time.utils"
 import { PureXStack, PureYStack } from "./PureStack"
 import { Optional } from "../utils/types.utils"
+import RenderHtml from "react-native-render-html"
+import { useWindowDimensions } from "react-native"
 
 type BaseTitleProps = {
   children: React.ReactNode
@@ -44,6 +46,26 @@ export function EpisodeDescription({ description }: { description: string }) {
       </Paragraph>
     </PureYStack>
   )
+}
+
+export function EpisodeDescriptionHtml({ description }: { description: string }) {
+  const { width } = useWindowDimensions()
+  const theme = useTheme()
+
+  const source = {
+    html: `
+      <body style="
+        color: ${theme.color.val};
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+      ">
+        ${description}
+      </body>
+    `,
+  }
+
+  return <RenderHtml contentWidth={width} source={source} />
 }
 
 export function DurationAndDateSection({

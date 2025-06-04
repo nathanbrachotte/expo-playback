@@ -1,6 +1,7 @@
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query"
 import { desc, sql } from "drizzle-orm"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
+import { eq } from "drizzle-orm"
 
 import { drizzleClient, schema } from "../db/client"
 import { episodeMetadatasTable, episodesTable, podcastsTable } from "../db/schema"
@@ -80,7 +81,9 @@ async function getEpisodesWithPodcastAndMetadataByPodcastId(podcastId: string | 
   return res
 }
 
-export function useGetLocalEpisodesWithPodcastAndMetadataByPodcastIdLiveQuery(podcastId: string | null) {
+export function useGetLocalEpisodesWithPodcastAndMetadataByPodcastIdLiveQuery(
+  podcastId: string | null,
+) {
   return useLiveQuery(
     drizzleClient
       .select({
@@ -96,7 +99,10 @@ export function useGetLocalEpisodesWithPodcastAndMetadataByPodcastIdLiveQuery(po
       })
       .from(episodesTable)
       .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
-      .innerJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+      .innerJoin(
+        episodeMetadatasTable,
+        sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`,
+      )
       .orderBy(desc(episodesTable.publishedAt))
       .where(sql`${episodesTable.podcastId} = ${podcastId}`),
     [podcastId],
@@ -210,7 +216,10 @@ export function useAllDownloadedEpisodesLiveQuery() {
       })
       .from(episodesTable)
       .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
-      .leftJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+      .leftJoin(
+        episodeMetadatasTable,
+        sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`,
+      )
       .orderBy(desc(episodesTable.publishedAt)),
   )
 }
@@ -252,6 +261,28 @@ export function useAllDownloadedEpisodesQuery() {
       }
       // Otherwise, increment the page number (which acts as the offset multiplier)
       return allPages.length
+    },
+  })
+}
+
+export const getLatestEpisodeQuery = drizzleClient
+  .select({
+    episode: episodesTable,
+    podcast: podcastsTable,
+    episodeMetadata: episodeMetadatasTable,
+  })
+  .from(episodesTable)
+  .leftJoin(podcastsTable, eq(episodesTable.podcastId, podcastsTable.id))
+  .leftJoin(episodeMetadatasTable, eq(episodesTable.id, episodeMetadatasTable.episodeId))
+  .orderBy(desc(episodesTable.publishedAt))
+  .limit(1)
+
+export const useGetLatestEpisodeQuery = () => {
+  return useQuery({
+    queryKey: ["latestEpisode"],
+    queryFn: async () => {
+      const result = await getLatestEpisodeQuery
+      return result
     },
   })
 }

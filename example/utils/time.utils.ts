@@ -75,3 +75,37 @@ export function formatRemainingTime(currentPositionMs: number, durationMs: numbe
   const formattedDuration = formatDuration(remainingMs)
   return `${formattedDuration} left`
 }
+
+/**
+ * Formats time in seconds to a player-friendly format (M:SS)
+ * @param seconds - Time in seconds
+ * @returns Formatted string like "2:45" or "12:05"
+ */
+export function formatPlayerTime(seconds: number): string {
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = Math.floor(seconds % 60)
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+}
+
+/**
+ * Formats the remaining time for player display
+ * @param seconds - Time in seconds
+ * @returns Formatted string like "-2:45"
+ */
+export function formatPlayerRemainingTime(seconds: number): string {
+  return `-${formatPlayerTime(seconds)}`
+}
+
+/**
+ * Formats the remaining time for player display based on current position and total duration
+ * @param currentPositionSeconds - Current playback position in seconds
+ * @param totalDurationSeconds - Total duration in seconds
+ * @returns Formatted string like "-2:45"
+ */
+export function formatPlayerRemainingTimeFromDuration(
+  currentPositionSeconds: number,
+  totalDurationSeconds: number,
+): string {
+  const remainingSeconds = Math.max(0, totalDurationSeconds - currentPositionSeconds)
+  return formatPlayerRemainingTime(remainingSeconds)
+}
