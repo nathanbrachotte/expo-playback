@@ -175,6 +175,12 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             let newTime = currentTime + event.interval
             let time = CMTime(seconds: newTime, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
             self.player?.seek(to: time)
+            
+            // Update now playing info
+            var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = newTime
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+            
             return .success
         }
         commandCenter.skipBackwardCommand.isEnabled = true
@@ -187,6 +193,12 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             let newTime = max(0, currentTime - event.interval)
             let time = CMTime(seconds: newTime, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
             self.player?.seek(to: time)
+            
+            // Update now playing info
+            var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = newTime
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+            
             return .success
         }
         
