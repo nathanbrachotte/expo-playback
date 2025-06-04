@@ -224,29 +224,46 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         }
         
         let playerItem = AVPlayerItem(url: episodeFileURL)
-//        let title = AVMutableMetadataItem()
-//        title.identifier = .commonIdentifierTitle
-//        title.value = episode.title as NSString
-//        title.extendedLanguageTag = "und"
-//
-//        let artist = AVMutableMetadataItem()
-//        artist.identifier = .commonIdentifierArtist
-//        artist.value = podcast.title as NSString
-//        artist.extendedLanguageTag = "und"
-//
-//        let image = AVMutableMetadataItem()
-//        image.identifier = .commonIdentifierArtwork
-//        let imateUrlString = episode.image600 ?? episode.image100 ?? episode.image60 ?? podcast.image600 ?? podcast.image100 ?? podcast.image60
-//        let imageUrl = URL(string: imateUrlString!)
-//        let imageData = try? Data(contentsOf: imageUrl!)
-//        image.value = UIImage(data: imageData!)!.jpegData(compressionQuality: 1.0)! as NSData
-//        image.dataType = kCMMetadataBaseDataType_JPEG as String
-//        image.extendedLanguageTag = "und"
-//
-//        playerItem.asset.meta = [title, artist, image]
+        
+        // Set up now playing info
+        var nowPlayingInfo = [String: Any]()
+        nowPlayingInfo[MPMediaItemPropertyTitle] = episode.title
+        nowPlayingInfo[MPMediaItemPropertyArtist] = podcast.title
+        
+        // Set the now playing info
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         
         self.player = AVPlayer(playerItem: playerItem)
-        self.player!.actionAtItemEnd = AVPlayer.ActionAtItemEnd.none
+        
+        // Load duration asynchronously
+        Task {
+            do {
+                let duration = try await playerItem.asset.load(.duration)
+                var updatedInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+                updatedInfo[MPMediaItemPropertyPlaybackDuration] = duration.seconds
+                MPNowPlayingInfoCenter.default().nowPlayingInfo = updatedInfo
+            } catch {
+                print("Error loading asset duration: \(error)")
+            }
+        }
+        
+        // Load artwork asynchronously
+        Task {
+            do {
+                let imageUrlString = episode.image600 ?? episode.image100 ?? episode.image60 ?? podcast.image600 ?? podcast.image100 ?? podcast.image60
+                if let imageUrl = URL(string: imageUrlString!) {
+                    let (imageData, _) = try await URLSession.shared.data(from: imageUrl)
+                    if let uiImage = UIImage(data: imageData) {
+                        let artwork = MPMediaItemArtwork(boundsSize: uiImage.size) { _ in uiImage }
+                        var updatedInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+                        updatedInfo[MPMediaItemPropertyArtwork] = artwork
+                        MPNowPlayingInfoCenter.default().nowPlayingInfo = updatedInfo
+                    }
+                }
+            } catch {
+                print("Error loading artwork: \(error)")
+            }
+        }
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(playerDidFinishPlaying),
