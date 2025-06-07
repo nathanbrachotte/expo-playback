@@ -3,8 +3,7 @@ import { Ellipsis } from "@tamagui/lucide-icons"
 import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import { useCallback } from "react"
 import { useWindowDimensions } from "react-native"
-import RenderHtml from "react-native-render-html"
-import { Button, H3, H4, Paragraph, useTheme, Image } from "tamagui"
+import { Button, H3, H4, Paragraph, Image } from "tamagui"
 import { z } from "zod"
 
 import { useSavePodcastMutation } from "../../clients/local.mutations"
@@ -21,11 +20,7 @@ import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../../types/db
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata"
-import {
-  DurationAndDateSection,
-  EpisodeDescriptionHtml,
-  EpisodeTitle,
-} from "../../components/episode"
+import { DurationAndDateSection, EpisodeDescriptionHtml } from "../../components/episode"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -164,8 +159,8 @@ function EpisodeDumbScreen({
   podcast: LocalPodcast
   episodeMetadata: LocalEpisodeMetadata | null
 }) {
-  const podcastImage = getImageFromEntity(podcast, "100")
-  const episodeImage = getImageFromEntity(episode, "100")
+  const podcastImage = getImageFromEntity(podcast, "600")
+  const episodeImage = getImageFromEntity(episode, "600")
   const image = episodeImage || podcastImage
 
   return (
@@ -177,12 +172,9 @@ function EpisodeDumbScreen({
           ) : null}
         </PureYStack>
         <PureYStack mt="$2">
-          <EpisodeTitle
-            title={episode.title}
-            isFinished={episodeMetadata?.isFinished}
-            Component={H3}
-            componentProps={{ size: "$8", fontWeight: "bold", textAlign: "left" }}
-          />
+          <PureXStack jc="flex-start" ai="flex-start" gap="$1">
+            <H3 fontWeight="bold">{episode.title}</H3>
+          </PureXStack>
         </PureYStack>
         <PureXStack>
           <DurationAndDateSection

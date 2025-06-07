@@ -1,4 +1,4 @@
-import { Check } from "@tamagui/lucide-icons"
+import { Check, CheckCircle, CheckCircle2 } from "@tamagui/lucide-icons"
 import React, { ComponentProps } from "react"
 import { getVariable, Paragraph, useTheme } from "tamagui"
 import { formatDate, formatDuration, formatRemainingTime } from "../utils/time.utils"
@@ -14,7 +14,7 @@ type BaseTitleProps = {
   opacity?: ComponentProps<typeof Paragraph>["opacity"]
 }
 
-export function EpisodeTitle({
+export function EpisodeCardTitle({
   title,
   isFinished,
   Component = Paragraph,
@@ -29,9 +29,10 @@ export function EpisodeTitle({
   const checkSize = value ? value * 0.3 : getVariable("$1")
 
   return (
-    <PureXStack jc="flex-start" ai="center" gap="$1">
-      {isFinished ? <Check size={checkSize} color="$green9" /> : null}
+    <PureXStack jc="flex-start" ai="flex-start" gap="$1">
+      {isFinished ? <Check size={checkSize} color="$green9" mt="$1.5" /> : null}
       <Component opacity={isFinished ? 0.6 : 1} {...componentProps}>
+        {title}
         {title}
       </Component>
     </PureXStack>
@@ -82,16 +83,17 @@ export function DurationAndDateSection({
   size?: ComponentProps<typeof Paragraph>["size"]
 }) {
   return (
-    <PureXStack>
+    <PureXStack jc="flex-start" ai="center">
       <Paragraph size={size}>{date ? formatDate(date) : ""}</Paragraph>
       <Paragraph size={size}>{" • "}</Paragraph>
       <Paragraph size={size}>{duration ? formatDuration(duration) : ""}</Paragraph>
       {isFinished ? (
         <PureXStack centered gap="$1">
           <Paragraph size={size}>{" • "}</Paragraph>
-          <Paragraph fontWeight="bold" size={size}>
-            Finished
-          </Paragraph>
+          <PureXStack centered gap="$1.5">
+            <Paragraph fontWeight="bold">Finished</Paragraph>
+            <CheckCircle2 size={16} color="$green9" />
+          </PureXStack>
         </PureXStack>
       ) : null}
       {duration && progress ? (

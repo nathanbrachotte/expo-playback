@@ -6,7 +6,7 @@ import * as Clipboard from "expo-clipboard"
 import { PureXStack, PureYStack } from "./PureStack"
 import { CustomButtonIcon, GhostButton, PlayButton } from "./buttons"
 import { Optional } from "../utils/types.utils"
-import { EpisodeTitle } from "./episode"
+import { EpisodeCardTitle } from "./episode"
 import { ActionSheet, ActionSheetAction } from "./ActionSheet"
 
 export function CardActionSheet({
@@ -127,7 +127,7 @@ export const EpisodeCard = ({
               </Paragraph>
             ) : null}
             {/* Episode title, in big */}
-            <EpisodeTitle
+            <EpisodeCardTitle
               title={bigHeader}
               isFinished={isFinished}
               Component={Paragraph}
