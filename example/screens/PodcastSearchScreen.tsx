@@ -2,12 +2,12 @@ import { Headphones, Plus, X } from "@tamagui/lucide-icons"
 import { useState } from "react"
 import { H4, Input, Paragraph, YStack, Button, XStack, Spinner, H3 } from "tamagui"
 import { useDebounceValue } from "usehooks-ts"
+import { FlatList } from "react-native"
 
 import { useSearchItunesPodcastsQuery } from "../clients/itunes.queries"
 import { useSavePodcastMutation } from "../clients/local.mutations"
-import { PureLayout } from "../components/Layout"
+import { PLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
-import { PureScrollView } from "../components/PureScrollview"
 import { PureYStack } from "../components/PureStack"
 import { getImageFromEntity } from "../utils/image.utils"
 
@@ -36,8 +36,27 @@ export function PodcastSearchScreen() {
   const data = searchResults?.results || []
   const hasSearchResults = data.length > 0
 
+  const renderEmptyState = () => {
+    if (isLoading || error || hasSearchResults) return null
+    return (
+      <PureYStack flex={1} centered py="$10" gap="$4">
+        <Headphones size={64} color="$blue10" />
+        <YStack alignItems="center" gap="$2">
+          <H3>No Podcasts Yet!</H3>
+          <Paragraph size="$4" textAlign="center">
+            Start by searching for your favorite podcasts above 👆
+          </Paragraph>
+        </YStack>
+      </PureYStack>
+    )
+  }
+
+  const renderItem = ({ item }: { item: (typeof data)[0] }) => {
+    return <SearchResultCard key={item.appleId} entry={item} />
+  }
+
   return (
-    <PureLayout header={<H4>Add Podcasts</H4>}>
+    <PLayout.Screen header={<H4>Add Podcasts</H4>}>
       <XStack gap="$3" px="$2" mt="$2">
         <YStack flex={1} position="relative">
           <Input
@@ -70,33 +89,26 @@ export function PodcastSearchScreen() {
           {isSearching ? "" : "Search"}
         </Button>
       </XStack>
+
       {error ? (
         <PureYStack centered flex={1}>
           <H3>Oh no 😵</H3>
           <Paragraph mt="$2">Failed to fetch podcasts. Please try again.</Paragraph>
         </PureYStack>
-      ) : null}
-
-      <PureScrollView scrollViewProps={{ alwaysBounceVertical: true, mt: "$3" }}>
-        <YStack gap="$3">
-          {!hasSearchResults && !isLoading && !error && (
-            <PureYStack flex={1} centered py="$10" gap="$4">
-              <Headphones size={64} color="$blue10" />
-              <YStack alignItems="center" gap="$2">
-                <H3>No Podcasts Yet!</H3>
-                <Paragraph size="$4" textAlign="center">
-                  Start by searching for your favorite podcasts above 👆
-                </Paragraph>
-              </YStack>
-            </PureYStack>
-          )}
-          {hasSearchResults &&
-            data.map((result) => {
-              return <SearchResultCard key={result.appleId} entry={result} />
-            })}
-        </YStack>
-      </PureScrollView>
-    </PureLayout>
+      ) : (
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.appleId.toString()}
+          contentContainerStyle={{ flexGrow: 1, paddingTop: 12 }}
+          ListEmptyComponent={renderEmptyState}
+          ItemSeparatorComponent={() => <YStack height={12} />}
+          showsVerticalScrollIndicator={false}
+          initialNumToRender={15}
+          bounces
+        />
+      )}
+    </PLayout.Screen>
   )
 }
 
