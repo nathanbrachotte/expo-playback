@@ -6,7 +6,7 @@ import { Paragraph, Spinner, Button } from "tamagui"
 import { AboutSection } from "./shared"
 import { useGetItunesPodcastAndEpisodesQuery } from "../../clients/itunes.queries"
 import { useSavePodcastMutation } from "../../clients/local.mutations"
-import { PureLayout } from "../../components/Layout"
+import { PLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { getImageFromEntity } from "../../utils/image.utils"
@@ -37,7 +37,7 @@ export function RemotePodcastScreen({ id }: { id: string }) {
   }
 
   return (
-    <PureLayout>
+    <PLayout.Screen>
       {/* About Section */}
       <AboutSection
         podcast={podcast}
@@ -56,7 +56,7 @@ export function RemotePodcastScreen({ id }: { id: string }) {
       <PureYStack flex={1} pt="$3">
         <RemoteEpisodesSection id={id} />
       </PureYStack>
-    </PureLayout>
+    </PLayout.Screen>
   )
 }
 
