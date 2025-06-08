@@ -1,25 +1,16 @@
 import { ArrowUp } from "@tamagui/lucide-icons"
 import { PropsWithChildren, useState } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import {
-  Button,
-  Slider,
-  Image,
-  AnimatePresence,
-  Sheet,
-  H4,
-  H6,
-  Separator,
-  Paragraph,
-} from "tamagui"
+import { Button, Slider, AnimatePresence, Sheet, H4, H6, Separator, Paragraph } from "tamagui"
 
 import { usePlayerContext } from "../../providers/PlayerProvider"
 import { formatPlayerTime, formatPlayerRemainingTimeFromDuration } from "../../utils/time.utils"
 import { getImageFromEntity } from "../../utils/image.utils"
-import { CoverImage, FULL_PLAYER_IMAGE_SIZE } from "../CoverImage"
+import { FULL_PLAYER_IMAGE_SIZE } from "../../utils/constants"
 import { PureYStack, PureXStack } from "../PureStack"
 import { LargePlayerSection, SmallPlayerSection } from "./PlayerButtons"
 import { EpisodeDescriptionHtml } from "../episode"
+import { PureImage } from "../image"
 
 export const PLAYER_HEIGHT = 100
 
@@ -83,7 +74,11 @@ function PlayerSheet({
 
         <PureYStack f={1} gap="$2" mt="$2" ai="center" px="$2">
           {/* Image */}
-          <CoverImage imageString={imageSource} />
+          <PureImage
+            uri={imageSource}
+            width={FULL_PLAYER_IMAGE_SIZE}
+            height={FULL_PLAYER_IMAGE_SIZE}
+          />
 
           {/* Description */}
           <Sheet.ScrollView f={1} gap="$4" px="$4" mt="$2" alwaysBounceVertical={false}>
@@ -156,13 +151,7 @@ export function SmallPlayer({ openSheet }: { openSheet: VoidFunction }) {
         >
           <PureXStack justifyContent="space-between" alignItems="center">
             {episodeImage ? (
-              <Image
-                source={{ uri: episodeImage }}
-                width={50}
-                height={50}
-                borderRadius="$2"
-                resizeMode="cover"
-              />
+              <PureImage uri={episodeImage} width={50} height={50} borderRadius="$2" />
             ) : (
               <PureYStack width={50} height={50} bg="$blue8" borderRadius="$2" overflow="hidden" />
             )}

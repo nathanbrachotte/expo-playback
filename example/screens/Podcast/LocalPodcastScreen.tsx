@@ -10,7 +10,7 @@ import {
   useGetLocalEpisodesByPodcastIdQuery,
   useGetLocalPodcastQuery,
 } from "../../clients/local.queries"
-import { PureLayout } from "../../components/Layout"
+import { PLayout, PureLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { getImageFromEntity } from "../../utils/image.utils"
@@ -30,7 +30,7 @@ export function LocalPodcastScreen({ id }: { id: string }) {
   }
 
   return (
-    <PureLayout>
+    <PLayout.Screen>
       {/* About Section */}
       <AboutSection
         podcast={localPodcast}
@@ -49,7 +49,7 @@ export function LocalPodcastScreen({ id }: { id: string }) {
       <PureYStack flex={1} pt="$3">
         <LocalEpisodesSection id={id} />
       </PureYStack>
-    </PureLayout>
+    </PLayout.Screen>
   )
 }
 

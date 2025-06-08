@@ -3,7 +3,7 @@ import { Ellipsis } from "@tamagui/lucide-icons"
 import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import { useCallback } from "react"
 import { useWindowDimensions } from "react-native"
-import { Button, H3, H4, Paragraph, Image } from "tamagui"
+import { Button, H3, H4, Paragraph } from "tamagui"
 import { z } from "zod"
 
 import { useSavePodcastMutation } from "../../clients/local.mutations"
@@ -21,6 +21,7 @@ import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata"
 import { DurationAndDateSection, EpisodeDescriptionHtml } from "../../components/episode"
+import { PureImage } from "../../components/image"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -62,10 +63,10 @@ function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
       maxWidth={width * 0.7}
     >
       <PureXStack gap="$3" ai="center">
-        <Image
-          source={{ uri: getImageFromEntity(podcast, "100") || "" }}
-          w="$3"
-          h="$3"
+        <PureImage
+          uri={getImageFromEntity(podcast, "100") || ""}
+          width="$3"
+          height="$3"
           borderRadius="$2"
           flexShrink={0}
         />
@@ -168,7 +169,7 @@ function EpisodeDumbScreen({
       <PLayout.Container px="$3">
         <PureYStack m="$-8" mb="$0">
           {image ? (
-            <Image alignSelf="center" source={{ uri: image }} w="$16" h="$16" borderRadius="$2" />
+            <PureImage alignSelf="center" uri={image} width="$16" height="$16" borderRadius="$2" />
           ) : null}
         </PureYStack>
         <PureYStack mt="$2">

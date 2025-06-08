@@ -1,5 +1,8 @@
 import { useNavigation } from "@react-navigation/native"
-import { Card, H4, Paragraph, YStack, Image } from "tamagui"
+import { Card, H4, Paragraph, YStack } from "tamagui"
+import { getVariable } from "tamagui"
+
+import { PureImage } from "./image"
 
 // type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
@@ -8,13 +11,21 @@ type PodcastCardProps = {
   title: string
   author?: string | null
   description?: string | null
-  cover?: string | null
+  cover: string | null
   Actions?: React.ReactElement
 } & React.ComponentProps<typeof Card>
 
-export function PodcastCard({ id, title, author, description, cover, Actions, ...props }: PodcastCardProps) {
+export function PodcastCard({
+  id,
+  title,
+  author,
+  description,
+  cover,
+  Actions,
+  ...props
+}: PodcastCardProps) {
   const navigation = useNavigation()
-  // const navigation = useNavigation<NavigationProp>()
+  const imageSize = getVariable("$6") // This will be 60px based on the original size
 
   return (
     <Card
@@ -30,21 +41,23 @@ export function PodcastCard({ id, title, author, description, cover, Actions, ..
       overflow="hidden"
       {...props}
     >
-      {cover && <Image source={{ uri: cover }} width={60} height={60} borderRadius="$4" resizeMode="cover" />}
-      <YStack flex={1} gap="$1">
+      <PureImage uri={cover} width={imageSize} height={imageSize} />
+      <YStack flex={1} gap="$1" justifyContent="center">
         <H4 numberOfLines={1} maxWidth="$14">
           {title}
         </H4>
-        <Paragraph numberOfLines={1} maxWidth="$14">
-          {author}
-        </Paragraph>
+        {author ? (
+          <Paragraph numberOfLines={1} maxWidth="$14" color="$gray11">
+            {author}
+          </Paragraph>
+        ) : null}
         {description ? (
-          <Paragraph size="$2" color="$gray11">
+          <Paragraph size="$2" color="$gray11" numberOfLines={2}>
             {description}
           </Paragraph>
         ) : null}
       </YStack>
-      {Actions}
+      {Actions && <YStack justifyContent="center">{Actions}</YStack>}
     </Card>
   )
 }

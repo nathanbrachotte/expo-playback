@@ -1,6 +1,6 @@
 import { Check, CircleCheck, Ellipsis, Trash2, Copy } from "@tamagui/lucide-icons"
 import React, { useState } from "react"
-import { Paragraph, Image, Card, CardProps, Progress } from "tamagui"
+import { Paragraph, Card, CardProps, Progress } from "tamagui"
 import * as Clipboard from "expo-clipboard"
 
 import { PureXStack, PureYStack } from "./PureStack"
@@ -8,6 +8,7 @@ import { CustomButtonIcon, GhostButton, PlayButton } from "./buttons"
 import { Optional } from "../utils/types.utils"
 import { EpisodeCardTitle } from "./episode"
 import { ActionSheet, ActionSheetAction } from "./ActionSheet"
+import { PureImage } from "./image"
 
 export function CardActionSheet({
   episodeId,
@@ -118,7 +119,7 @@ export const EpisodeCard = ({
     >
       <PureYStack flex={1}>
         <PureXStack flex={1} gap="$2">
-          {image && <Image source={{ uri: image }} w="$5" h="$5" borderRadius="$2" />}
+          {image && <PureImage uri={image} width="$5" height="$5" />}
           <PureYStack flex={1}>
             {/* Podcast title, in small */}
             {smallHeader ? (
