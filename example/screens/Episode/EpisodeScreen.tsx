@@ -11,7 +11,7 @@ import {
   getEpisodeWithPodcastByExternalId,
   useGetLiveLocalEpisodeQuery,
 } from "../../clients/local.queries"
-import { PLayout, PureLayout } from "../../components/Layout"
+import { PLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
 import { CustomButtonIcon, GhostButton, PlayButton } from "../../components/buttons"
@@ -22,6 +22,7 @@ import { getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata"
 import { DurationAndDateSection, EpisodeDescriptionHtml } from "../../components/episode"
 import { PureImage } from "../../components/image"
+import { SECTION_PADDING_VALUE } from "../../components/Sections/PureSection"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -205,7 +206,11 @@ function EpisodeDumbScreen({
           </PureXStack>
         </PureXStack>
         <PureYStack mt="$2" mx="$-3" flex={1}>
-          <PureScrollView>
+          <PureScrollView
+            scrollViewProps={{
+              contentContainerStyle: { paddingHorizontal: SECTION_PADDING_VALUE / 2 },
+            }}
+          >
             <EpisodeDescriptionHtml description={episode.description} />
           </PureScrollView>
         </PureYStack>
@@ -235,11 +240,11 @@ export function EpisodeScreen() {
 
   if (!episode || !podcast) {
     return (
-      <PureLayout header={<H4>Episode</H4>}>
+      <PLayout.Screen header={<H4>Episode</H4>}>
         <PureYStack f={1} centered>
           <Paragraph>Could not find Episode :(</Paragraph>
         </PureYStack>
-      </PureLayout>
+      </PLayout.Screen>
     )
   }
 

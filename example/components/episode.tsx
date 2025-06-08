@@ -6,6 +6,7 @@ import { PureXStack, PureYStack } from "./PureStack"
 import { Optional } from "../utils/types.utils"
 import RenderHtml from "react-native-render-html"
 import { useWindowDimensions } from "react-native"
+import { cleanHtmlText } from "../utils/text.utils"
 
 type BaseTitleProps = {
   children: React.ReactNode
@@ -39,11 +40,13 @@ export function EpisodeCardTitle({
   )
 }
 
-export function EpisodeDescription({ description }: { description: string }) {
+export function CleanEpisodeDescription({ description }: { description: string }) {
+  const cleanedDescription = cleanHtmlText(description)
+
   return (
     <PureYStack flex={1} mt="$2">
       <Paragraph numberOfLines={2} size="$1" lineHeight={16}>
-        {description}
+        {cleanedDescription}
       </Paragraph>
     </PureYStack>
   )

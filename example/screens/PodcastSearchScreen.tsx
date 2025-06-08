@@ -65,7 +65,7 @@ export function PodcastSearchScreen() {
             value={searchQuery}
             onChangeText={setSearchQuery}
             autoCapitalize="none"
-            placeholderTextColor="$color10"
+            placeholderTextColor="$gray11"
           />
           {searchQuery ? (
             <Button

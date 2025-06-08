@@ -11,7 +11,8 @@ import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { EpisodeCard } from "../../components/EpisodeCard"
-import { DurationAndDateSection, EpisodeDescription } from "../../components/episode"
+import { DurationAndDateSection, CleanEpisodeDescription } from "../../components/episode"
+import { SECTION_PADDING_VALUE } from "../../components/Sections/PureSection"
 
 const LIMIT_ITUNES_INITIAL_FETCH = 15
 
@@ -82,7 +83,7 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
   return (
     <FlatList
       contentContainerStyle={{
-        paddingHorizontal: 14,
+        paddingHorizontal: SECTION_PADDING_VALUE / 2,
       }}
       data={episodesWithPodcastId}
       renderItem={({ item }) => {
@@ -98,7 +99,7 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
             }}
             extraInfo={
               <>
-                <EpisodeDescription description={item.description} />
+                <CleanEpisodeDescription description={item.description} />
                 <DurationAndDateSection duration={item.duration} date={item.publishedAt} />
               </>
             }

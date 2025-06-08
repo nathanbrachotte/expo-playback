@@ -10,13 +10,13 @@ import {
   useGetLocalEpisodesByPodcastIdQuery,
   useGetLocalPodcastQuery,
 } from "../../clients/local.queries"
-import { PLayout, PureLayout } from "../../components/Layout"
+import { PLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata"
 import { EpisodeCard } from "../../components/EpisodeCard"
-import { DurationAndDateSection, EpisodeDescription } from "../../components/episode"
+import { DurationAndDateSection, CleanEpisodeDescription } from "../../components/episode"
 
 export function LocalPodcastScreen({ id }: { id: string }) {
   const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(id)
@@ -87,7 +87,7 @@ export function LocalEpisodesSection({ id }: { id: string }) {
             image={getImageFromEntity(episode, "100") || getImageFromEntity(localPodcast, "100")}
             extraInfo={
               <>
-                <EpisodeDescription description={episode.description} />
+                <CleanEpisodeDescription description={episode.description} />
                 <DurationAndDateSection
                   duration={episode.duration}
                   date={episode.publishedAt}
