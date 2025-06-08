@@ -98,10 +98,10 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
               pressStyle: { scale: 1 },
             }}
             extraInfo={
-              <>
+              <PureYStack gap="$1.5">
                 <CleanEpisodeDescription description={item.description} />
                 <DurationAndDateSection duration={item.duration} date={item.publishedAt} />
-              </>
+              </PureYStack>
             }
           />
         )

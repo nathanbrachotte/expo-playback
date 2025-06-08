@@ -12,6 +12,7 @@ import { getImageFromEntity } from "../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../utils/metadata"
 import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
 import { DurationAndDateSection, CleanEpisodeDescription } from "../components/episode"
+import { PureYStack } from "../components/PureStack"
 
 export function EpisodesFlatlist() {
   const navigation = useNavigation()
@@ -66,7 +67,7 @@ export function EpisodesFlatlist() {
             bigHeader={episode.title}
             image={getImageFromEntity(episode, "100") || getImageFromEntity(podcast, "100")}
             extraInfo={
-              <>
+              <PureYStack gap="$1.5">
                 <CleanEpisodeDescription description={episode.description} />
                 <DurationAndDateSection
                   duration={episode.duration}
@@ -74,7 +75,7 @@ export function EpisodesFlatlist() {
                   isFinished={prettyMetadata?.isFinished}
                   progress={prettyMetadata?.progress}
                 />
-              </>
+              </PureYStack>
             }
             onPress={() => {
               if (!episode.rssId) {

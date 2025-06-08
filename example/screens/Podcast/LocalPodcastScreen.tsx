@@ -86,14 +86,14 @@ export function LocalEpisodesSection({ id }: { id: string }) {
             smallHeader={localPodcast.title}
             image={getImageFromEntity(episode, "100") || getImageFromEntity(localPodcast, "100")}
             extraInfo={
-              <>
+              <PureYStack gap="$1.5">
                 <CleanEpisodeDescription description={episode.description} />
                 <DurationAndDateSection
                   duration={episode.duration}
                   date={episode.publishedAt}
                   progress={prettyMetadata?.progress}
                 />
-              </>
+              </PureYStack>
             }
             onPress={() => {
               navigation.navigate("Episode", {
