@@ -12,6 +12,8 @@ import { PodcastScreen } from "./screens/Podcast/PodcastScreen"
 import { PodcastSearchScreen } from "./screens/PodcastSearchScreen"
 import { SettingsScreen } from "./screens/SettingsScreen"
 import { RootStackParamList } from "./types/navigation.types"
+import { DownloadedEpisodesScreen } from "./screens/DownloadedEpisodesScreen"
+import { InProgressEpisodesScreen } from "./screens/InProgressEpisodesScreen"
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -22,6 +24,8 @@ export function Routes() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="PodcastSearch" component={PodcastSearchScreen} />
         <Stack.Screen name="LatestEpisodes" component={LatestEpisodesScreen} />
+        <Stack.Screen name="DownloadedEpisodes" component={DownloadedEpisodesScreen} />
+        <Stack.Screen name="InProgressEpisodes" component={InProgressEpisodesScreen} />
         <Stack.Screen name="Podcast" component={PodcastScreen} />
         <Stack.Screen name="Episode" component={EpisodeScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />

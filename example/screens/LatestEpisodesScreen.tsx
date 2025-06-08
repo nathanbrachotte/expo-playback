@@ -5,7 +5,7 @@ import { H3, Paragraph, YStack } from "tamagui"
 
 import { useAllDownloadedEpisodesQuery } from "../clients/local.queries"
 import { EpisodeCard } from "../components/EpisodeCard"
-import { PureLayout } from "../components/Layout"
+import { PLayout } from "../components/Layout"
 import { ErrorSection } from "../components/Sections/Error"
 import { LoadingSection } from "../components/Sections/Loading"
 import { getImageFromEntity } from "../utils/image.utils"
@@ -98,8 +98,8 @@ export function EpisodesFlatlist() {
 
 export function LatestEpisodesScreen() {
   return (
-    <PureLayout header={<H3>Latest episodes</H3>}>
+    <PLayout.Screen header={<H3>Latest episodes</H3>}>
       <EpisodesFlatlist />
-    </PureLayout>
+    </PLayout.Screen>
   )
 }

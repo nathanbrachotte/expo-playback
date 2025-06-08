@@ -286,3 +286,47 @@ export const useGetLatestEpisodeQuery = () => {
     },
   })
 }
+
+async function getAllInProgressEpisodes({ pageParam = 0 }: { pageParam?: number }) {
+  const limit = 20
+  const offset = pageParam * limit
+
+  const res = await drizzleClient
+    .select({
+      episode: {
+        ...episodesTable,
+      },
+      podcast: {
+        ...podcastsTable,
+      },
+      episodeMetadata: {
+        ...episodeMetadatasTable,
+      },
+    })
+    .from(episodesTable)
+    .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
+    .innerJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+    .where(
+      sql`${episodeMetadatasTable.isFinished} = false AND ${episodeMetadatasTable.playback} > 0`,
+    )
+    .orderBy(desc(episodesTable.publishedAt))
+    .limit(limit)
+    .offset(offset)
+  return res
+}
+
+export function useAllInProgressEpisodesQuery() {
+  return useInfiniteQuery({
+    queryKey: ["allInProgressEpisodes"],
+    queryFn: getAllInProgressEpisodes,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      // If lastPage has less than 20 items, it means there are no more pages
+      if (lastPage.length < 20) {
+        return undefined
+      }
+      // Otherwise, increment the page number (which acts as the offset multiplier)
+      return allPages.length
+    },
+  })
+}

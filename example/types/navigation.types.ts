@@ -13,6 +13,8 @@ export type RootStackParamList = {
     id?: string
   }
   LatestEpisodes: undefined
+  DownloadedEpisodes: undefined
+  InProgressEpisodes: undefined
   Episode: EpisodeScreenParams
   Settings: undefined
   DatabaseExplorer: undefined

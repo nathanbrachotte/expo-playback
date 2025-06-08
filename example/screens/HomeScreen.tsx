@@ -93,12 +93,12 @@ export function HomeScreen() {
               <ButtonList
                 icon={<Download size="$1.5" />}
                 text="Downloaded episodes"
-                onPress={() => navigation.navigate("LatestEpisodes")}
+                onPress={() => navigation.navigate("DownloadedEpisodes")}
               />
               <ButtonList
                 icon={<CircleDotDashed size="$1.5" />}
                 text="In progress"
-                onPress={() => navigation.navigate("LatestEpisodes")}
+                onPress={() => navigation.navigate("InProgressEpisodes")}
               />
             </YStack>
             <PodcastsSection />
