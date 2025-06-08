@@ -47,7 +47,9 @@ export function useGetItunesPodcastAndEpisodesQuery(podcastId: string | null, li
             return parsedEpisode.data
           })
           .filter(BooleanFilter),
-        podcast: ToLocalPodcastSchema.parse(data.results.find((episode) => episode.wrapperType === "track")),
+        podcast: ToLocalPodcastSchema.parse(
+          data.results.find((episode) => episode.wrapperType === "track"),
+        ),
       }
     },
     enabled: !!podcastId,
@@ -84,7 +86,9 @@ export function useGetItunesEpisodeQuery({
 
       return {
         episode: parsedEpisode.data,
-        podcast: ToLocalPodcastSchema.parse(data.results.find((episode) => episode.wrapperType === "track")),
+        podcast: ToLocalPodcastSchema.parse(
+          data.results.find((episode) => episode.wrapperType === "track"),
+        ),
       }
     },
     enabled: !!episodeId,

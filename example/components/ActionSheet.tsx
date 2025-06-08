@@ -31,7 +31,7 @@ export function ActionSheet({
       modal
       open={isOpen}
       onOpenChange={onOpenChange}
-      snapPoints={[30]}
+      snapPoints={[50]}
       dismissOnSnapToBottom
       animation="quick"
       zIndex={100000}

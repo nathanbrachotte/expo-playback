@@ -17,8 +17,11 @@ export function getProgressPercentageFromMetadata(
   return ((metadata.playback ?? 0) / totalDuration) * 100
 }
 
-export function getIsFinishedFromMetadata(metadata: LocalEpisodeMetadata): boolean {
-  return metadata.isFinished || (metadata.playback ?? 0) > 95
+export function getIsFinishedFromMetadata(
+  metadata: LocalEpisodeMetadata,
+  progressPercentage: number,
+): boolean {
+  return metadata.isFinished || progressPercentage >= 95
 }
 
 export function getIsDownloadedFromMetadata(metadata: LocalEpisodeMetadata): boolean {
@@ -44,7 +47,7 @@ export function getEpisodeStateFromMetadata(
   const progressPercentage = getProgressPercentageFromMetadata(metadata, duration ?? 0)
 
   return {
-    isFinished: getIsFinishedFromMetadata(metadata),
+    isFinished: getIsFinishedFromMetadata(metadata, progressPercentage),
     isDownloaded: getIsDownloadedFromMetadata(metadata),
     isDownloading: getIsDownloadingFromMetadata(metadata),
     dowloadProgress: metadata.downloadProgress ?? 0,

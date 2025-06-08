@@ -8,7 +8,10 @@ import { drizzleClient, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
 import { generateRssId } from "../utils/episodes.utils"
 
-async function savePodcastAndEpisodes(podcast: SharedPodcastFields, episodes: Omit<SharedEpisodeFields, "">[]) {
+async function savePodcastAndEpisodes(
+  podcast: SharedPodcastFields,
+  episodes: Omit<SharedEpisodeFields, "">[],
+) {
   // TODO: transaction
   const [savedPodcast] = await drizzleClient
     .insert(schema.podcastsTable)
@@ -76,7 +79,9 @@ export function useRemovePodcastMutation() {
   return useMutation({
     mutationFn: async (podcastId: string) => {
       await drizzleClient.transaction(async (tx) => {
-        await tx.delete(schema.episodesTable).where(eq(schema.episodesTable.podcastId, Number(podcastId)))
+        await tx
+          .delete(schema.episodesTable)
+          .where(eq(schema.episodesTable.podcastId, Number(podcastId)))
         await tx.delete(schema.podcastsTable).where(eq(schema.podcastsTable.id, Number(podcastId)))
       })
     },
@@ -88,6 +93,28 @@ export function useRemovePodcastMutation() {
     },
     onError: () => {
       PURE_TOASTS.error({ message: "Failed to Remove Podcast" })
+    },
+  })
+}
+
+export function useDeleteEpisodeMetadataMutation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (episodeId: number) => {
+      await drizzleClient
+        .delete(schema.episodeMetadatasTable)
+        .where(eq(schema.episodeMetadatasTable.episodeId, episodeId))
+    },
+    onSuccess: (_, episodeId) => {
+      PURE_TOASTS.success({ message: "Download removed!" })
+      // Invalidate any queries that might be using this episode's metadata
+      queryClient.invalidateQueries({ queryKey: ["episodeMetadata", episodeId] })
+      queryClient.invalidateQueries({ queryKey: ["savedEpisodes"] })
+      queryClient.invalidateQueries({ queryKey: ["episode"] })
+    },
+    onError: () => {
+      PURE_TOASTS.error({ message: "Failed to remove download" })
     },
   })
 }

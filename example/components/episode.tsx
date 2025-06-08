@@ -1,4 +1,4 @@
-import { Check, CheckCircle2 } from "@tamagui/lucide-icons"
+import { Check, CheckCircle2, Minus } from "@tamagui/lucide-icons"
 import React, { ComponentProps, useState } from "react"
 import { getVariable, Paragraph, useTheme } from "tamagui"
 import { formatDate, formatDuration, formatRemainingTime } from "../utils/time.utils"
@@ -10,6 +10,7 @@ import { cleanHtmlText } from "../utils/text.utils"
 import { CircleCheck, Ellipsis, Trash2, Copy } from "@tamagui/lucide-icons"
 import { Card, CardProps, Progress } from "tamagui"
 import * as Clipboard from "expo-clipboard"
+import { useDeleteEpisodeMetadataMutation } from "../clients/local.mutations"
 
 import { CustomButtonIcon, GhostButton, PlayButton } from "./buttons"
 import { ActionSheet, ActionSheetAction } from "./ActionSheet"
@@ -114,7 +115,7 @@ export function DurationAndDateSection({
           </PureXStack>
         </PureXStack>
       ) : null}
-      {duration && progress ? (
+      {duration && progress && !isFinished ? (
         <PureXStack centered gap="$1">
           <Paragraph size={size}>{" • "}</Paragraph>
           <Paragraph fontWeight="bold" size={size}>
@@ -131,11 +132,13 @@ export function EpisodeCardActionSheet({
   isDownloaded,
   onDelete,
   onMarkAsFinished,
+  onForgetEpisodePress,
 }: {
   episodeId?: number
   isDownloaded?: boolean
-  onDelete?: () => void
-  onMarkAsFinished?: () => void
+  onDelete?: VoidFunction
+  onMarkAsFinished?: VoidFunction
+  onForgetEpisodePress?: VoidFunction
 }) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -144,6 +147,11 @@ export function EpisodeCardActionSheet({
       label: "Mark as finished",
       onPress: () => onMarkAsFinished?.(),
       Icon: Check,
+    },
+    {
+      label: "Forget episode",
+      onPress: () => onForgetEpisodePress?.(),
+      Icon: Minus,
     },
   ]
 
@@ -198,7 +206,7 @@ export type EpisodeCardProps = {
     title: string
   } & EntityImage
   prettyMetadata?: Optional<PrettyMetadata>
-  onCardPress?: () => void
+  onCardPress?: VoidFunction
   cardProps?: CardProps
 }
 
@@ -212,6 +220,19 @@ export const NewEpisodeCard = ({
   const image = getImageFromEntities(episode, podcast)
   const { isFinished, isDownloaded, isDownloading, progress, isInProgress, progressPercentage } =
     prettyMetadata || {}
+  const deleteMetadataMutation = useDeleteEpisodeMetadataMutation()
+
+  const handleDeleteDownload = () => {
+    if (episode.id) {
+      // deleteMetadataMutation.mutate(episode.id)
+    }
+  }
+
+  const handleForgetEpisode = () => {
+    if (episode.id) {
+      deleteMetadataMutation.mutate(episode.id)
+    }
+  }
 
   return (
     <Card
@@ -269,7 +290,7 @@ export const NewEpisodeCard = ({
             />
             {isDownloaded ? (
               <GhostButton
-                onPress={() => {}}
+                onPress={handleDeleteDownload}
                 Icon={<CustomButtonIcon Component={Trash2} color="$red10" />}
               />
             ) : null}
@@ -277,8 +298,9 @@ export const NewEpisodeCard = ({
             <EpisodeCardActionSheet
               episodeId={episode.id}
               isDownloaded={isDownloaded}
-              onDelete={() => {}}
+              onDelete={handleDeleteDownload}
               onMarkAsFinished={() => {}}
+              onForgetEpisodePress={handleForgetEpisode}
             />
           </PureXStack>
           {isInProgress ? (
