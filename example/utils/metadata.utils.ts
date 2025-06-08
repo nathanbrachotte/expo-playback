@@ -5,8 +5,16 @@ export type PrettyMetadata = {
   isDownloaded: boolean
   isDownloading: boolean
   progress: number
+  progressPercentage: number
   dowloadProgress: number
   isInProgress: boolean
+}
+
+export function getProgressPercentageFromMetadata(
+  metadata: LocalEpisodeMetadata,
+  totalDuration: number,
+): number {
+  return ((metadata.playback ?? 0) / totalDuration) * 100
 }
 
 export function getIsFinishedFromMetadata(metadata: LocalEpisodeMetadata): boolean {
@@ -24,14 +32,24 @@ export function getIsDownloadingFromMetadata(metadata: LocalEpisodeMetadata): bo
     metadata.downloadProgress !== 100
   )
 }
-export function getEpisodeStateFromMetadata(metadata: LocalEpisodeMetadata): PrettyMetadata {
+
+export function getEpisodeStateFromMetadata(
+  metadata: LocalEpisodeMetadata,
+  duration: number | null,
+): PrettyMetadata {
+  if (!duration) {
+    console.warn("🚀 ~ Found an episode with duration 0: ", metadata.episodeId)
+  }
+
+  const progressPercentage = getProgressPercentageFromMetadata(metadata, duration ?? 0)
+
   return {
     isFinished: getIsFinishedFromMetadata(metadata),
     isDownloaded: getIsDownloadedFromMetadata(metadata),
     isDownloading: getIsDownloadingFromMetadata(metadata),
     dowloadProgress: metadata.downloadProgress ?? 0,
-    // TODO: How to get percentage?
     progress: metadata.playback ?? 0,
-    isInProgress: metadata.isFinished === null && metadata.downloadProgress !== null,
+    progressPercentage,
+    isInProgress: progressPercentage > 0 && progressPercentage < 95,
   }
 }

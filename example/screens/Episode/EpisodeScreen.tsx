@@ -88,8 +88,6 @@ function PlayEpisodeButton({
   podcast: LocalPodcast
   episodeMetadata: LocalEpisodeMetadata | null
 }) {
-  console.log("🚀 ~ PlayEpisodeButton ~ podcast:", JSON.stringify(podcast, null, 2))
-  console.log("🚀 ~ PlayEpisodeButton ~ episode:", JSON.stringify(episode, null, 2))
   const { setActiveEpisodeId } = usePlayerContext()
 
   const { mutateAsync: savePodcast } = useSavePodcastMutation({
@@ -139,7 +137,10 @@ function PlayEpisodeButton({
     )
   }
 
-  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(episodeMetadata)
+  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(
+    episodeMetadata,
+    episode.duration,
+  )
 
   return (
     <PlayButton

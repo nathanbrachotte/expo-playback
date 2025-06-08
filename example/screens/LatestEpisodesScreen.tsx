@@ -53,7 +53,7 @@ export function EpisodesFlatlist() {
       contentContainerStyle={{ paddingHorizontal: SECTION_PADDING_VALUE / 2 }}
       renderItem={({ item }) => {
         const prettyMetadata = item.episodeMetadata
-          ? getEpisodeStateFromMetadata(item.episodeMetadata)
+          ? getEpisodeStateFromMetadata(item.episodeMetadata, item.episode.duration)
           : null
 
         return (

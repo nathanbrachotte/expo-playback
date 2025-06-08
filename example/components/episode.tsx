@@ -41,7 +41,7 @@ export function EpisodeCardTitle({
 
   return (
     <PureXStack jc="flex-start" ai="flex-start" gap="$1">
-      {isFinished ? <Check size={checkSize} color="$green9" mt="$1.5" /> : null}
+      {isFinished ? <Check size={checkSize} color="$green9" mt={6} /> : null}
       <Component opacity={isFinished ? 0.6 : 1} {...componentProps}>
         {title}
       </Component>
@@ -186,7 +186,6 @@ export function EpisodeCardActionSheet({
 }
 
 export type EpisodeCardProps = {
-  animated?: boolean
   episode: {
     id?: number
     title: string
@@ -204,7 +203,6 @@ export type EpisodeCardProps = {
 }
 
 export const NewEpisodeCard = ({
-  animated = true,
   episode,
   podcast,
   prettyMetadata,
@@ -212,7 +210,8 @@ export const NewEpisodeCard = ({
   cardProps,
 }: EpisodeCardProps) => {
   const image = getImageFromEntities(episode, podcast)
-  const { isFinished, isDownloaded, isDownloading, progress, isInProgress } = prettyMetadata || {}
+  const { isFinished, isDownloaded, isDownloading, progress, isInProgress, progressPercentage } =
+    prettyMetadata || {}
 
   return (
     <Card
@@ -284,7 +283,7 @@ export const NewEpisodeCard = ({
           </PureXStack>
           {isInProgress ? (
             <PureXStack flex={1} px="$6" w="100%">
-              <Progress value={progress} size="$1" bg="$color1">
+              <Progress value={progressPercentage} size="$1" bg="$color1">
                 <Progress.Indicator animation="quick" bg="$color10" />
               </Progress>
             </PureXStack>

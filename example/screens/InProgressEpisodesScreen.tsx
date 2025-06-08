@@ -62,7 +62,7 @@ export function InProgressEpisodesScreen() {
           const episode = item.episode
           const podcast = item.podcast
           const prettyMetadata = item.episodeMetadata
-            ? getEpisodeStateFromMetadata(item.episodeMetadata)
+            ? getEpisodeStateFromMetadata(item.episodeMetadata, episode.duration)
             : null
 
           return (

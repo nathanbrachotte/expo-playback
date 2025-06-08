@@ -62,9 +62,22 @@ export function DownloadedEpisodesScreen() {
           const episode = item.episode
           const podcast = item.podcast
           const prettyMetadata = item.episodeMetadata
-            ? getEpisodeStateFromMetadata(item.episodeMetadata)
+            ? getEpisodeStateFromMetadata(item.episodeMetadata, episode.duration)
             : null
-
+          // if (episode.id === 516) {
+          //   console.log(
+          //     "🚀 ~ DownloadedEpisodesScreen ~ episode:",
+          //     JSON.stringify(episode, null, 2),
+          //   )
+          //   console.log(
+          //     "🚀 ~ DownloadedEpisodesScreen ~ metadata:",
+          //     JSON.stringify(item.episodeMetadata, null, 2),
+          //   )
+          //   console.log(
+          //     "🚀 ~ DownloadedEpisodesScreen ~ prettyMetadata:",
+          //     JSON.stringify(prettyMetadata, null, 2),
+          //   )
+          // }
           return (
             <NewEpisodeCard
               episode={episode}
