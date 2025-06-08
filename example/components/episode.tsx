@@ -44,7 +44,6 @@ export function EpisodeCardTitle({
       {isFinished ? <Check size={checkSize} color="$green9" mt="$1.5" /> : null}
       <Component opacity={isFinished ? 0.6 : 1} {...componentProps}>
         {title}
-        {title}
       </Component>
     </PureXStack>
   )

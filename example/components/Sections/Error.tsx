@@ -15,9 +15,9 @@ export function ErrorSection() {
   )
 }
 
-export function ErrorScreen() {
+export function ErrorScreen({ header }: { header?: React.ReactNode }) {
   return (
-    <PureLayout>
+    <PureLayout header={header}>
       <ErrorSection />
     </PureLayout>
   )

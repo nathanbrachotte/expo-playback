@@ -12,9 +12,9 @@ export function LoadingSection({ children }: { children?: React.ReactNode }) {
   )
 }
 
-export function LoadingScreen() {
+export function LoadingScreen({ header }: { header?: React.ReactNode }) {
   return (
-    <PureLayout>
+    <PureLayout header={header}>
       <PureYStack f={1} centered>
         <Spinner />
       </PureYStack>

@@ -4,15 +4,16 @@ import { FlatList } from "react-native"
 import { H3, Paragraph, YStack } from "tamagui"
 
 import { useAllDownloadedEpisodesQuery } from "../clients/local.queries"
-import { EpisodeCard } from "../components/EpisodeCard"
 import { PLayout } from "../components/Layout"
 import { ErrorScreen } from "../components/Sections/Error"
 import { LoadingScreen } from "../components/Sections/Loading"
-import { getImageFromEntity } from "../utils/image.utils"
-import { getEpisodeStateFromMetadata } from "../utils/metadata"
+import { getEpisodeStateFromMetadata } from "../utils/metadata.utils"
 import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
-import { DurationAndDateSection, CleanEpisodeDescription } from "../components/episode"
-import { PureYStack } from "../components/PureStack"
+import { NewEpisodeCard } from "../components/episode"
+
+export function Header() {
+  return <H3>Downloaded</H3>
+}
 
 export function DownloadedEpisodesScreen() {
   const navigation = useNavigation()
@@ -26,11 +27,11 @@ export function DownloadedEpisodesScreen() {
   } = useAllDownloadedEpisodesQuery()
 
   if (error) {
-    return <ErrorScreen />
+    return <ErrorScreen header={<Header />} />
   }
 
   if (isLoading) {
-    return <LoadingScreen />
+    return <LoadingScreen header={<Header />} />
   }
 
   // Flatten the pages into a single array
@@ -38,7 +39,7 @@ export function DownloadedEpisodesScreen() {
 
   if (allEpisodes.length === 0) {
     return (
-      <PLayout.Screen header={<H3>Downloaded Episodes</H3>}>
+      <PLayout.Screen header={<Header />}>
         <YStack flex={1} gap="$4" justifyContent="center" alignItems="center">
           <Paragraph>No downloaded episodes yet</Paragraph>
         </YStack>
@@ -47,7 +48,7 @@ export function DownloadedEpisodesScreen() {
   }
 
   return (
-    <PLayout.Screen header={<H3>Downloaded</H3>}>
+    <PLayout.Screen header={<Header />}>
       <FlatList
         data={allEpisodes}
         onEndReached={() => {
@@ -65,33 +66,16 @@ export function DownloadedEpisodesScreen() {
             : null
 
           return (
-            <EpisodeCard
-              smallHeader={podcast.title}
-              bigHeader={episode.title}
-              image={getImageFromEntity(episode, "100") || getImageFromEntity(podcast, "100")}
-              extraInfo={
-                <PureYStack gap="$1.5">
-                  <CleanEpisodeDescription description={episode.description} />
-                  <DurationAndDateSection
-                    duration={episode.duration}
-                    date={episode.publishedAt}
-                    isFinished={prettyMetadata?.isFinished}
-                    progress={prettyMetadata?.progress}
-                  />
-                </PureYStack>
-              }
-              onPress={() => {
-                if (!episode.rssId) {
-                  throw new Error("Found episode without an rssId")
-                }
-
+            <NewEpisodeCard
+              episode={episode}
+              podcast={podcast}
+              prettyMetadata={prettyMetadata}
+              onCardPress={() => {
                 navigation.navigate("Episode", {
                   episodeId: String(episode.id),
                   podcastId: String(podcast.id),
                 })
               }}
-              episodeId={episode.id}
-              {...prettyMetadata}
             />
           )
         }}
