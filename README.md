@@ -29,6 +29,9 @@ cd ios && pod install && cd .. # install pods
 - [x] Performances in search
 - [x] Don't render HTML in Cards
 - [x] Player
+- [ ] Finish Downloaded / InProgress screens
+  - [ ] Use Flashlist for long lists of episodes
+  - [ ] Abstract EpisodeCard better so it's easily reusable around the app
 - [ ] Update episode id to be podcastId-creationDate so we can always have the same ids for episodes used in backend
 - [ ] Create script to automatically make 10 random podcasts downloaded/ongoing to simplify testing
 - [ ] Fix starting playing always tries to download

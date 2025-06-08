@@ -4,15 +4,12 @@ import { FlatList } from "react-native"
 import { H3, Paragraph, YStack } from "tamagui"
 
 import { useAllDownloadedEpisodesQuery } from "../clients/local.queries"
-import { EpisodeCard } from "../components/EpisodeCard"
 import { PLayout } from "../components/Layout"
 import { ErrorSection } from "../components/Sections/Error"
 import { LoadingSection } from "../components/Sections/Loading"
-import { getImageFromEntity } from "../utils/image.utils"
-import { getEpisodeStateFromMetadata } from "../utils/metadata"
+import { getEpisodeStateFromMetadata } from "../utils/metadata.utils"
 import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
-import { DurationAndDateSection, CleanEpisodeDescription } from "../components/episode"
-import { PureYStack } from "../components/PureStack"
+import { NewEpisodeCard } from "../components/episode"
 
 export function EpisodesFlatlist() {
   const navigation = useNavigation()
@@ -55,40 +52,21 @@ export function EpisodesFlatlist() {
       onEndReachedThreshold={0.3}
       contentContainerStyle={{ paddingHorizontal: SECTION_PADDING_VALUE / 2 }}
       renderItem={({ item }) => {
-        const episode = item.episode
-        const podcast = item.podcast
         const prettyMetadata = item.episodeMetadata
           ? getEpisodeStateFromMetadata(item.episodeMetadata)
           : null
 
         return (
-          <EpisodeCard
-            smallHeader={podcast.title}
-            bigHeader={episode.title}
-            image={getImageFromEntity(episode, "100") || getImageFromEntity(podcast, "100")}
-            extraInfo={
-              <PureYStack gap="$1.5">
-                <CleanEpisodeDescription description={episode.description} />
-                <DurationAndDateSection
-                  duration={episode.duration}
-                  date={episode.publishedAt}
-                  isFinished={prettyMetadata?.isFinished}
-                  progress={prettyMetadata?.progress}
-                />
-              </PureYStack>
-            }
-            onPress={() => {
-              if (!episode.rssId) {
-                throw new Error("Found episode without an rssId")
-              }
-
+          <NewEpisodeCard
+            episode={item.episode}
+            podcast={item.podcast}
+            prettyMetadata={prettyMetadata}
+            onCardPress={() => {
               navigation.navigate("Episode", {
-                episodeId: String(episode.id),
-                podcastId: String(podcast.id),
+                episodeId: String(item.episode.id),
+                podcastId: String(item.podcast.id),
               })
             }}
-            episodeId={episode.id}
-            {...prettyMetadata}
           />
         )
       }}

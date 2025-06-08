@@ -15,3 +15,7 @@ export type SharedPodcastFields = Omit<LocalPodcast, "createdAt" | "updatedAt" |
 
 export type LocalEpisodeMetadata = typeof episodeMetadatasTable.$inferSelect
 export type LocalEpisodeMetadataInsert = typeof episodeMetadatasTable.$inferInsert
+
+// Maybe there is a way to extract this from the type directly?
+type Sizes = "30" | "60" | "100" | "600"
+export type EntityImage = Pick<LocalEpisode, `image${Sizes}`>

@@ -9,10 +9,8 @@ import { useSavePodcastMutation } from "../../clients/local.mutations"
 import { PLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
-import { getImageFromEntity } from "../../utils/image.utils"
-import { EpisodeCard } from "../../components/EpisodeCard"
-import { DurationAndDateSection, CleanEpisodeDescription } from "../../components/episode"
 import { SECTION_PADDING_VALUE } from "../../components/Sections/PureSection"
+import { NewEpisodeCard } from "../../components/episode"
 
 const LIMIT_ITUNES_INITIAL_FETCH = 15
 
@@ -88,21 +86,31 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
       data={episodesWithPodcastId}
       renderItem={({ item }) => {
         return (
-          <EpisodeCard
-            smallHeader={podcast.title}
-            bigHeader={item.title}
-            image={getImageFromEntity(item, "100")}
+          <NewEpisodeCard
+            animated={false}
             cardProps={{
               opacity: 0.5,
               hoverStyle: { scale: 1 },
               pressStyle: { scale: 1 },
             }}
-            extraInfo={
-              <PureYStack gap="$1.5">
-                <CleanEpisodeDescription description={item.description} />
-                <DurationAndDateSection duration={item.duration} date={item.publishedAt} />
-              </PureYStack>
-            }
+            episode={{
+              title: item.title,
+              description: item.description,
+              duration: item.duration,
+              publishedAt: item.publishedAt,
+              image30: item.image30,
+              image60: item.image60,
+              image100: item.image100,
+              image600: item.image600,
+            }}
+            podcast={{
+              id: podcast.appleId,
+              title: podcast.title,
+              image30: podcast.image30,
+              image60: podcast.image60,
+              image600: podcast.image600,
+              image100: podcast.image100,
+            }}
           />
         )
       }}

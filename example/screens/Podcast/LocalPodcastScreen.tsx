@@ -13,10 +13,8 @@ import {
 import { PLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
-import { getImageFromEntity } from "../../utils/image.utils"
-import { getEpisodeStateFromMetadata } from "../../utils/metadata"
-import { EpisodeCard } from "../../components/EpisodeCard"
-import { DurationAndDateSection, CleanEpisodeDescription } from "../../components/episode"
+import { getEpisodeStateFromMetadata } from "../../utils/metadata.utils"
+import { NewEpisodeCard } from "../../components/episode"
 
 export function LocalPodcastScreen({ id }: { id: string }) {
   const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(id)
@@ -81,28 +79,16 @@ export function LocalEpisodesSection({ id }: { id: string }) {
           : null
 
         return (
-          <EpisodeCard
-            bigHeader={episode.title}
-            smallHeader={localPodcast.title}
-            image={getImageFromEntity(episode, "100") || getImageFromEntity(localPodcast, "100")}
-            extraInfo={
-              <PureYStack gap="$1.5">
-                <CleanEpisodeDescription description={episode.description} />
-                <DurationAndDateSection
-                  duration={episode.duration}
-                  date={episode.publishedAt}
-                  progress={prettyMetadata?.progress}
-                />
-              </PureYStack>
-            }
-            onPress={() => {
+          <NewEpisodeCard
+            episode={episode}
+            podcast={localPodcast}
+            prettyMetadata={prettyMetadata}
+            onCardPress={() => {
               navigation.navigate("Episode", {
                 episodeId: String(episode.id),
                 podcastId: String(episode.podcastId),
               })
             }}
-            episodeId={episode.id}
-            {...prettyMetadata}
           />
         )
       }}
