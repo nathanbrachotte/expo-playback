@@ -26,9 +26,11 @@ cd ios && pod install && cd .. # install pods
 - [x] Add way to copy episodeId easily
 - [x] Add "..." ios action sheet
   - [ ] Add it everwhere
-- [ ] Performances in search
-- [ ] Don't render HTML in Cards
+- [x] Performances in search
+- [x] Don't render HTML in Cards
 - [x] Player
+- [ ] Update episode id to be podcastId-creationDate so we can always have the same ids for episodes used in backend
+- [ ] Create script to automatically make 10 random podcasts downloaded/ongoing to simplify testing
 - [ ] Fix starting playing always tries to download
 - [x] Handle dates and durations
 - [ ] Hook the "mark as played" / "unplay" button
@@ -36,6 +38,7 @@ cd ios && pod install && cd .. # install pods
 - [x] Player empty state
 - [ ] Update weird transparent gradient
 - [ ] Make "play" button also show "pause" if actively playing
+- [ ] Add logic to refetch latest episodes of each podcast on app mount
 
 ## SQLite
 
