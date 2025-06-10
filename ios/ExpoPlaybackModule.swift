@@ -14,6 +14,10 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
     private var currentEpisodeId: Int64?
     private var skipSegments: [SkipSegment] = []
     private var timeObserverToken: Any?
+
+    private let metadataRepo = EpisodeMetadataRepository()
+    private let episodeRepo = EpisodeRepository()
+    private let podcastRepo = PodcastRepository()
     
     private func startBackgroundDownload(episodeId: Int64) {
         EpisodeDownloader.shared.episodeDownloaderDelegate = self
@@ -50,28 +54,25 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         Events("onPlaybackStatusUpdate", "onSkipSegmentReached", "onSqLiteTableUpdate")
         
         // Playback control functions
-        AsyncFunction("play") { (episodeId: Int64, promise: Promise) in
-            do {
-                try self.play(episodeId: episodeId)
-            } catch {
-                promise.reject(error)
-            }
-            promise.resolve()
+        Function("play") { (episodeId: Int64) in
+            try self.play(episodeId: episodeId)
         }
         
         Function("startBackgroundDownload") { (episodeId: Int64) in
             startBackgroundDownload(episodeId: episodeId)
         }
         
-        AsyncFunction("pause") { (promise: Promise) in
+        Function("pause") { () in
             self.player?.pause()
-            promise.resolve()
         }
         
-        AsyncFunction("seekTo") { (position: Double, promise: Promise) in
+        Function("stop") { () in
+            self.cleanup()
+        }
+        
+        Function("seekTo") { (position: Double) in
             let time = CMTime(seconds: position, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
             self.player?.seek(to: time)
-            promise.resolve()
         }
         
         // Update skip segments during playback
@@ -81,17 +82,61 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         
         // Cleanup
         Function("cleanup") {
-            if let token = self.timeObserverToken {
-                self.player?.removeTimeObserver(token)
-                self.timeObserverToken = nil
-            }
-            self.player = nil
-            self.skipSegments = []
+            self.cleanup()
         }
+
+        // Restart incomplete downloads by removing partial file and starting fresh
+        Function("restartDownload") { (episodeId: Int64) in
+            if let metadata = self.metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId),
+               let relativeFilePath = metadata.relativeFilePath {
+                
+                do {
+                    // Try to delete the partial download file if it exists
+                    let fileURL = try EpisodeDownloader.getEpisodeFileURL(relativeFilePath: relativeFilePath)
+                    try? FileManager.default.removeItem(at: fileURL)
+                    
+                    // Reset metadata download progress
+                    var updatedMetadata = metadata
+                    updatedMetadata.downloadProgress = 0
+                    updatedMetadata.relativeFilePath = nil
+                    updatedMetadata.fileSize = nil
+                    self.metadataRepo.createOrUpdateMetadata(updatedMetadata)
+                    
+                    // Start fresh download
+                    startBackgroundDownload(episodeId: episodeId)
+                } catch {
+                    print("Error restarting download: \(error)")
+                }
+            }
+        }
+    }
+    
+    func cleanup() {
+        self.player?.pause()
+        if let token = self.timeObserverToken {
+            self.player?.removeTimeObserver(token)
+            self.timeObserverToken = nil
+        }
+        self.currentEpisodeId = nil
+        self.player = nil
+        self.skipSegments = []
+        
+        // Clean up MPRemoteCommandCenter
+        let commandCenter = MPRemoteCommandCenter.shared()
+        commandCenter.playCommand.removeTarget(nil)
+        commandCenter.pauseCommand.removeTarget(nil)
+        commandCenter.togglePlayPauseCommand.removeTarget(nil)
+        commandCenter.changePlaybackPositionCommand.removeTarget(nil)
+        commandCenter.skipForwardCommand.removeTarget(nil)
+        commandCenter.skipBackwardCommand.removeTarget(nil)
+        
+        // Clear now playing info
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
     
     @objc func playerDidFinishPlaying(note: NSNotification) {
         print("episode finished ", self.currentEpisodeId!)
+        self.currentEpisodeId = nil
     }
     
     enum PlaybackError: LocalizedError {
@@ -216,10 +261,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         }
         
         self.currentEpisodeId = episodeId
-        
-        let metadataRepo = EpisodeMetadataRepository()
-        let episodeRepo = EpisodeRepository()
-        let podcastRepo = PodcastRepository()
+
         
         guard let episode = episodeRepo.getEpisodeById(episodeIdValue: episodeId) else {
             throw Exception(name: "episode_not_found", description: "episode_not_found")
@@ -312,16 +354,21 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             //     }
             // }
             
-            let metadataRepo = EpisodeMetadataRepository()
+            let duration = self.player?.currentItem?.duration.seconds ?? 0
+            
             if var metadata = metadataRepo.getMetadataForEpisode(
-                episodeIdValue: self.currentEpisodeId!)
-            {
+                episodeIdValue: self.currentEpisodeId!) {
+                if !metadata.isFinished {
+                    let progress = (currentTime / duration) * 100
+                    if progress >= 95 {
+                        metadata.isFinished = true
+                    }
+                }
+
                 metadata.playback = Int64(currentTime)
                 metadataRepo.createOrUpdateMetadata(metadata)
                 sendEpisodeMetadataUpdate()
             }
-            
-            
             
             // Emit playback status
             self.sendEvent(
@@ -329,7 +376,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
                 [
                     "isPlaying": self.player?.rate != 0,
                     "currentTime": currentTime,
-                    "duration": self.player?.currentItem?.duration.seconds ?? 0,
+                    "duration": duration,
                 ])
         }
         

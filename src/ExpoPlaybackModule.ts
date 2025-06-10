@@ -27,10 +27,10 @@ declare class ExpoPlaybackModule extends NativeModule<{
   onPlaybackStatusUpdate: (event: PlaybackStatus) => void
   onSkipSegmentReached: (event: SkipSegmentEvent) => void
 }> {
-  play(episodeId: number): Promise<void>
-  pause(): Promise<void>
+  play(episodeId: number): void
+  pause(): void
   startBackgroundDownload(episodeId: number): void
-  seekTo(position: number): Promise<void>
+  seekTo(position: number): void
   cleanup(): void
 }
 
