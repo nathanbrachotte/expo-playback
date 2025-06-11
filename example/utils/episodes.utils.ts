@@ -1,5 +1,10 @@
 import { randomUUID } from "expo-crypto"
 
+export const MISSING_VALUES_EPISODE = {
+  // If publishedAt is missing, we use the oldest date possible
+  publishedAt: new Date("1970-01-01"),
+} as const
+
 export function generateRssId(podcastId: number, rssId: string | null) {
   return `${podcastId.toString()}-${rssId || `generated-${randomUUID()}`}`
 }

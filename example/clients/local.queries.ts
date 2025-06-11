@@ -110,7 +110,6 @@ export function useGetLocalEpisodesWithPodcastAndMetadataByPodcastIdLiveQuery(
 }
 
 export function useGetLocalEpisodesByPodcastIdQuery(podcastId: string | null) {
-  console.log("🚀 ~ useGetLocalEpisodesByPodcastIdQuery ~ podcastId:", podcastId)
   return useQuery({
     queryKey: ["savedEpisodes", podcastId],
     queryFn: () => getEpisodesWithPodcastAndMetadataByPodcastId(podcastId),

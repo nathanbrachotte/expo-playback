@@ -7,29 +7,23 @@ export function formatDuration(milliseconds: number): string {
   }
 
   const totalSeconds = Math.floor(milliseconds / 1000)
-  const totalMinutesRoundedUp = Math.ceil(totalSeconds / 60)
-
-  if (totalMinutesRoundedUp === 0) {
-    // This handles cases from 0ms that round down to 0 minutes.
-    return "0m"
-  }
-
-  const hours = Math.floor(totalMinutesRoundedUp / 60)
-  const minutes = totalMinutesRoundedUp % 60
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
 
   // Construct the duration object for @goomba/date-fns
   const durationObject = {
     hours,
     minutes,
-    seconds: 0, // Explicitly set seconds to 0 as we've rounded to minutes
+    seconds,
   }
 
-  // Format string to display hours and minutes, e.g., "1h 30m", "0h 5m"
-  const formatString = hours > 0 ? "h 'h' m 'm'" : "m 'm'"
+  // Format string to display hours, minutes, and seconds
+  const formatString = hours > 0 ? "h'h' m'm' s's'" : minutes > 0 ? "m 'm' s 's'" : "s 's'"
 
   const formatted = formatDurationFn(durationObject, formatString)
 
-  return formatted === null ? "0m" : formatted
+  return formatted === null ? "0s" : formatted
 }
 
 /**

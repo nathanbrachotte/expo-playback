@@ -2,6 +2,8 @@ import { z } from "zod"
 
 import { RssItemSchema } from "./rss.fetch"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
+import { MISSING_VALUES_EPISODE } from "../utils/episodes.utils"
+import { Optional } from "../utils/types.utils"
 
 export const ToLocalPodcastSchema = z
   .object({
@@ -127,24 +129,38 @@ export const ToLocalEpisodeSchema = z
     },
   )
 
-export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
+export function calculateDuration(itemDuration: Optional<number | string>) {
   // TODO: This whole duration math is fucked up
   // Convert duration from "HH:MM:SS" to milliseconds
-  const durationParts = typeof data["itunes:duration"] === "string" ? data["itunes:duration"].split(":") : []
+  const durationParts = itemDuration ? String(itemDuration).split(":") : []
+
   let duration = 0
   if (durationParts.length === 3) {
     duration =
-      parseInt(durationParts[0]) * 3600000 + parseInt(durationParts[1]) * 60000 + parseInt(durationParts[2]) * 1000
+      parseInt(durationParts[0]) * 3600000 +
+      parseInt(durationParts[1]) * 60000 +
+      parseInt(durationParts[2]) * 1000
   } else if (durationParts.length === 2) {
     duration = parseInt(durationParts[0]) * 60000 + parseInt(durationParts[1]) * 1000
   } else {
     duration = parseInt(durationParts[0]) * 1000
   }
+  console.log("🚀 ~ calculateDuration ~ duration:", duration)
+
+  return duration
+}
+
+export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
+  const itunesDuration = data["itunes:duration"]
+
+  if (!data.pubDate) {
+    console.warn("⚠️ FOUND EPISODE WITHOUT PUBLISHED DATE", JSON.stringify(data, null, 2))
+  }
 
   return {
     title: String(data.title),
-    duration,
-    publishedAt: new Date(data.pubDate),
+    duration: calculateDuration(itunesDuration),
+    publishedAt: data.pubDate ? new Date(data.pubDate) : MISSING_VALUES_EPISODE.publishedAt,
     downloadUrl: data.enclosure?.url || "",
     image30: null,
     image60: null,

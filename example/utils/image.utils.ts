@@ -44,7 +44,6 @@ export function containImage(entity: EntityImage | undefined | null): boolean {
   const imageKeys = Object.keys(entity).filter((key): key is ImageKey<EntityImage> =>
     key.startsWith("image"),
   )
-  console.log("🚀 ~ containImage ~ imageKeys:", imageKeys)
 
   return imageKeys.some((key) => Boolean(entity[key]))
 }
@@ -55,16 +54,12 @@ export function getImageFromEntities(
   prioritySize: (typeof PRIORITY_SIZES)[number] = "100",
 ): string | null {
   if (episode && containImage(episode)) {
-    console.log("🚀 ~ getImageFromEntities ~ episode:", episode)
     const image = getImageFromEntity(episode, prioritySize)
-    console.log("🚀 ~ getImageFromEntities ~ image:", image)
     return image
   }
 
   if (podcast && containImage(podcast)) {
-    console.log("🚀 ~ getImageFromEntities ~ podcast:", podcast)
     const image = getImageFromEntity(podcast, prioritySize)
-    console.log("🚀 ~ getImageFromEntities ~ image:", image)
     return image
   }
   return null
