@@ -3,32 +3,41 @@ import ExpoPlaybackModule, {
   PlaybackStatus,
   SkipSegmentEvent,
   SqLiteTableUpdatedEvent,
+  PlayerState,
 } from "./ExpoPlaybackModule"
 
 export { SkipSegment, PlaybackStatus, SkipSegmentEvent }
 
-export function play(episodeId: number): Promise<void> {
-  return ExpoPlaybackModule.play(episodeId)
+export function play(episodeId: number): void {
+  ExpoPlaybackModule.play(episodeId)
 }
 
-export function pause(): Promise<void> {
-  return ExpoPlaybackModule.pause()
+export function pause(): void {
+  ExpoPlaybackModule.pause()
 }
 
-export function seekTo(position: number): Promise<void> {
-  return ExpoPlaybackModule.seekTo(position)
+export function seek(position: number): void {
+  ExpoPlaybackModule.seek(position)
 }
 
 export function startBackgroundDownload(episodeId: number): void {
-  return ExpoPlaybackModule.startBackgroundDownload(episodeId)
+  ExpoPlaybackModule.startBackgroundDownload(episodeId)
 }
 
-export function cleanup(): void {
-  return ExpoPlaybackModule.cleanup()
+export function getPlayerState(): PlayerState {
+  return ExpoPlaybackModule.getState()
 }
 
-export function addPlaybackStatusListener(listener: (event: PlaybackStatus) => void) {
-  return ExpoPlaybackModule.addListener("onPlaybackStatusUpdate", listener)
+export function stop(): void {
+  ExpoPlaybackModule.stop()
+}
+
+export function skip(seconds: number): void {
+  ExpoPlaybackModule.skip(seconds)
+}
+
+export function addPlayerStateListener(listener: (event: PlayerState) => void) {
+  return ExpoPlaybackModule.addListener("onPlayerStateUpdate", listener)
 }
 
 export function addSqLiteTableUpdatedListener(listener: (event: SqLiteTableUpdatedEvent) => void) {

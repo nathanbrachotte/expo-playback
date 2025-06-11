@@ -28,40 +28,43 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <GestureHandlerRootView
-        style={{
-          flex: 1,
-        }}
-      >
-        <TamaguiProvider
-          config={tamaguiConfig}
-          // config={config}
-          // defaultTheme={colorScheme!}
-          defaultTheme="dark"
+      <PlayerProvider>
+        <GestureHandlerRootView
+          style={{
+            flex: 1,
+          }}
         >
-          <Theme name="blue">
-            <PortalProvider>
-              <MigrationsWrapper>
-                <QueryClientProvider client={queryClient}>
-                  <PlayerProvider>
+          <TamaguiProvider
+            config={tamaguiConfig}
+            // config={config}
+            // defaultTheme={colorScheme!}
+            defaultTheme="dark"
+          >
+            <Theme name="blue">
+              <PortalProvider>
+                <MigrationsWrapper>
+                  <QueryClientProvider client={queryClient}>
                     <I18nProvider
                       language={
                         // getLocales()[0].languageTag
                         "en"
                       }
                     >
-                      <NavigationContainer theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+                      <NavigationContainer
+                        theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+                      >
                         <Routes />
                       </NavigationContainer>
                     </I18nProvider>
-                  </PlayerProvider>
-                  <ToastProvider />
-                </QueryClientProvider>
-              </MigrationsWrapper>
-            </PortalProvider>
-          </Theme>
-        </TamaguiProvider>
-      </GestureHandlerRootView>
+
+                    <ToastProvider />
+                  </QueryClientProvider>
+                </MigrationsWrapper>
+              </PortalProvider>
+            </Theme>
+          </TamaguiProvider>
+        </GestureHandlerRootView>
+      </PlayerProvider>
     </SafeAreaProvider>
   )
 }

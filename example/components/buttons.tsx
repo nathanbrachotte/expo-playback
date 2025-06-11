@@ -1,10 +1,12 @@
-import { Check, Download, Play } from "@tamagui/lucide-icons"
+import { Check, Download, Pause, Play } from "@tamagui/lucide-icons"
 import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
-import React, { ComponentProps } from "react"
+import React, { ComponentProps, useCallback } from "react"
 import { Button, ButtonProps, getVariable, Paragraph, Spinner } from "tamagui"
 
 import { PureXStack } from "./PureStack"
 import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
+import { pause, play, startBackgroundDownload } from "expo-playback"
+import { usePlayerContext } from "../providers/PlayerProvider"
 
 export function ButtonList({
   icon,
@@ -68,8 +70,6 @@ export const CustomButtonIcon = ({
 }
 
 export function PlayButton({
-  isDownloaded,
-  isDownloading,
   episodeId,
   onPress,
   size = "$4",
@@ -84,6 +84,21 @@ export function PlayButton({
 } & ButtonProps) {
   // Make iconSize scale based on size
   const iconSize = getVariable(size) * 0.5
+  const { activeEpisode, isPlaying } = usePlayerContext()
+  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
+  const downloadProgress = localEpisodeMetadata?.[0]?.episodeMetadata?.downloadProgress ?? 0
+  const isDownloaded = downloadProgress === 100
+  const isDownloading = downloadProgress > 0 && downloadProgress < 100
+
+  const isEpisodePlaying = activeEpisode?.episode?.id === episodeId && isPlaying
+
+  const handlePlayPause = useCallback(() => {
+    if (isEpisodePlaying) {
+      pause()
+    } else {
+      play(episodeId)
+    }
+  }, [isEpisodePlaying, episodeId])
 
   if (isDownloaded) {
     return (
@@ -91,10 +106,8 @@ export function PlayButton({
         <GhostButton
           size={size}
           showBg
-          onPress={() => {
-            ExpoPlaybackModule.play(episodeId)
-          }}
-          Icon={<CustomButtonIcon Component={Play} size={iconSize} />}
+          onPress={handlePlayPause}
+          Icon={<CustomButtonIcon Component={isEpisodePlaying ? Pause : Play} size={iconSize} />}
           {...props}
         />
       </PureXStack>
@@ -114,7 +127,7 @@ export function PlayButton({
       <GhostButton
         size={size}
         showBg
-        onPress={() => ExpoPlaybackModule.startBackgroundDownload(episodeId)}
+        onPress={() => startBackgroundDownload(episodeId)}
         Icon={<CustomButtonIcon Component={Download} size={iconSize} />}
         {...props}
       />
@@ -154,7 +167,7 @@ export function DownloadButton({
       }
       onPress={() => {
         if (!isDownloading && !isDownloaded) {
-          ExpoPlaybackModule.startBackgroundDownload(episodeId)
+          startBackgroundDownload(episodeId)
         }
       }}
     />

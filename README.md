@@ -65,8 +65,8 @@ cd ios && pod install && cd .. # install pods
 
 - [ ] Auto-play next episode in background
 - [ ] Fix scenario where download is stopped
-- [ ] Harden the download process
-- [ ] Player integration with the native side
+- [x] Harden the download process
+- [x] Player integration with the native side
 - [ ] Previous / Next 15 seconds
 - [ ] Seeking
 - [ ] Auto-download last 3 episodes of each podcast?

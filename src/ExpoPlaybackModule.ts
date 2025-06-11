@@ -22,16 +22,24 @@ export interface SkipSegmentEvent {
   endTime: number
 }
 
+export interface PlayerState {
+  status: "playing" | "paused" | "buffering" | "stopped"
+  currentEpisodeId: number | null
+  currentTime: number
+}
+
 declare class ExpoPlaybackModule extends NativeModule<{
   onSqLiteTableUpdate: (event: SqLiteTableUpdatedEvent) => void
-  onPlaybackStatusUpdate: (event: PlaybackStatus) => void
+  onPlayerStateUpdate: (event: PlayerState) => void
   onSkipSegmentReached: (event: SkipSegmentEvent) => void
 }> {
   play(episodeId: number): void
   pause(): void
   startBackgroundDownload(episodeId: number): void
   seekTo(position: number): void
+  skip(seconds: number): void
   cleanup(): void
+  getState(): PlayerState
 }
 
 export default requireNativeModule<ExpoPlaybackModule>("ExpoPlayback")

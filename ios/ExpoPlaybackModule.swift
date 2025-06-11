@@ -41,6 +41,12 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             ])
     }
     
+    private func sendPlayerStateUpdate() {
+        self.sendEvent(
+            "onPlayerStateUpdate",
+            self.getState())
+    }
+    
     // Each module class must implement the definition function. The definition consists of components
     // that describes the module's functionality and behavior.
     // See https://docs.expo.dev/modules/module-api for more details about available components.
@@ -51,11 +57,15 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         Name("ExpoPlayback")
         
         // Events that will be emitted to JavaScript
-        Events("onPlaybackStatusUpdate", "onSkipSegmentReached", "onSqLiteTableUpdate")
+        Events("onPlayerStateUpdate", "onSkipSegmentReached", "onSqLiteTableUpdate")
         
         // Playback control functions
         Function("play") { (episodeId: Int64) in
             try self.play(episodeId: episodeId)
+        }
+        
+        Function("getState") { () in
+            return self.getState()
         }
         
         Function("startBackgroundDownload") { (episodeId: Int64) in
@@ -63,26 +73,24 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         }
         
         Function("pause") { () in
-            self.player?.pause()
+            self.pause()
         }
         
         Function("stop") { () in
-            self.cleanup()
+            self.stop()
+        }
+
+        Function("skip") { (seconds: Double) in
+            self.skip(seconds)
         }
         
-        Function("seekTo") { (position: Double) in
-            let time = CMTime(seconds: position, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-            self.player?.seek(to: time)
+        Function("seek") { (position: Double) in
+            self.seek(position)
         }
         
         // Update skip segments during playback
         Function("updateSkipSegments") { (segments: [SkipSegment]) in
             self.skipSegments = segments
-        }
-        
-        // Cleanup
-        Function("cleanup") {
-            self.cleanup()
         }
 
         // Restart incomplete downloads by removing partial file and starting fresh
@@ -173,7 +181,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         commandCenter.playCommand.isEnabled = true
         commandCenter.playCommand.addTarget { [weak self] event in
             guard let self = self else { return .commandFailed }
-            self.player?.play()
+            self.play()
             return .success
         }
         
@@ -181,7 +189,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         commandCenter.pauseCommand.isEnabled = true
         commandCenter.pauseCommand.addTarget { [weak self] event in
             guard let self = self else { return .commandFailed }
-            self.player?.pause()
+            self.pause()
             return .success
         }
         
@@ -190,9 +198,9 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         commandCenter.togglePlayPauseCommand.addTarget { [weak self] event in
             guard let self = self else { return .commandFailed }
             if self.player?.rate == 0 {
-                self.player?.play()
+                self.play()
             } else {
-                self.player?.pause()
+                self.pause()
             }
             return .success
         }
@@ -216,16 +224,8 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
                   let event = event as? MPSkipIntervalCommandEvent else {
                 return .commandFailed
             }
-            let currentTime = self.player?.currentTime().seconds ?? 0
-            let newTime = currentTime + event.interval
-            let time = CMTime(seconds: newTime, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-            self.player?.seek(to: time)
             
-            // Update now playing info
-            var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
-            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = newTime
-            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-            
+            self.skip(event.interval)
             return .success
         }
         commandCenter.skipBackwardCommand.isEnabled = true
@@ -234,22 +234,58 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
                   let event = event as? MPSkipIntervalCommandEvent else {
                 return .commandFailed
             }
-            let currentTime = self.player?.currentTime().seconds ?? 0
-            let newTime = max(0, currentTime - event.interval)
-            let time = CMTime(seconds: newTime, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-            self.player?.seek(to: time)
             
-            // Update now playing info
-            var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
-            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = newTime
-            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-            
+            self.skip(-1 * event.interval)
             return .success
         }
         
         // Set default skip intervals
         commandCenter.skipForwardCommand.preferredIntervals = [15]
         commandCenter.skipBackwardCommand.preferredIntervals = [15]
+    }
+
+    func getState() -> [String: Any?] {
+        guard player != nil else {
+                return [
+                    "status": "stopped",
+                    "currentEpisodeId": nil,
+                    "currentTime": 0.0
+                ]
+            }
+            
+            let status: String
+            switch self.player?.timeControlStatus {
+            case .playing:
+                status = "playing"
+            case .paused:
+                status = "paused"
+            case .waitingToPlayAtSpecifiedRate:
+                status = "buffering"
+            case .none:
+                status = "stopped"
+            case .some(_):
+                status = "stopped"
+            }
+            
+            let currentTime = self.player?.currentTime().seconds ?? 0.0
+            
+            return [
+                "status": status,
+                "currentEpisodeId": self.currentEpisodeId,
+                "currentTime": currentTime
+            ]
+    }
+    
+    func skip(seconds: Double) {
+        let currentTime = self.player?.currentTime().seconds ?? 0
+        let newTime = currentTime + seconds
+        let time = CMTime(seconds: newTime, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        self.player?.seek(to: time)
+        
+        // Update now playing info
+        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = newTime
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
     
     func play (episodeId: Int64) throws {
@@ -370,14 +406,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
                 sendEpisodeMetadataUpdate()
             }
             
-            // Emit playback status
-            self.sendEvent(
-                "onPlaybackStatusUpdate",
-                [
-                    "isPlaying": self.player?.rate != 0,
-                    "currentTime": currentTime,
-                    "duration": duration,
-                ])
+            self.sendPlayerStateUpdate()
         }
         
         
@@ -387,5 +416,41 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+
+    // Add these new class functions for player state management
+    private func play() {
+        self.player?.play()
+        self.sendPlayerStateUpdate()
+    }
+    
+    private func pause() {
+        self.player?.pause()
+        self.sendPlayerStateUpdate()
+    }
+    
+    private func stop() {
+        self.cleanup()
+        self.sendPlayerStateUpdate()
+    }
+    
+    private func seek(_ position: Double) {
+        let time = CMTime(seconds: position, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        self.player?.seek(to: time)
+        self.sendPlayerStateUpdate()
+    }
+    
+    private func skip(_ seconds: Double) {
+        let currentTime = self.player?.currentTime().seconds ?? 0
+        let newTime = currentTime + seconds
+        let time = CMTime(seconds: newTime, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        self.player?.seek(to: time)
+        
+        // Update now playing info
+        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = newTime
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        
+        self.sendPlayerStateUpdate()
     }
 }

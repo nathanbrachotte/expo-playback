@@ -1,5 +1,5 @@
 import { ArrowUp } from "@tamagui/lucide-icons"
-import { PropsWithChildren, useState } from "react"
+import { PropsWithChildren, useEffect, useState } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Button, Slider, AnimatePresence, Sheet, H4, H6, Separator, Paragraph } from "tamagui"
 
@@ -11,6 +11,8 @@ import { PureYStack, PureXStack } from "../PureStack"
 import { LargePlayerSection, SmallPlayerSection } from "./PlayerButtons"
 import { EpisodeDescriptionHtml } from "../episode"
 import { PureImage } from "../image"
+import { addPlayerStateListener } from "expo-playback"
+import { PlayerState } from "expo-playback/ExpoPlaybackModule"
 
 export const PLAYER_HEIGHT = 100
 
@@ -31,10 +33,19 @@ function PlayerSheet({
   isOpen: boolean
   onOpenChange: (isOpen: boolean) => void
 }) {
-  const { activeEpisode, progress, onSliderValueChange } = usePlayerContext()
+  const { activeEpisode, onSliderValueChange } = usePlayerContext()
+  const [currentTimeSeconds, setCurrentTimeSeconds] = useState(0)
   const { title } = activeEpisode?.episode ?? {}
   const { title: podcastTitle } = activeEpisode?.podcast ?? {}
   const insets = useSafeAreaInsets()
+
+  useEffect(() => {
+    const subscription = addPlayerStateListener((newPlayerState: PlayerState) => {
+      setCurrentTimeSeconds(newPlayerState.currentTime)
+    })
+
+    return () => subscription.remove()
+  }, [])
 
   const episodeImage = getImageFromEntity(activeEpisode?.episode ?? {}, "100")
   const podcastImage = getImageFromEntity(activeEpisode?.podcast ?? {}, "100")
@@ -43,7 +54,6 @@ function PlayerSheet({
 
   // Convert duration from milliseconds to seconds for display
   const totalDurationSeconds = (activeEpisode?.episode?.duration ?? 0) / 1000
-  const currentTimeSeconds = progress
   const progressPercentage =
     totalDurationSeconds > 0 ? (currentTimeSeconds / totalDurationSeconds) * 100 : 0
 
@@ -167,7 +177,7 @@ export function SmallPlayer({ openSheet }: { openSheet: VoidFunction }) {
 
 export function Player() {
   // TODO: When the user swipes, next / previous episode?
-  const { activeEpisode, setActiveEpisodeId } = usePlayerContext()
+  const { activeEpisode } = usePlayerContext()
   const [isSheetOpen, setIsSheetOpen] = useState(false)
 
   if (!activeEpisode) {
