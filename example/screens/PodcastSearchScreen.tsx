@@ -97,6 +97,7 @@ export function PodcastSearchScreen() {
         </PureYStack>
       ) : (
         <FlatList
+          indicatorStyle="white"
           data={data}
           renderItem={renderItem}
           keyExtractor={(item) => item.appleId.toString()}

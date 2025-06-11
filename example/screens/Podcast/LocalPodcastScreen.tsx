@@ -67,6 +67,7 @@ export function LocalEpisodesSection({ id }: { id: string }) {
 
   return (
     <FlatList
+      indicatorStyle="white"
       contentContainerStyle={{
         paddingHorizontal: 14,
       }}

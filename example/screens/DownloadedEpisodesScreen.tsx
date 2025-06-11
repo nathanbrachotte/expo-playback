@@ -50,6 +50,7 @@ export function DownloadedEpisodesScreen() {
   return (
     <PLayout.Screen header={<Header />}>
       <FlatList
+        indicatorStyle="white"
         data={allEpisodes}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {

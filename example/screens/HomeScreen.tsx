@@ -16,7 +16,7 @@ function PodcastsList() {
   const { data: podcastList } = useLocalPodcastsQuery()
 
   return (
-    <ScrollView contentContainerStyle={{ paddingBottom: "$12" }}>
+    <ScrollView contentContainerStyle={{ paddingBottom: "$12" }} indicatorStyle="white">
       {podcastList?.map((podcast) => {
         const image = getImageFromEntity(podcast, "100")
 

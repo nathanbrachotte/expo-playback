@@ -80,6 +80,7 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
 
   return (
     <FlatList
+      indicatorStyle="white"
       contentContainerStyle={{
         paddingHorizontal: SECTION_PADDING_VALUE / 2,
       }}
@@ -87,7 +88,6 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
       renderItem={({ item }) => {
         return (
           <NewEpisodeCard
-            animated={false}
             cardProps={{
               opacity: 0.5,
               hoverStyle: { scale: 1 },

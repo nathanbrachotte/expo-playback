@@ -96,6 +96,7 @@ export function PureFlatList({
           <LoadingSection />
         </YStack>
       }
+      indicatorStyle="white"
       renderItem={({ item }) => {
         const prettyMetadata = item.episodeMetadata
           ? getEpisodeStateFromMetadata(item.episodeMetadata, item.episode.duration)
