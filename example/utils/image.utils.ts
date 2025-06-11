@@ -15,8 +15,21 @@ export function getImageFromEntity(
 
   if (allowFallback) {
     const currentIndex = PRIORITY_SIZES.indexOf(prioSize)
-    if (currentIndex < PRIORITY_SIZES.length - 1) {
-      return getImageFromEntity(entity, PRIORITY_SIZES[currentIndex + 1], true)
+
+    // Try smaller sizes first
+    for (let i = currentIndex + 1; i < PRIORITY_SIZES.length; i++) {
+      const smallerSize = entity[`image${PRIORITY_SIZES[i]}`]
+      if (smallerSize) {
+        return smallerSize
+      }
+    }
+
+    // If no smaller sizes found, try larger sizes
+    for (let i = currentIndex - 1; i >= 0; i--) {
+      const largerSize = entity[`image${PRIORITY_SIZES[i]}`]
+      if (largerSize) {
+        return largerSize
+      }
     }
   }
 
@@ -31,17 +44,28 @@ export function containImage(entity: EntityImage | undefined | null): boolean {
   const imageKeys = Object.keys(entity).filter((key): key is ImageKey<EntityImage> =>
     key.startsWith("image"),
   )
+  console.log("🚀 ~ containImage ~ imageKeys:", imageKeys)
 
   return imageKeys.some((key) => Boolean(entity[key]))
 }
 
-export function getImageFromEntities(episode?: EntityImage, podcast?: EntityImage): string | null {
+export function getImageFromEntities(
+  episode?: EntityImage,
+  podcast?: EntityImage,
+  prioritySize: (typeof PRIORITY_SIZES)[number] = "100",
+): string | null {
   if (episode && containImage(episode)) {
-    return getImageFromEntity(episode, "100")
+    console.log("🚀 ~ getImageFromEntities ~ episode:", episode)
+    const image = getImageFromEntity(episode, prioritySize)
+    console.log("🚀 ~ getImageFromEntities ~ image:", image)
+    return image
   }
 
   if (podcast && containImage(podcast)) {
-    return getImageFromEntity(podcast, "100")
+    console.log("🚀 ~ getImageFromEntities ~ podcast:", podcast)
+    const image = getImageFromEntity(podcast, prioritySize)
+    console.log("🚀 ~ getImageFromEntities ~ image:", image)
+    return image
   }
   return null
 }

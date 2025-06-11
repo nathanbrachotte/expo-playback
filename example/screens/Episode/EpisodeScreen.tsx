@@ -18,7 +18,7 @@ import { CustomButtonIcon, GhostButton, PlayButton } from "../../components/butt
 import { usePlayerContext } from "../../providers/PlayerProvider"
 import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
-import { getImageFromEntity } from "../../utils/image.utils"
+import { getImageFromEntities, getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata.utils"
 import { DurationAndDateSection, EpisodeDescriptionHtml } from "../../components/episode"
 import { PureImage } from "../../components/image"
@@ -162,9 +162,7 @@ function EpisodeDumbScreen({
   podcast: LocalPodcast
   episodeMetadata: LocalEpisodeMetadata | null
 }) {
-  const podcastImage = getImageFromEntity(podcast, "600")
-  const episodeImage = getImageFromEntity(episode, "600")
-  const image = episodeImage || podcastImage
+  const image = getImageFromEntities(episode, podcast, "600")
 
   return (
     <PLayout.Screen>
@@ -239,6 +237,8 @@ export function EpisodeScreen() {
   const podcast = localEpisode[0]?.podcast
   const episodeMetadata = localEpisode[0]?.episodeMetadata
 
+  // TODO: Remove this and assume the episode exist?
+  // This is fucked because of the livequery bs
   if (!episode || !podcast) {
     return (
       <PLayout.Screen header={<H4>Episode</H4>}>
