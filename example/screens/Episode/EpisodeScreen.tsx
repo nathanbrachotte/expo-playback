@@ -1,5 +1,4 @@
 import { useNavigation, useNavigationState, useRoute } from "@react-navigation/native"
-import { Ellipsis } from "@tamagui/lucide-icons"
 import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import { useCallback } from "react"
 import { useWindowDimensions } from "react-native"
@@ -14,13 +13,17 @@ import {
 import { PLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
-import { CustomButtonIcon, GhostButton, PlayButton } from "../../components/buttons"
+import { PlayButton } from "../../components/buttons"
 import { usePlayerContext } from "../../providers/PlayerProvider"
 import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntities, getImageFromEntity } from "../../utils/image.utils"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata.utils"
-import { DurationAndDateSection, EpisodeDescriptionHtml } from "../../components/episode"
+import {
+  DurationAndDateSection,
+  EpisodeActionSheet,
+  EpisodeDescriptionHtml,
+} from "../../components/episode"
 import { PureImage } from "../../components/image"
 import { SECTION_PADDING_VALUE } from "../../components/Sections/PureSection"
 
@@ -163,6 +166,9 @@ function EpisodeDumbScreen({
   episodeMetadata: LocalEpisodeMetadata | null
 }) {
   const image = getImageFromEntities(episode, podcast, "600")
+  const prettyMetadata = episodeMetadata
+    ? getEpisodeStateFromMetadata(episodeMetadata, episode.duration)
+    : null
 
   return (
     <PLayout.Screen>
@@ -190,12 +196,9 @@ function EpisodeDumbScreen({
             <PodcastButton podcast={podcast} />
           </PureXStack>
           <PureXStack gap="$2" centered width="30%">
-            <GhostButton
-              Icon={<CustomButtonIcon Component={Ellipsis} />}
-              onPress={() => {}}
-              // episode={episode}
-              // podcast={podcast}
-              // episodeMetadata={episodeMetadata}
+            <EpisodeActionSheet
+              episodeId={episode.id}
+              isDownloaded={prettyMetadata?.isDownloaded}
             />
             <PlayEpisodeButton
               episode={episode}

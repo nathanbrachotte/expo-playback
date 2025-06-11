@@ -77,7 +77,7 @@ async function getEpisodesWithPodcastAndMetadataByPodcastId(podcastId: string | 
     .leftJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
     .where(sql`${episodesTable.podcastId} = ${podcastId}`)
     .orderBy(desc(episodesTable.publishedAt))
-  console.log("🚀 ~ getEpisodesWithPodcastAndMetadataByPodcastId ~ res:", res)
+
   return res
 }
 

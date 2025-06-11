@@ -130,8 +130,6 @@ export const ToLocalEpisodeSchema = z
   )
 
 export function calculateDuration(itemDuration: Optional<number | string>) {
-  // TODO: This whole duration math is fucked up
-  // Convert duration from "HH:MM:SS" to milliseconds
   const durationParts = itemDuration ? String(itemDuration).split(":") : []
 
   let duration = 0
@@ -145,7 +143,6 @@ export function calculateDuration(itemDuration: Optional<number | string>) {
   } else {
     duration = parseInt(durationParts[0]) * 1000
   }
-  console.log("🚀 ~ calculateDuration ~ duration:", duration)
 
   return duration
 }
@@ -156,6 +153,11 @@ export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
   if (!data.pubDate) {
     console.warn("⚠️ FOUND EPISODE WITHOUT PUBLISHED DATE", JSON.stringify(data, null, 2))
   }
+
+  console.log(
+    "🚀 ~ ToEpisodeFromRSSSchema ~ new item to be created:",
+    JSON.stringify(data, null, 2),
+  )
 
   return {
     title: String(data.title),
@@ -169,7 +171,6 @@ export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
     image600: null,
     description: data.description || "",
     shouldDownload: false,
-    //!!!!!!!!! CHECK CHANGE THIS TO RSS ID
     rssId: typeof data.guid === "string" ? data.guid : data.guid?.["#text"] || null,
     // `podcastId` is not part of the RSS response
   } satisfies Omit<SharedEpisodeFields, "id" | "podcastId">

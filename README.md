@@ -27,7 +27,7 @@ cd ios && pod install && cd .. # install pods
 - [x] Change the mechanism to save the podcast locally, it should be taking all episodes from RSS feed and not itunes. Not doing rn since Erik is working on this file and he'll get mad at me if I do.
 - [x] Add way to copy episodeId easily
 - [x] Add "..." ios action sheet
-  - [ ] Add it everwhere
+  - [x] Add it everwhere
 - [x] Performances in search
 - [x] Don't render HTML in Cards
 - [x] Player
@@ -67,6 +67,7 @@ cd ios && pod install && cd .. # install pods
 - [ ] Seeking
 - [ ] Auto-download last 3 episodes of each podcast?
 - [ ] Instantly play episode even when not downloaded
+- [ ] Remove all downloads when podcast is removed from library
 
 #### Future Erik
 

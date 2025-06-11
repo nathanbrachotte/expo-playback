@@ -78,10 +78,24 @@ export function useRemovePodcastMutation() {
 
   return useMutation({
     mutationFn: async (podcastId: string) => {
+      // TODO: Erik, first remove all downloads.
+
       await drizzleClient.transaction(async (tx) => {
+        // First delete episode metadata for all episodes of this podcast
+        await tx.delete(schema.episodeMetadatasTable).where(
+          eq(
+            schema.episodeMetadatasTable.episodeId,
+            tx
+              .select({ id: schema.episodesTable.id })
+              .from(schema.episodesTable)
+              .where(eq(schema.episodesTable.podcastId, Number(podcastId))),
+          ),
+        )
+        // Then delete episodes
         await tx
           .delete(schema.episodesTable)
           .where(eq(schema.episodesTable.podcastId, Number(podcastId)))
+        // Then delete the podcast
         await tx.delete(schema.podcastsTable).where(eq(schema.podcastsTable.id, Number(podcastId)))
       })
     },

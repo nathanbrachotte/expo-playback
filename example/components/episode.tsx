@@ -127,7 +127,7 @@ export function DurationAndDateSection({
   )
 }
 
-export function EpisodeCardActionSheet({
+export function EpisodeActionSheet({
   episodeId,
   isDownloaded,
   onDelete,
@@ -141,16 +141,29 @@ export function EpisodeCardActionSheet({
   onForgetEpisodePress?: VoidFunction
 }) {
   const [isOpen, setIsOpen] = useState(false)
+  const deleteMetadataMutation = useDeleteEpisodeMetadataMutation()
+
+  const handleDeleteDownload = () => {
+    if (episodeId) {
+      // deleteMetadataMutation.mutate(episode.id)
+    }
+  }
+
+  const handleForgetEpisode = () => {
+    if (episodeId) {
+      deleteMetadataMutation.mutate(episodeId)
+    }
+  }
 
   const actions: ActionSheetAction[] = [
     {
       label: "Mark as finished",
-      onPress: () => onMarkAsFinished?.(),
+      onPress: () => {},
       Icon: Check,
     },
     {
       label: "Forget episode",
-      onPress: () => onForgetEpisodePress?.(),
+      onPress: () => handleForgetEpisode(),
       Icon: Minus,
     },
   ]
@@ -220,17 +233,12 @@ export const NewEpisodeCard = ({
   const image = getImageFromEntities(episode, podcast)
   const { isFinished, isDownloaded, isDownloading, progress, isInProgress, progressPercentage } =
     prettyMetadata || {}
+
   const deleteMetadataMutation = useDeleteEpisodeMetadataMutation()
 
   const handleDeleteDownload = () => {
     if (episode.id) {
       // deleteMetadataMutation.mutate(episode.id)
-    }
-  }
-
-  const handleForgetEpisode = () => {
-    if (episode.id) {
-      deleteMetadataMutation.mutate(episode.id)
     }
   }
 
@@ -295,13 +303,7 @@ export const NewEpisodeCard = ({
               />
             ) : null}
             {/* Menu */}
-            <EpisodeCardActionSheet
-              episodeId={episode.id}
-              isDownloaded={isDownloaded}
-              onDelete={handleDeleteDownload}
-              onMarkAsFinished={() => {}}
-              onForgetEpisodePress={handleForgetEpisode}
-            />
+            <EpisodeActionSheet episodeId={episode.id} isDownloaded={isDownloaded} />
           </PureXStack>
           {isInProgress ? (
             <PureXStack flex={1} px="$6" w="100%">
