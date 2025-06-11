@@ -31,6 +31,7 @@ cd ios && pod install && cd .. # install pods
 - [x] Performances in search
 - [x] Don't render HTML in Cards
 - [x] Player
+- [ ] When removing podcast, must remove episode and episodeMetadata too
 - [ ] Finish Downloaded / InProgress screens
 - [ ] Make scrollbar light
   - [ ] Use Flashlist for long lists of episodes
@@ -52,6 +53,9 @@ cd ios && pod install && cd .. # install pods
 - [ ] Why are search not case insensitive?
 
 #### Future N8
+
+- [ ] "To listen later" playlist
+- [ ] Build "segemented progress" component
 
 ### Erik
 
