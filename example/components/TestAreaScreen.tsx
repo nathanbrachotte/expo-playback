@@ -6,7 +6,7 @@ import { PureYStack } from "./PureStack"
 import { useSavePodcastMutation } from "../clients/local.mutations"
 import {
   useAllDownloadedEpisodesQuery,
-  useAllEpisodesQuery,
+  useInfiniteAllEpisodesQuery,
   useGetLiveLocalEpisodeQuery,
   useLocalPodcastsQuery,
 } from "../clients/local.queries"
@@ -20,7 +20,7 @@ export function TestAreaScreen() {
     updatedAt,
   } = useGetLiveLocalEpisodeQuery({ id: "1000704249323" })
   const { data: episodesWithPodcastsAndMetadata } = useAllDownloadedEpisodesQuery()
-  const { data: allEpisodes } = useAllEpisodesQuery()
+  const { data: allEpisodes } = useInfiniteAllEpisodesQuery()
   const { activeEpisode, setActiveEpisodeId } = usePlayerContext()
   const { data: podcastList } = useLocalPodcastsQuery()
 

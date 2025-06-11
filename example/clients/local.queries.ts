@@ -181,22 +181,45 @@ export function useGetLiveLocalEpisodeMetadataQuery(id: number) {
   return useNativeSaveLiveQuery(episodeMetadataByIdDbQuery(id), ["episode_metadata"])
 }
 
-// Join episodes with podcasts to get podcast title, and order by published_at desc
-export const useAllEpisodesQuery = () => {
-  return useLiveQuery(
-    drizzleClient
-      .select({
-        episode: {
-          ...episodesTable,
-        },
-        podcast: {
-          ...podcastsTable,
-        },
-      })
-      .from(episodesTable)
-      .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
-      .orderBy(desc(episodesTable.publishedAt)),
-  )
+async function getAllEpisodes({ pageParam = 0 }: { pageParam?: number }) {
+  const limit = 20
+  const offset = pageParam * limit
+  const res = await drizzleClient
+    .select({
+      episode: {
+        ...episodesTable,
+      },
+      podcast: {
+        ...podcastsTable,
+      },
+      episodeMetadata: {
+        ...episodeMetadatasTable,
+      },
+    })
+    .from(episodesTable)
+    .innerJoin(podcastsTable, sql`${episodesTable.podcastId} = ${podcastsTable.id}`)
+    .leftJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
+    .orderBy(desc(episodesTable.publishedAt))
+    .limit(limit)
+    .offset(offset)
+
+  return res
+}
+
+export function useInfiniteAllEpisodesQuery() {
+  return useInfiniteQuery({
+    queryKey: ["allEpisodes"],
+    queryFn: getAllEpisodes,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      // If lastPage has less than 20 items, it means there are no more pages
+      if (lastPage.length < 20) {
+        return undefined
+      }
+      // Otherwise, increment the page number (which acts as the offset multiplier)
+      return allPages.length
+    },
+  })
 }
 
 export function useAllDownloadedEpisodesLiveQuery() {
