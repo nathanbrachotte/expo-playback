@@ -6,7 +6,7 @@ import { extractEpisodesFromRssFeed } from "./rss.queries"
 import { PURE_TOASTS } from "../components/toasts"
 import { drizzleClient, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
-import { generateRssId } from "../utils/episodes.utils"
+import { generateEpisodeId, generateRssId } from "../utils/episodes.utils"
 
 async function savePodcastAndEpisodes(
   podcast: SharedPodcastFields,
@@ -34,6 +34,7 @@ async function savePodcastAndEpisodes(
     episodes.map((episode) => {
       return {
         ...episode,
+        id: generateEpisodeId(savedPodcast.id, episode.publishedAt),
         rssId: generateRssId(savedPodcast.id, episode.rssId),
         podcastId: savedPodcast.id,
       } satisfies typeof schema.episodesTable.$inferInsert
@@ -52,7 +53,6 @@ export function useSavePodcastMutation({ podcastId }: { podcastId: string }) {
     mutationKey: ["savePodcast", podcastId],
     mutationFn: async ({ podcast }: { podcast: SharedPodcastFields }) => {
       const res = await fetchRssFeed(podcast.rssFeedUrl)
-      console.log("🚀 ~ mutationFn: ~ res:", JSON.stringify(res, null, 2))
       const rssEpisodes = extractEpisodesFromRssFeed(res).map((episode) => ({
         ...episode,
         podcastId: podcast.appleId,
@@ -62,7 +62,7 @@ export function useSavePodcastMutation({ podcastId }: { podcastId: string }) {
     },
     onError: (err) => {
       console.error("Failed to save podcast:", podcastId, err)
-      PURE_TOASTS.error({ message: "Failed to Save" })
+      PURE_TOASTS.error({ message: "Failed to save" })
     },
     onSuccess: ({ savedPodcast, savedEpisodes }) => {
       PURE_TOASTS.success({ message: "Podcast Added!" })

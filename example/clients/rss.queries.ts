@@ -21,12 +21,20 @@ export function useGetRssEpisodesQuery(feedUrl: string | null) {
   })
 }
 
-export function useGetRssEpisodeQuery({ feedUrl, episodeId }: { feedUrl: string | null; episodeId: string | null }) {
+export function useGetRssEpisodeQuery({
+  feedUrl,
+  episodeId,
+}: {
+  feedUrl: string | null
+  episodeId: string | null
+}) {
   return useQuery({
     queryKey: ["rssEpisode", feedUrl, episodeId],
     queryFn: () => fetchRssFeed(feedUrl),
     select: (data: RssFeed) => {
-      const episode = extractEpisodesFromRssFeed(data).find((episode) => episode.rssId === episodeId)
+      const episode = extractEpisodesFromRssFeed(data).find(
+        (episode) => episode.rssId === episodeId,
+      )
 
       if (!episode) {
         return null
