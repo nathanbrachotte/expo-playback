@@ -13,6 +13,8 @@ cd ios && pod install && cd .. # install pods
 
 ## TODO
 
+### N8
+
 - [x] Try: `npm run start` then `Shift + M`/Drizzle, then `s` to switch to build mode and `i`
   - `npm run start`
   - `Shift + M`
@@ -30,9 +32,10 @@ cd ios && pod install && cd .. # install pods
 - [x] Don't render HTML in Cards
 - [x] Player
 - [ ] Finish Downloaded / InProgress screens
+- [ ] Make scrollbar light
   - [ ] Use Flashlist for long lists of episodes
-  - [ ] Abstract EpisodeCard better so it's easily reusable around the app
-- [ ] Update episode id to be podcastId-creationDate so we can always have the same ids for episodes used in backend
+  - [x] Abstract EpisodeCard better so it's easily reusable around the app
+- [x] Update episode id to be podcastId-creationDate so we can always have the same ids for episodes used in backend
 - [ ] Create script to automatically make 10 random podcasts downloaded/ongoing to simplify testing
 - [ ] Fix starting playing always tries to download
 - [x] Handle dates and durations
@@ -42,6 +45,37 @@ cd ios && pod install && cd .. # install pods
 - [ ] Update weird transparent gradient
 - [ ] Make "play" button also show "pause" if actively playing
 - [ ] Add logic to refetch latest episodes of each podcast on app mount
+- [ ] Live updates (when something updates on native side, reflect it on RN)
+- [ ] Action sheet on Episode Screen
+- [ ] Build / Send to AppStore
+- [ ] Have a download and a play button even if the episode is not downloaded
+- [ ] Why are search not case insensitive?
+
+#### Future N8
+
+### Erik
+
+- [ ] Auto-play next episode in background
+- [ ] Fix scenario where download is stopped
+- [ ] Harden the download process
+- [ ] Player integration with the native side
+- [ ] Previous / Next 15 seconds
+- [ ] Seeking
+- [ ] Auto-download last 3 episodes of each podcast?
+- [ ] Instantly play episode even when not downloaded
+
+#### Future Erik
+
+- [ ] Android
+- [ ]
+
+## Resources
+
+### SponsorBlock
+
+- https://sb.ltn.fi/video/aEsNRUMySIg/
+- https://sponsor.ajay.app/donate/
+-
 
 ## SQLite
 
