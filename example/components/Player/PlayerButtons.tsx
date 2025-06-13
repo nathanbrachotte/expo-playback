@@ -3,13 +3,33 @@ import { RotateCcw } from "@tamagui/lucide-icons"
 import { PureXStack } from "../PureStack"
 import { PlayButton } from "../buttons"
 import { usePlayerContext } from "../../providers/PlayerProvider"
+import { skip } from "expo-playback"
 
 export function PlayerSkipBackButton({ size }: { size: string }) {
-  return <Button icon={RotateCcw} size={size} onPress={() => {}} circular />
+  return (
+    <Button
+      icon={RotateCcw}
+      size={size}
+      onPress={() => {
+        skip(-15)
+      }}
+      circular
+    />
+  )
 }
 
 export function PlayerSkipForwardButton({ size }: { size: string }) {
-  return <Button icon={RotateCcw} rotateY="180deg" size={size} onPress={() => {}} circular />
+  return (
+    <Button
+      icon={RotateCcw}
+      rotateY="180deg"
+      size={size}
+      onPress={() => {
+        skip(15)
+      }}
+      circular
+    />
+  )
 }
 
 export function SmallPlayerSection() {

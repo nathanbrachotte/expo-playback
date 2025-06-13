@@ -34,11 +34,11 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
     }
     
     private func sendEpisodeMetadataUpdate() {
-        self.sendEvent(
-            "onSqLiteTableUpdate",
-            [
-                "table": "episode_metadata"
-            ])
+//        self.sendEvent(
+//            "onSqLiteTableUpdate",
+//            [
+//                "table": "episode_metadata"
+//            ])
     }
     
     private func sendPlayerStateUpdate() {

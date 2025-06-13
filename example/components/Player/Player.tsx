@@ -26,6 +26,49 @@ function PlayerBackground({ children }: PropsWithChildren) {
   )
 }
 
+function PlayerSlider({ totalDurationSeconds }: { totalDurationSeconds: number }) {
+  const { onSliderValueChange } = usePlayerContext()
+  const [currentTimeSeconds, setCurrentTimeSeconds] = useState(0)
+
+  useEffect(() => {
+    const subscription = addPlayerStateListener((newPlayerState: PlayerState) => {
+      setCurrentTimeSeconds(Math.round(newPlayerState.currentTime))
+    })
+
+    return () => subscription.remove()
+  }, [])
+
+  const progressPercentage =
+    totalDurationSeconds > 0 ? (currentTimeSeconds / totalDurationSeconds) * 100 : 0
+  return (
+    <PureYStack gap="$1.5">
+      <Slider
+        mt="$4"
+        size="$2"
+        value={[progressPercentage]}
+        max={100}
+        step={1}
+        onValueChange={(value) => {
+          const newTime = (value[0] / 100) * totalDurationSeconds
+          onSliderValueChange([newTime])
+        }}
+        w={DEVICE_WIDTH * 0.85}
+      >
+        <Slider.Track w="$full">
+          <Slider.TrackActive />
+        </Slider.Track>
+        <Slider.Thumb circular index={0} size="$1" />
+      </Slider>
+      <PureXStack mt="$2.5" mx="$-1.5">
+        <Paragraph flex={1}>{formatPlayerTime(currentTimeSeconds)}</Paragraph>
+        <Paragraph flex={1} textAlign="right">
+          {formatPlayerRemainingTimeFromDuration(currentTimeSeconds, totalDurationSeconds)}
+        </Paragraph>
+      </PureXStack>
+    </PureYStack>
+  )
+}
+
 function PlayerSheet({
   isOpen,
   onOpenChange,
@@ -33,29 +76,16 @@ function PlayerSheet({
   isOpen: boolean
   onOpenChange: (isOpen: boolean) => void
 }) {
-  const { activeEpisode, onSliderValueChange } = usePlayerContext()
-  const [currentTimeSeconds, setCurrentTimeSeconds] = useState(0)
+  const { activeEpisode } = usePlayerContext()
   const { title } = activeEpisode?.episode ?? {}
   const { title: podcastTitle } = activeEpisode?.podcast ?? {}
   const insets = useSafeAreaInsets()
 
-  useEffect(() => {
-    const subscription = addPlayerStateListener((newPlayerState: PlayerState) => {
-      setCurrentTimeSeconds(newPlayerState.currentTime)
-    })
-
-    return () => subscription.remove()
-  }, [])
-
   const episodeImage = getImageFromEntity(activeEpisode?.episode ?? {}, "100")
   const podcastImage = getImageFromEntity(activeEpisode?.podcast ?? {}, "100")
-
   const imageSource = episodeImage ?? podcastImage ?? null
-
   // Convert duration from milliseconds to seconds for display
   const totalDurationSeconds = (activeEpisode?.episode?.duration ?? 0) / 1000
-  const progressPercentage =
-    totalDurationSeconds > 0 ? (currentTimeSeconds / totalDurationSeconds) * 100 : 0
 
   return (
     <Sheet
@@ -98,32 +128,7 @@ function PlayerSheet({
 
         <PureYStack mb={insets.bottom} px="$4">
           {/* Controls */}
-          <Slider
-            mt="$4"
-            size="$2"
-            // Keep this for testing UI.
-            // value={[0]}
-            // value={[100]}
-            value={[progressPercentage]}
-            max={100}
-            step={1}
-            onValueChange={(value) => {
-              const newTime = (value[0] / 100) * totalDurationSeconds
-              onSliderValueChange([newTime])
-            }}
-            w={DEVICE_WIDTH * 0.85}
-          >
-            <Slider.Track w="$full">
-              <Slider.TrackActive />
-            </Slider.Track>
-            <Slider.Thumb circular index={0} size="$1" />
-          </Slider>
-          <PureXStack mt="$2" mx="$-1.5">
-            <Paragraph flex={1}>{formatPlayerTime(currentTimeSeconds)}</Paragraph>
-            <Paragraph flex={1} textAlign="right">
-              {formatPlayerRemainingTimeFromDuration(currentTimeSeconds, totalDurationSeconds)}
-            </Paragraph>
-          </PureXStack>
+          <PlayerSlider totalDurationSeconds={totalDurationSeconds} />
           {/* Player */}
           <PureYStack mt="$-2">
             <LargePlayerSection />
@@ -133,6 +138,7 @@ function PlayerSheet({
     </Sheet>
   )
 }
+
 export function SmallPlayer({ openSheet }: { openSheet: VoidFunction }) {
   const { activeEpisode } = usePlayerContext()
 

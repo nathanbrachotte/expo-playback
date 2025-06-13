@@ -67,8 +67,8 @@ cd ios && pod install && cd .. # install pods
 - [ ] Fix scenario where download is stopped
 - [x] Harden the download process
 - [x] Player integration with the native side
-- [ ] Previous / Next 15 seconds
-- [ ] Seeking
+- [x] Previous / Next 15 seconds
+- [x] Seeking
 - [ ] Auto-download last 3 episodes of each podcast?
 - [ ] Instantly play episode even when not downloaded
 - [ ] Remove all downloads when podcast is removed from library
