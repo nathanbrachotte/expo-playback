@@ -40,12 +40,12 @@ cd ios && pod install && cd .. # install pods
 - [x] Update episode id to be podcastId-creationDate so we can always have the same ids for episodes used in backend
 - [ ] Create script to automatically make 10 random podcasts downloaded/ongoing to simplify testing
 - [ ] Fix starting playing always tries to download
-- [ ] Fix padding of EpisodeScreen's description scrollview
+- [x] Fix padding of EpisodeScreen's description scrollview
 - [x] Handle dates and durations
 - [ ] Hook the "mark as played" / "unplay" button
 - [ ] Hook the Download button
 - [x] Player empty state
-- [ ] Update weird transparent gradient
+- [x] Update weird transparent gradient
 - [ ] Make "play" button also show "pause" if actively playing
 - [ ] Add logic to refetch latest episodes of each podcast on app mount
 - [ ] Live updates (when something updates on native side, reflect it on RN)
