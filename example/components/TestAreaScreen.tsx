@@ -1,7 +1,7 @@
 import React from "react"
-import { Button, H2, Heading, Paragraph } from "tamagui"
+import { Button, Heading, Paragraph } from "tamagui"
 
-import { PureLayout } from "./Layout"
+import { PLayout } from "./Layout"
 import { PureYStack } from "./PureStack"
 import { useSavePodcastMutation } from "../clients/local.mutations"
 import {
@@ -28,11 +28,14 @@ export function TestAreaScreen() {
     podcastId: "1019768302",
   })
 
+  const latestEpisode = allEpisodes?.pages[0][0]
+  const latestEpisodeId = latestEpisode?.episode.id
+
   return (
-    <PureLayout header={<Heading>Test Area</Heading>}>
+    <PLayout.Screen header={<Heading>Test Area</Heading>}>
       <Paragraph>Podcasts: {podcastList?.length}</Paragraph>
       <Paragraph>Episodes: {episodesWithPodcastsAndMetadata?.pages.flat().length}</Paragraph>
-      <Paragraph>All episodes: {allEpisodes?.length}</Paragraph>
+      <Paragraph>All episodes first page: {allEpisodes?.pages.flat().length}</Paragraph>
       <Paragraph>Amount result: {JSON.stringify(localEpisode.length, null, 2)}</Paragraph>
       <Paragraph>Local episode by id: {JSON.stringify(localEpisode, null, 2)}</Paragraph>
       <Paragraph>Error: {JSON.stringify(error, null, 2)}</Paragraph>
@@ -84,8 +87,10 @@ export function TestAreaScreen() {
         >
           Save podcast
         </Button>
-        <Button onPress={() => setActiveEpisodeId(191)}>Set active episode</Button>
+        {latestEpisodeId && (
+          <Button onPress={() => setActiveEpisodeId(latestEpisodeId)}>Set active episode</Button>
+        )}
       </PureYStack>
-    </PureLayout>
+    </PLayout.Screen>
   )
 }
