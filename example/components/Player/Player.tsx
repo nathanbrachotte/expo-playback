@@ -6,7 +6,7 @@ import { Button, Slider, AnimatePresence, Sheet, H4, H6, Separator, Paragraph } 
 import { usePlayerContext } from "../../providers/PlayerProvider"
 import { formatPlayerTime, formatPlayerRemainingTimeFromDuration } from "../../utils/time.utils"
 import { getImageFromEntity } from "../../utils/image.utils"
-import { FULL_PLAYER_IMAGE_SIZE } from "../../utils/constants"
+import { DEVICE_WIDTH, FULL_PLAYER_IMAGE_SIZE } from "../../utils/constants"
 import { PureYStack, PureXStack } from "../PureStack"
 import { LargePlayerSection, SmallPlayerSection } from "./PlayerButtons"
 import { EpisodeDescriptionHtml } from "../episode"
@@ -91,42 +91,43 @@ function PlayerSheet({
           />
 
           {/* Description */}
-          <Sheet.ScrollView f={1} gap="$4" px="$4" mt="$2" alwaysBounceVertical={false}>
+          <Sheet.ScrollView f={1} gap="$4" px="$4" alwaysBounceVertical={false} bg="blue">
             <EpisodeDescriptionHtml description={activeEpisode?.episode?.description} />
           </Sheet.ScrollView>
         </PureYStack>
 
-        <PureYStack mb={insets.bottom} mt="$2">
+        <PureYStack mb={insets.bottom} px="$4">
           {/* Controls */}
-          <PureYStack gap="$1.5">
-            <Slider
-              size="$2"
-              // Keep this for testing UI.
-              // value={[0]}
-              // value={[100]}
-              value={[progressPercentage]}
-              max={100}
-              step={1}
-              onValueChange={(value) => {
-                const newTime = (value[0] / 100) * totalDurationSeconds
-                onSliderValueChange([newTime])
-              }}
-              w={FULL_PLAYER_IMAGE_SIZE * 1.3}
-            >
-              <Slider.Track w="$full">
-                <Slider.TrackActive />
-              </Slider.Track>
-              <Slider.Thumb circular index={0} size="$1" />
-            </Slider>
-            <PureXStack mt="$2.5" mx="$-1.5">
-              <Paragraph flex={1}>{formatPlayerTime(currentTimeSeconds)}</Paragraph>
-              <Paragraph flex={1} textAlign="right">
-                {formatPlayerRemainingTimeFromDuration(currentTimeSeconds, totalDurationSeconds)}
-              </Paragraph>
-            </PureXStack>
-          </PureYStack>
+          <Slider
+            mt="$4"
+            size="$2"
+            // Keep this for testing UI.
+            // value={[0]}
+            // value={[100]}
+            value={[progressPercentage]}
+            max={100}
+            step={1}
+            onValueChange={(value) => {
+              const newTime = (value[0] / 100) * totalDurationSeconds
+              onSliderValueChange([newTime])
+            }}
+            w={DEVICE_WIDTH * 0.85}
+          >
+            <Slider.Track w="$full">
+              <Slider.TrackActive />
+            </Slider.Track>
+            <Slider.Thumb circular index={0} size="$1" />
+          </Slider>
+          <PureXStack mt="$2" mx="$-1.5">
+            <Paragraph flex={1}>{formatPlayerTime(currentTimeSeconds)}</Paragraph>
+            <Paragraph flex={1} textAlign="right">
+              {formatPlayerRemainingTimeFromDuration(currentTimeSeconds, totalDurationSeconds)}
+            </Paragraph>
+          </PureXStack>
           {/* Player */}
-          <LargePlayerSection />
+          <PureYStack mt="$-2">
+            <LargePlayerSection />
+          </PureYStack>
         </PureYStack>
       </Sheet.Frame>
     </Sheet>
