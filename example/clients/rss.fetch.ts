@@ -104,6 +104,7 @@ export async function fetchRssFeed(feedUrl: string | null): Promise<RssFeed> {
   if (!feedUrl) {
     throw new Error("Feed URL is required")
   }
+
   let response: any
   try {
     response = await fetch(feedUrl)

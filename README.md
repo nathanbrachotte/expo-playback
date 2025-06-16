@@ -66,6 +66,7 @@ cd ios && pod install && cd .. # install pods
 - [ ] Auto-play next episode in background
 - [ ] Fix scenario where download is stopped
 - [ ] Remove download feature
+- [ ] Use duration from metadata once file is downloaded
 - [x] Harden the download process
 - [x] Player integration with the native side
 - [x] Previous / Next 15 seconds

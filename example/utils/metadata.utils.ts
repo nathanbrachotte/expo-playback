@@ -29,11 +29,19 @@ export function getIsDownloadedFromMetadata(metadata: LocalEpisodeMetadata): boo
 }
 
 export function getIsDownloadingFromMetadata(metadata: LocalEpisodeMetadata): boolean {
-  return (
-    metadata.downloadProgress !== null &&
-    metadata.downloadProgress !== 0 &&
-    metadata.downloadProgress !== 100
-  )
+  if (metadata.downloadProgress == null) {
+    return false
+  }
+
+  if (metadata.downloadProgress === 100) {
+    return false
+  }
+
+  if (metadata.downloadProgress === 0) {
+    return false
+  }
+
+  return true
 }
 
 export function getEpisodeStateFromMetadata(

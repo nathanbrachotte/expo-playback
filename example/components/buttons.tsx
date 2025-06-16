@@ -1,4 +1,4 @@
-import { Check, Download, Pause, Play } from "@tamagui/lucide-icons"
+import { Check, Download, Pause, Play, Trash2 } from "@tamagui/lucide-icons"
 import React, { ComponentProps, useCallback } from "react"
 import { Button, ButtonProps, getVariable, Paragraph, Spinner } from "tamagui"
 
@@ -7,7 +7,7 @@ import {
   useGetLiveLocalEpisodeMetadataQuery,
   useGetLiveLocalEpisodeQuery,
 } from "../clients/local.queries"
-import { pause, play, startBackgroundDownload } from "expo-playback"
+import { pause, play, removeDownload, startBackgroundDownload } from "expo-playback"
 import { usePlayerContext } from "../providers/PlayerProvider"
 import {
   getEpisodeStateFromMetadata,
@@ -43,7 +43,6 @@ export function GhostButton({
 }: {
   Icon: ComponentProps<typeof Button>["icon"]
   showBg?: boolean
-  onPress: () => void
 } & ButtonProps) {
   return (
     <Button
@@ -107,14 +106,6 @@ export function PlayButton({
     }
   }, [isEpisodePlaying, episodeId])
 
-  if (isDownloading) {
-    return (
-      <PureXStack centered>
-        <Spinner size="small" />
-      </PureXStack>
-    )
-  }
-
   return (
     <PureXStack centered themeInverse>
       <GhostButton
@@ -130,28 +121,100 @@ export function PlayButton({
 
 export function DownloadButton({
   episodeId,
-  size = "$4",
+  size = "$3",
   ...props
 }: {
   episodeId: number
   size?: React.ComponentProps<typeof Button>["size"]
 } & ButtonProps) {
+  // Make iconSize scale based on size
+  const iconSize = getVariable(size) * 0.5
+
   const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
   const { isDownloaded, isDownloading } = getEpisodeStateFromMetadataWithoutDuration(
     localEpisodeMetadata?.[0]?.episodeMetadata ?? {},
   )
 
-  return (
-    <PureXStack centered themeInverse>
+  if (isDownloading) {
+    return (
+      <GhostButton
+        size={size}
+        showBg
+        disabled
+        onPress={() => {}}
+        Icon={<Spinner size="small" />}
+        {...props}
+      />
+    )
+  }
+
+  if (isDownloaded) {
+    return (
       <GhostButton
         size={size}
         showBg
         onPress={() => {
-          startBackgroundDownload(episodeId)
+          removeDownload(episodeId)
         }}
-        Icon={<CustomButtonIcon Component={Download} size={iconSize} />}
+        Icon={<CustomButtonIcon Component={Trash2} size={iconSize} color="$red8" />}
         {...props}
       />
+    )
+  }
+
+  return (
+    <GhostButton
+      size={size}
+      showBg
+      onPress={() => {
+        startBackgroundDownload(episodeId)
+      }}
+      Icon={<CustomButtonIcon Component={Download} size={iconSize} />}
+      {...props}
+    />
+  )
+}
+
+export function PlayButtonsSection({ episodeId }: { episodeId: number }) {
+  return (
+    <PureXStack gap="$3" centered>
+      <DownloadButton episodeId={episodeId} />
+      <PlayButton episodeId={episodeId} />
     </PureXStack>
+  )
+}
+
+export function MarkAsFinishedButton({ episodeId }: { episodeId: number }) {
+  const iconSize = getVariable("$3") * 0.5
+  // FIXME: This is bullshit
+  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
+  // FIXME: This is bullshit
+  const { data: episode } = useGetLiveLocalEpisodeQuery({ id: episodeId.toString() })
+
+  const { isFinished } = getEpisodeStateFromMetadata(
+    localEpisodeMetadata?.[0]?.episodeMetadata ?? {},
+    episode?.[0]?.episode?.duration ?? 0,
+  )
+
+  console.log("🚀 ~ isFinished:", isFinished)
+
+  if (isFinished) {
+    return (
+      <GhostButton
+        size="$3"
+        showBg
+        onPress={() => {}}
+        Icon={<CustomButtonIcon Component={Check} size={iconSize} />}
+      />
+    )
+  }
+
+  return (
+    <GhostButton
+      size="$3"
+      showBg
+      onPress={() => {}}
+      Icon={<CustomButtonIcon Component={Check} size={iconSize} />}
+    />
   )
 }

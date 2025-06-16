@@ -7,12 +7,12 @@ import { Optional } from "../utils/types.utils"
 import RenderHtml from "react-native-render-html"
 import { useWindowDimensions } from "react-native"
 import { cleanHtmlText } from "../utils/text.utils"
-import { CircleCheck, Ellipsis, Trash2, Copy } from "@tamagui/lucide-icons"
+import { Ellipsis, Trash2, Copy } from "@tamagui/lucide-icons"
 import { Card, CardProps, Progress } from "tamagui"
 import * as Clipboard from "expo-clipboard"
 import { useDeleteEpisodeMetadataMutation } from "../clients/local.mutations"
 
-import { CustomButtonIcon, GhostButton, PlayButton } from "./buttons"
+import { CustomButtonIcon, GhostButton, MarkAsFinishedButton, PlayButtonsSection } from "./buttons"
 import { ActionSheet, ActionSheetAction } from "./ActionSheet"
 import { PureImage } from "./image"
 import { getImageFromEntities } from "../utils/image.utils"
@@ -143,12 +143,6 @@ export function EpisodeActionSheet({
   const [isOpen, setIsOpen] = useState(false)
   const deleteMetadataMutation = useDeleteEpisodeMetadataMutation()
 
-  const handleDeleteDownload = () => {
-    if (episodeId) {
-      // deleteMetadataMutation.mutate(episode.id)
-    }
-  }
-
   const handleForgetEpisode = () => {
     if (episodeId) {
       deleteMetadataMutation.mutate(episodeId)
@@ -231,16 +225,8 @@ export const NewEpisodeCard = ({
   cardProps,
 }: EpisodeCardProps) => {
   const image = getImageFromEntities(episode, podcast)
-  const { isFinished, isDownloaded, isDownloading, progress, isInProgress, progressPercentage } =
+  const { isFinished, isDownloaded, progress, isInProgress, progressPercentage } =
     prettyMetadata || {}
-
-  const deleteMetadataMutation = useDeleteEpisodeMetadataMutation()
-
-  const handleDeleteDownload = () => {
-    if (episode.id) {
-      // deleteMetadataMutation.mutate(episode.id)
-    }
-  }
 
   return (
     <Card
@@ -286,39 +272,18 @@ export const NewEpisodeCard = ({
         </PureYStack>
         <Card.Footer alignItems="center" justifyContent="space-between">
           <PureXStack centered gap="$2">
-            <GhostButton
-              onPress={() => {}}
-              Icon={
-                isFinished ? (
-                  <CustomButtonIcon Component={Check} color="$green9" />
-                ) : (
-                  <CustomButtonIcon Component={CircleCheck} />
-                )
-              }
-            />
-            {isDownloaded ? (
-              <GhostButton
-                onPress={handleDeleteDownload}
-                Icon={<CustomButtonIcon Component={Trash2} color="$red10" />}
-              />
-            ) : null}
+            {episode.id ? <MarkAsFinishedButton episodeId={episode.id} /> : null}
             {/* Menu */}
             <EpisodeActionSheet episodeId={episode.id} isDownloaded={isDownloaded} />
           </PureXStack>
           {isInProgress ? (
-            <PureXStack flex={1} px="$6" w="100%">
-              <Progress value={progressPercentage} size="$1" bg="$color1">
+            <PureXStack flex={1} px="$4" w="100%">
+              <Progress value={progressPercentage} size="$1" bg="$color1" w="100%">
                 <Progress.Indicator animation="quick" bg="$color10" />
               </Progress>
             </PureXStack>
           ) : null}
-          {episode.id ? (
-            <PlayButton
-              isDownloaded={isDownloaded}
-              isDownloading={isDownloading}
-              episodeId={episode.id}
-            />
-          ) : null}
+          {episode.id ? <PlayButtonsSection episodeId={episode.id} /> : null}
         </Card.Footer>
       </PureYStack>
     </Card>
