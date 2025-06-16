@@ -56,3 +56,14 @@ export function getEpisodeStateFromMetadata(
     isInProgress: progressPercentage > 0 && progressPercentage < 95,
   }
 }
+
+export function getEpisodeStateFromMetadataWithoutDuration(
+  metadata: LocalEpisodeMetadata,
+): Pick<PrettyMetadata, "isDownloaded" | "isDownloading" | "dowloadProgress" | "progress"> {
+  return {
+    isDownloaded: getIsDownloadedFromMetadata(metadata),
+    isDownloading: getIsDownloadingFromMetadata(metadata),
+    dowloadProgress: metadata.downloadProgress ?? 0,
+    progress: metadata.playback ?? 0,
+  }
+}

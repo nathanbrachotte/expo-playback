@@ -24,6 +24,11 @@ export function startBackgroundDownload(episodeId: number): void {
   ExpoPlaybackModule.startBackgroundDownload(episodeId)
 }
 
+export function removeDownload(episodeId: number): void {
+  // TODO: Erik - implement this
+  ExpoPlaybackModule.removeDownload(episodeId)
+}
+
 export function getPlayerState(): PlayerState {
   return ExpoPlaybackModule.getState()
 }

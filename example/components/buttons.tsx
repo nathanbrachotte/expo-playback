@@ -1,12 +1,18 @@
 import { Check, Download, Pause, Play } from "@tamagui/lucide-icons"
-import ExpoPlaybackModule from "expo-playback/ExpoPlaybackModule"
 import React, { ComponentProps, useCallback } from "react"
 import { Button, ButtonProps, getVariable, Paragraph, Spinner } from "tamagui"
 
 import { PureXStack } from "./PureStack"
-import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
+import {
+  useGetLiveLocalEpisodeMetadataQuery,
+  useGetLiveLocalEpisodeQuery,
+} from "../clients/local.queries"
 import { pause, play, startBackgroundDownload } from "expo-playback"
 import { usePlayerContext } from "../providers/PlayerProvider"
+import {
+  getEpisodeStateFromMetadata,
+  getEpisodeStateFromMetadataWithoutDuration,
+} from "../utils/metadata.utils"
 
 export function ButtonList({
   icon,
@@ -86,6 +92,7 @@ export function PlayButton({
   const iconSize = getVariable(size) * 0.5
   const { activeEpisode, isPlaying } = usePlayerContext()
   const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
+  // TODO: Erik - use getEpisodeStateFromMetadata
   const downloadProgress = localEpisodeMetadata?.[0]?.episodeMetadata?.downloadProgress ?? 0
   const isDownloaded = downloadProgress === 100
   const isDownloading = downloadProgress > 0 && downloadProgress < 100
@@ -100,20 +107,6 @@ export function PlayButton({
     }
   }, [isEpisodePlaying, episodeId])
 
-  if (isDownloaded) {
-    return (
-      <PureXStack centered themeInverse>
-        <GhostButton
-          size={size}
-          showBg
-          onPress={handlePlayPause}
-          Icon={<CustomButtonIcon Component={isEpisodePlaying ? Pause : Play} size={iconSize} />}
-          {...props}
-        />
-      </PureXStack>
-    )
-  }
-
   if (isDownloading) {
     return (
       <PureXStack centered>
@@ -127,49 +120,38 @@ export function PlayButton({
       <GhostButton
         size={size}
         showBg
-        onPress={() => startBackgroundDownload(episodeId)}
-        Icon={<CustomButtonIcon Component={Download} size={iconSize} />}
+        onPress={handlePlayPause}
+        Icon={<CustomButtonIcon Component={isEpisodePlaying ? Pause : Play} size={iconSize} />}
         {...props}
       />
     </PureXStack>
   )
 }
 
-/**
- * @deprecated Use PlayButton
- */
 export function DownloadButton({
   episodeId,
-  showLabel = false,
+  size = "$4",
+  ...props
 }: {
   episodeId: number
-  showLabel?: boolean
-}) {
+  size?: React.ComponentProps<typeof Button>["size"]
+} & ButtonProps) {
   const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
-  const downloadProgress = localEpisodeMetadata?.[0]?.episodeMetadata?.downloadProgress ?? 0
-  const isDownloading = downloadProgress > 0 && downloadProgress < 100
-  const isDownloaded = downloadProgress === 100
+  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadataWithoutDuration(
+    localEpisodeMetadata?.[0]?.episodeMetadata ?? {},
+  )
 
   return (
-    <Button
-      icon={
-        isDownloading ? (
-          <PureXStack width={16} overflow="visible">
-            <Paragraph textAlign="center" width={32} ml={-8}>
-              {downloadProgress}%
-            </Paragraph>
-          </PureXStack>
-        ) : isDownloaded ? (
-          <Check color="$green10" />
-        ) : (
-          Download
-        )
-      }
-      onPress={() => {
-        if (!isDownloading && !isDownloaded) {
+    <PureXStack centered themeInverse>
+      <GhostButton
+        size={size}
+        showBg
+        onPress={() => {
           startBackgroundDownload(episodeId)
-        }
-      }}
-    />
+        }}
+        Icon={<CustomButtonIcon Component={Download} size={iconSize} />}
+        {...props}
+      />
+    </PureXStack>
   )
 }
