@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { eq } from "drizzle-orm"
 
-import { fetchRssFeed } from "./rss.fetch"
-import { extractEpisodesFromRssFeed } from "./rss.queries"
+import { validateRSSEpisodes, fetchAndValidateRssFeed } from "./rss.fetch"
 import { PURE_TOASTS } from "../components/toasts"
 import { drizzleClient, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
@@ -53,8 +52,8 @@ export function useSavePodcastMutation({ podcastId }: { podcastId: string }) {
   return useMutation({
     mutationKey: ["savePodcast", podcastId],
     mutationFn: async ({ podcast }: { podcast: SharedPodcastFields }) => {
-      const res = await fetchRssFeed(podcast.rssFeedUrl)
-      const rssEpisodes = extractEpisodesFromRssFeed(res).map((episode) => ({
+      const res = await fetchAndValidateRssFeed(podcast.rssFeedUrl)
+      const rssEpisodes = validateRSSEpisodes(res).map((episode) => ({
         ...episode,
         podcastId: podcast.appleId,
       }))
@@ -62,7 +61,10 @@ export function useSavePodcastMutation({ podcastId }: { podcastId: string }) {
       return await savePodcastAndEpisodes(podcast, rssEpisodes)
     },
     onError: (err) => {
-      console.error("Failed to save podcast:", podcastId, err)
+      console.error("Failed to save podcast:", podcastId)
+      if (false) {
+        console.log("🚀 ~ useSavePodcastMutation ~ err:", err)
+      }
       PURE_TOASTS.error({ message: "Failed to save" })
     },
     onSuccess: ({ savedPodcast, savedEpisodes }) => {

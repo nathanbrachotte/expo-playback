@@ -1,5 +1,6 @@
 import { XMLParser } from "fast-xml-parser"
-import { z } from "zod"
+import { z, ZodError } from "zod/v4"
+import { FromRSSItemToLocalEpisodeSchema } from "./schemas"
 
 // true or falso or "Yes" or "No". Because why not.
 const ExplicitSchema = z.any()
@@ -36,7 +37,9 @@ export const RssItemSchema = z.object({
   "guid": z
     .union([
       z.object({
-        "#text": z.string().optional(),
+        // Some fuckers like Fest & Flauschig send back a guid with sometimes a UUID and sometimes a number.
+        // BECAUSE WHY THE FUCK NOT.
+        "#text": z.union([z.string(), z.number()]).optional(),
         "isPermaLink": z.string().optional(),
       }),
       z.string(),
@@ -85,7 +88,7 @@ const RssChannelSchema = z.object({
       title: z.string().optional(),
     })
     .optional(),
-  "item": z.union([z.array(RssItemSchema), RssItemSchema]),
+  "item": z.unknown(),
 })
 
 // Schema for the entire RSS feed
@@ -99,8 +102,31 @@ export type RssFeed = z.infer<typeof RssFeedSchema>
 export type RssChannel = z.infer<typeof RssChannelSchema>
 export type RssItem = z.infer<typeof RssItemSchema>
 
-export async function fetchRssFeed(feedUrl: string | null): Promise<RssFeed> {
-  console.log("🚀 ~ fetchRssFeed ~ feedUrl:", feedUrl)
+export function validateRSSEpisodes(data: RssFeed) {
+  try {
+    const episodes = Array.isArray(data.rss.channel.item)
+      ? data.rss.channel.item.map((episode) => {
+          try {
+            return FromRSSItemToLocalEpisodeSchema.parse(episode)
+          } catch (error) {
+            console.error("Error parsing episode:", JSON.stringify(episode, null, 2))
+            if (error instanceof ZodError) {
+              console.error("ZodError:", z.prettifyError(error))
+            }
+
+            throw error
+          }
+        })
+      : [FromRSSItemToLocalEpisodeSchema.parse(data.rss.channel.item)]
+
+    return episodes
+  } catch (error) {
+    console.error("Error extracting episodes from RSS feed:", error)
+    throw error
+  }
+}
+
+export async function fetchAndValidateRssFeed(feedUrl: string | null): Promise<RssFeed> {
   if (!feedUrl) {
     throw new Error("Feed URL is required")
   }
@@ -129,9 +155,12 @@ export async function fetchRssFeed(feedUrl: string | null): Promise<RssFeed> {
     const validatedData = RssFeedSchema.parse(parsedData)
     return validatedData
   } catch (error) {
-    console.error("🚀 ~ fetchRssFeed ~ feedUrl:", feedUrl)
-    console.log("🚀 ~ fetchRssFeed ~ parsedData:", JSON.stringify(parsedData, null, 2))
-    console.error("🚀 ~ fetchRssFeed ~ error:", error)
+    if (error instanceof ZodError) {
+      console.error("🚀 ~ fetchRssFeed ~ error:", z.prettifyError(error))
+    }
+
+    // console.error("🚀 ~ fetchRssFeed ~ feedUrl:", feedUrl)
+    // console.log("🚀 ~ fetchRssFeed ~ parsedData:", JSON.stringify(parsedData, null, 2))
     throw new Error(`Failed to parse RSS feed: ${error}`)
   }
 }

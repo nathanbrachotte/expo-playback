@@ -1,4 +1,9 @@
-import { resolveValue, toast, ToastOptions, ToastPosition } from "@backpackapp-io/react-native-toast"
+import {
+  resolveValue,
+  toast,
+  ToastOptions,
+  ToastPosition,
+} from "@backpackapp-io/react-native-toast"
 import { colorTokens } from "@tamagui/themes"
 import React from "react"
 import { Easing } from "react-native-reanimated"

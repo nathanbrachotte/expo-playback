@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { RssItemSchema } from "./rss.fetch"
+import { RssItem, RssItemSchema } from "./rss.fetch"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
 import { MISSING_VALUES_EPISODE } from "../utils/episodes.utils"
 import { Optional } from "../utils/types.utils"
@@ -147,7 +147,25 @@ export function calculateDuration(itemDuration: Optional<number | string>) {
   return duration
 }
 
-export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
+function extractRssId(guid: RssItem["guid"]) {
+  if (!guid) {
+    return null
+  }
+  if (typeof guid === "string") {
+    return guid
+  }
+
+  if (typeof guid["#text"] === "string") {
+    return guid["#text"]
+  }
+
+  if (typeof guid["#text"] === "number") {
+    return guid["#text"].toString()
+  }
+
+  return null
+}
+export const FromRSSItemToLocalEpisodeSchema = RssItemSchema.transform((data) => {
   const itunesDuration = data["itunes:duration"]
 
   if (!data.pubDate) {
@@ -171,11 +189,11 @@ export const ToEpisodeFromRSSSchema = RssItemSchema.transform((data) => {
     image600: null,
     description: data.description || "",
     shouldDownload: false,
-    rssId: typeof data.guid === "string" ? data.guid : data.guid?.["#text"] || null,
+    rssId: extractRssId(data.guid),
     // `podcastId` is not part of the RSS response
   } satisfies Omit<SharedEpisodeFields, "id" | "podcastId">
 })
 
 export type ParsedLocalPodcastSchema = z.infer<typeof ToLocalPodcastSchema>
 export type ParsedLocalEpisodeSchema = z.infer<typeof ToLocalEpisodeSchema>
-export type ParsedRssEpisodeSchema = z.infer<typeof ToEpisodeFromRSSSchema>
+export type ParsedRssEpisodeSchema = z.infer<typeof FromRSSItemToLocalEpisodeSchema>
