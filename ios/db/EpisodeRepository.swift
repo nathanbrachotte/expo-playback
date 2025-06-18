@@ -62,33 +62,49 @@ class EpisodeRepository {
 
         return result
     }
-    
+
     func getEpisodeById(episodeIdValue: Int64) -> Episode? {
         guard let db = db else { return nil }
         do {
             let query = episodes.filter(id == episodeIdValue)
-            guard let row = try db.prepare(query).makeIterator().next() else {return nil}
+            guard let row = try db.prepare(query).makeIterator().next() else { return nil }
             return rowToEpisode(row: row)
         } catch {
             print("❌ Error fetching episodes for podcast: \(error)")
         }
         return nil
     }
-    
+
     func rowToEpisode(row: Row) -> Episode {
         return Episode(
-                id: row[id],
-                podcastId: row[podcastId],
-                title: row[title],
-                description: row[description],
-                image30: row[image30],
-                image60: row[image60],
-                image100: row[image100],
-                image600: row[image600],
-                publishedAt: row[publishedAt],
-                shouldDownload: row[shouldDownload],
-                downloadUrl: row[downloadUrl],
-                duration: row[duration]
-            )
+            id: row[id],
+            podcastId: row[podcastId],
+            title: row[title],
+            description: row[description],
+            image30: row[image30],
+            image60: row[image60],
+            image100: row[image100],
+            image600: row[image600],
+            publishedAt: row[publishedAt],
+            shouldDownload: row[shouldDownload],
+            downloadUrl: row[downloadUrl],
+            duration: row[duration]
+        )
+    }
+
+    func getEpisodesToDownload() -> [Episode] {
+        var result: [Episode] = []
+        guard let db = db else { return result }
+
+        do {
+            let query = episodes.filter(shouldDownload == true)
+            for row in try db.prepare(query) {
+                result.append(rowToEpisode(row: row))
+            }
+        } catch {
+            print("❌ Error fetching episodes to download: \(error)")
+        }
+
+        return result
     }
 }

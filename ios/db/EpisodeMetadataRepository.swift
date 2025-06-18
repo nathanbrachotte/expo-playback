@@ -11,7 +11,7 @@ struct EpisodeMetadata {
 
 class EpisodeMetadataRepository {
     private let db = SQLiteManager.shared.getDB()
-    
+
     private let episodeMetadata = Table("episode_metadata")
     private let episodeId = Expression<Int64>("episode_id")
     private let playback = Expression<Int64>("playback")
@@ -38,42 +38,65 @@ class EpisodeMetadataRepository {
         } catch {
             print("❌ Error fetching metadata for episode \(episodeIdValue): \(error)")
         }
-        
+
         return nil
     }
 
     @discardableResult
     func createOrUpdateMetadata(_ metadata: EpisodeMetadata) -> EpisodeMetadata? {
         guard let db = db else { return nil }
-        
+
         do {
             let query = episodeMetadata.filter(episodeId == metadata.episodeId)
-            
+
             // Check if record exists
             if try db.pluck(query) != nil {
                 // Update existing record
-                try db.run(query.update(
-                    playback <- metadata.playback,
-                    isFinished <- metadata.isFinished,
-                    downloadProgress <- metadata.downloadProgress,
-                    fileSize <- metadata.fileSize,
-                    relativeFilePath <- metadata.relativeFilePath
-                ))
+                try db.run(
+                    query.update(
+                        playback <- metadata.playback,
+                        isFinished <- metadata.isFinished,
+                        downloadProgress <- metadata.downloadProgress,
+                        fileSize <- metadata.fileSize,
+                        relativeFilePath <- metadata.relativeFilePath
+                    ))
             } else {
                 // Insert new record
-                try db.run(episodeMetadata.insert(
-                    episodeId <- metadata.episodeId,
-                    playback <- metadata.playback,
-                    isFinished <- metadata.isFinished,
-                    downloadProgress <- metadata.downloadProgress,
-                    fileSize <- metadata.fileSize,
-                    relativeFilePath <- metadata.relativeFilePath
-                ))
+                try db.run(
+                    episodeMetadata.insert(
+                        episodeId <- metadata.episodeId,
+                        playback <- metadata.playback,
+                        isFinished <- metadata.isFinished,
+                        downloadProgress <- metadata.downloadProgress,
+                        fileSize <- metadata.fileSize,
+                        relativeFilePath <- metadata.relativeFilePath
+                    ))
             }
             return metadata
         } catch {
             print("❌ Error creating/updating metadata for episode \(metadata.episodeId): \(error)")
             return nil
+        }
+    }
+
+    @discardableResult
+    func resetAllPartialDownloads() -> Bool {
+        guard let db = db else { return false }
+
+        do {
+            let query = episodeMetadata.filter(
+                (downloadProgress > 0 && downloadProgress < 100) || relativeFilePath == nil
+                    || fileSize == nil)
+            try db.run(
+                query.update(
+                    downloadProgress <- 0,
+                    fileSize <- nil,
+                    relativeFilePath <- nil
+                ))
+            return true
+        } catch {
+            print("❌ Error resetting partial downloads: \(error)")
+            return false
         }
     }
 }

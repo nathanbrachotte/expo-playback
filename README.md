@@ -64,13 +64,14 @@ cd ios && pod install && cd .. # install pods
 ### Erik
 
 - [ ] Auto-play next episode in background
-- [ ] Fix scenario where download is stopped
+- [x] Fix scenario where download is stopped
 - [ ] Remove download feature
 - [ ] Use duration from metadata once file is downloaded
 - [x] Harden the download process
 - [x] Player integration with the native side
 - [x] Previous / Next 15 seconds
 - [x] Seeking
+- [x] Recover from download interruption
 - [ ] Auto-download last 3 episodes of each podcast?
 - [ ] Instantly play episode even when not downloaded
 - [ ] Remove all downloads when podcast is removed from library
