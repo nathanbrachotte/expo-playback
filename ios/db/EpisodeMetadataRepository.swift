@@ -80,6 +80,20 @@ class EpisodeMetadataRepository {
     }
 
     @discardableResult
+    func delete(episodeIdValue: Int64) -> Bool {
+        guard let db = db else { return false }
+
+        do {
+            let query = episodeMetadata.filter(episodeId == episodeIdValue)
+            try db.run(query.delete())
+            return true
+        } catch {
+            print("❌ Error deleting metadata for episode \(episodeIdValue): \(error)")
+            return false
+        }
+    }
+
+    @discardableResult
     func resetAllPartialDownloads() -> Bool {
         guard let db = db else { return false }
 

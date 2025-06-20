@@ -7,6 +7,7 @@ import { PURE_TOASTS } from "../components/toasts"
 import { drizzleClient, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
 import { generateEpisodeId, generateRssId } from "../utils/episodes.utils"
+import { deleteEpisodeAudioFileAndMetadata } from "expo-playback"
 
 async function savePodcastAndEpisodes(
   podcast: SharedPodcastFields,
@@ -111,14 +112,12 @@ export function useRemovePodcastMutation() {
   })
 }
 
-export function useDeleteEpisodeMetadataMutation() {
+export function useDeleteEpisodeMetadataAndAudioFileMutation() {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (episodeId: number) => {
-      await drizzleClient
-        .delete(schema.episodeMetadatasTable)
-        .where(eq(schema.episodeMetadatasTable.episodeId, episodeId))
+      await deleteEpisodeAudioFileAndMetadata(episodeId)
     },
     onSuccess: (_, episodeId) => {
       PURE_TOASTS.success({ message: "Download removed!" })

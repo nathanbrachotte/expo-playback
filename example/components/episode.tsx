@@ -10,7 +10,7 @@ import { cleanHtmlText } from "../utils/text.utils"
 import { Ellipsis, Trash2, Copy } from "@tamagui/lucide-icons"
 import { Card, CardProps, Progress } from "tamagui"
 import * as Clipboard from "expo-clipboard"
-import { useDeleteEpisodeMetadataMutation } from "../clients/local.mutations"
+import { useDeleteEpisodeMetadataAndAudioFileMutation } from "../clients/local.mutations"
 
 import { CustomButtonIcon, GhostButton, MarkAsFinishedButton, PlayButtonsSection } from "./buttons"
 import { ActionSheet, ActionSheetAction } from "./ActionSheet"
@@ -130,7 +130,6 @@ export function DurationAndDateSection({
 export function EpisodeActionSheet({
   episodeId,
   isDownloaded,
-  onDelete,
   onMarkAsFinished,
   onForgetEpisodePress,
 }: {
@@ -141,9 +140,9 @@ export function EpisodeActionSheet({
   onForgetEpisodePress?: VoidFunction
 }) {
   const [isOpen, setIsOpen] = useState(false)
-  const deleteMetadataMutation = useDeleteEpisodeMetadataMutation()
+  const deleteMetadataMutation = useDeleteEpisodeMetadataAndAudioFileMutation()
 
-  const handleForgetEpisode = () => {
+  const deleteMetadataAndAudioFile = () => {
     if (episodeId) {
       deleteMetadataMutation.mutate(episodeId)
     }
@@ -157,7 +156,7 @@ export function EpisodeActionSheet({
     },
     {
       label: "Forget episode",
-      onPress: () => handleForgetEpisode(),
+      onPress: deleteMetadataAndAudioFile,
       Icon: Minus,
     },
   ]
@@ -175,7 +174,7 @@ export function EpisodeActionSheet({
   if (isDownloaded) {
     actions.push({
       label: "Delete download",
-      onPress: () => onDelete?.(),
+      onPress: deleteMetadataAndAudioFile,
       isDestructive: true,
       Icon: <Trash2 color="$red10" />,
     })

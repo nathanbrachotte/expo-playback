@@ -24,11 +24,6 @@ export function startBackgroundDownload(episodeId: number): void {
   ExpoPlaybackModule.startBackgroundDownload(episodeId)
 }
 
-export function removeDownload(episodeId: number): void {
-  // TODO: Erik - implement this
-  ExpoPlaybackModule.removeDownload(episodeId)
-}
-
 export function getPlayerState(): PlayerState {
   return ExpoPlaybackModule.getState()
 }
@@ -39,6 +34,10 @@ export function stop(): void {
 
 export function skip(seconds: number): void {
   ExpoPlaybackModule.skip(seconds)
+}
+
+export function deleteEpisodeAudioFileAndMetadata(episodeId: number): Promise<void> {
+  return ExpoPlaybackModule.deleteEpisodeAudioFileAndMetadata(episodeId)
 }
 
 export function addPlayerStateListener(listener: (event: PlayerState) => void) {

@@ -94,6 +94,26 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             self.skipSegments = segments
         }
 
+        AsyncFunction("deleteEpisodeAudioFileAndMetadata") { (episodeId: Int64, promise: Promise) in
+            if let metadata = self.metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId),
+                let relativeFilePath = metadata.relativeFilePath
+            {
+                do {
+                    // Delete the downloaded file if it exists
+                    let fileURL = try EpisodeDownloader.getEpisodeFileURL(
+                        relativeFilePath: relativeFilePath)
+                    try? FileManager.default.removeItem(at: fileURL)
+
+                    // Delete metadata from database
+                    self.metadataRepo.delete(episodeIdValue: episodeId)
+                    promise.resolve()
+                } catch {
+                    print("Error deleting episode: \(error)")
+                    promise.reject(error)
+                }
+            }
+        }
+
         // Restart incomplete downloads by removing partial file and starting fresh
         Function("restartDownload") { (episodeId: Int64) in
             if let metadata = self.metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId),

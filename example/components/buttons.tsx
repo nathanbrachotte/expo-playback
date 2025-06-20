@@ -7,12 +7,13 @@ import {
   useGetLiveLocalEpisodeMetadataQuery,
   useGetLiveLocalEpisodeQuery,
 } from "../clients/local.queries"
-import { pause, play, removeDownload, startBackgroundDownload } from "expo-playback"
+import { pause, play, startBackgroundDownload } from "expo-playback"
 import { usePlayerContext } from "../providers/PlayerProvider"
 import {
   getEpisodeStateFromMetadata,
   getEpisodeStateFromMetadataWithoutDuration,
 } from "../utils/metadata.utils"
+import { useDeleteEpisodeMetadataAndAudioFileMutation } from "../clients/local.mutations"
 
 export function ButtonList({
   icon,
@@ -129,6 +130,7 @@ export function DownloadButton({
 } & ButtonProps) {
   // Make iconSize scale based on size
   const iconSize = getVariable(size) * 0.5
+  const deleteMetadataMutation = useDeleteEpisodeMetadataAndAudioFileMutation()
 
   const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
   const { isDownloaded, isDownloading } = getEpisodeStateFromMetadataWithoutDuration(
@@ -154,7 +156,7 @@ export function DownloadButton({
         size={size}
         showBg
         onPress={() => {
-          removeDownload(episodeId)
+          deleteMetadataMutation.mutate(episodeId)
         }}
         Icon={<CustomButtonIcon Component={Trash2} size={iconSize} color="$red8" />}
         {...props}
@@ -195,8 +197,6 @@ export function MarkAsFinishedButton({ episodeId }: { episodeId: number }) {
     localEpisodeMetadata?.[0]?.episodeMetadata ?? {},
     episode?.[0]?.episode?.duration ?? 0,
   )
-
-  console.log("🚀 ~ isFinished:", isFinished)
 
   if (isFinished) {
     return (
