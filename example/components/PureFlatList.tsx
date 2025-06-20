@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native"
 import React, { ComponentType, ReactElement } from "react"
-import { FlatList, FlatListProps } from "react-native"
+import { FlatList, FlatListProps, RefreshControl, Platform } from "react-native"
 import { Paragraph, YStack } from "tamagui"
 
 import { ErrorSection } from "./Sections/Error"
@@ -27,6 +27,8 @@ type PureFlatListProps = {
   ListEmptyComponent?: ComponentType<any> | ReactElement | null
   ListHeaderComponent?: ComponentType<any> | ReactElement | null
   contentContainerStyle?: FlatListProps<EpisodeWithPodcast>["contentContainerStyle"]
+  onRefresh?: () => void
+  isRefreshing?: boolean
 }
 
 export function PureFlatList({
@@ -40,6 +42,8 @@ export function PureFlatList({
   ListEmptyComponent,
   ListHeaderComponent,
   contentContainerStyle,
+  onRefresh,
+  isRefreshing = false,
 }: PureFlatListProps) {
   const navigation = useNavigation()
 
@@ -86,6 +90,17 @@ export function PureFlatList({
           fetchNextPage()
         }
       }}
+      refreshControl={
+        onRefresh ? (
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            tintColor={Platform.OS === "ios" ? "#ffffff" : undefined}
+            colors={Platform.OS === "android" ? ["#ffffff"] : undefined}
+            progressBackgroundColor={Platform.OS === "android" ? "#000000" : undefined}
+          />
+        ) : undefined
+      }
       contentContainerStyle={[
         { paddingHorizontal: SECTION_PADDING_VALUE / 2 },
         contentContainerStyle,

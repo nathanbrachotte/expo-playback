@@ -49,7 +49,10 @@ export function getEpisodeStateFromMetadata(
   duration: number | null,
 ): PrettyMetadata {
   if (!duration) {
-    console.warn("🚀 ~ Found an episode with duration 0: ", metadata.episodeId)
+    console.warn("🚀 ~ Found an episode with no duration: ", {
+      metadata: JSON.stringify(metadata, null, 2),
+      duration,
+    })
   }
 
   const progressPercentage = getProgressPercentageFromMetadata(metadata, duration ?? 0)

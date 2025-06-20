@@ -6,6 +6,7 @@ export type LocalEpisodeInsert = typeof episodesTable.$inferInsert
 
 // This is to be able to consume both fetched and local episodes in the app
 export type SharedEpisodeFields = Omit<LocalEpisode, "createdAt" | "updatedAt" | "id">
+export type RSSFeedEpisodeFields = Omit<SharedEpisodeFields, "podcastId">
 
 export type LocalPodcast = typeof podcastsTable.$inferSelect
 export type LocalPodcastInsert = typeof podcastsTable.$inferInsert

@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { RssItem, RssItemSchema } from "./rss.fetch"
-import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
+import { RSSFeedEpisodeFields, SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
 import { MISSING_VALUES_EPISODE } from "../utils/episodes.utils"
 import { Optional } from "../utils/types.utils"
 
@@ -165,6 +165,9 @@ function extractRssId(guid: RssItem["guid"]) {
 
   return null
 }
+
+const LOG_LEVEL: "debug" | "error" | "none" | unknown = "none"
+
 export const FromRSSItemToLocalEpisodeSchema = RssItemSchema.transform((data) => {
   const itunesDuration = data["itunes:duration"]
 
@@ -172,10 +175,12 @@ export const FromRSSItemToLocalEpisodeSchema = RssItemSchema.transform((data) =>
     console.warn("⚠️ FOUND EPISODE WITHOUT PUBLISHED DATE", JSON.stringify(data, null, 2))
   }
 
-  console.log(
-    "🚀 ~ ToEpisodeFromRSSSchema ~ new item to be created:",
-    JSON.stringify(data, null, 2),
-  )
+  if (LOG_LEVEL === "debug") {
+    console.log(
+      "🚀 ~ ToEpisodeFromRSSSchema ~ new item to be created:",
+      JSON.stringify(data, null, 2),
+    )
+  }
 
   return {
     title: String(data.title),
@@ -191,9 +196,8 @@ export const FromRSSItemToLocalEpisodeSchema = RssItemSchema.transform((data) =>
     shouldDownload: false,
     rssId: extractRssId(data.guid),
     // `podcastId` is not part of the RSS response
-  } satisfies Omit<SharedEpisodeFields, "id" | "podcastId">
+  } satisfies RSSFeedEpisodeFields
 })
 
 export type ParsedLocalPodcastSchema = z.infer<typeof ToLocalPodcastSchema>
 export type ParsedLocalEpisodeSchema = z.infer<typeof ToLocalEpisodeSchema>
-export type ParsedRssEpisodeSchema = z.infer<typeof FromRSSItemToLocalEpisodeSchema>
