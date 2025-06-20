@@ -48,12 +48,16 @@ cd ios && pod install && cd .. # install pods
 - [x] Update weird transparent gradient
 - [ ] Make "play" button also show "pause" if actively playing
 - [ ] Add logic to refetch latest episodes of each podcast on app mount
+  - [x] Pull to refresh on LatestEpisodeScreen
+    - [ ] Investigate some duplicated episodes
 - [ ] Live updates (when something updates on native side, reflect it on RN)
 - [x] Action sheet on Episode Screen
 - [ ] Build / Send to AppStore
 - [ ] Have a download and a play button even if the episode is not downloaded
 - [ ] Why are search not case insensitive?
 - [ ] Use Flashlist for long lists of episodes
+- [ ]
+- [ ]
 - [ ]
 
 #### Future N8
