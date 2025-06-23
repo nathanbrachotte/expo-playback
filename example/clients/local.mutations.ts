@@ -7,12 +7,9 @@ import { drizzleClient, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
 import { generateEpisodeId, generateRssId } from "../utils/episodes.utils"
 import { deleteEpisodeAudioFileAndMetadata } from "expo-playback"
+import { episodesTable } from "../db/schema"
 
-async function savePodcastAndEpisodes(
-  podcast: SharedPodcastFields,
-  episodes: Omit<SharedEpisodeFields, "">[],
-) {
-  // TODO: transaction
+export async function savePodcast(podcast: SharedPodcastFields) {
   const [savedPodcast] = await drizzleClient
     .insert(schema.podcastsTable)
     .values({
@@ -29,20 +26,74 @@ async function savePodcastAndEpisodes(
     } satisfies typeof schema.podcastsTable.$inferInsert)
     .returning()
 
-  //! FIXME: What happens if two episodes have the same rssId (because of different podcasts)?
+  return savedPodcast
+}
+
+export async function saveEpisodes(podcastId: number, episodes: Omit<SharedEpisodeFields, "">[]) {
   const savedEpisodes = await drizzleClient.insert(schema.episodesTable).values(
     episodes.map((episode) => {
       return {
         ...episode,
-        id: generateEpisodeId(savedPodcast.id, episode.publishedAt),
-        rssId: generateRssId(savedPodcast.id, episode.rssId),
-        podcastId: savedPodcast.id,
+        id: generateEpisodeId(podcastId, episode.publishedAt),
+        rssId: generateRssId(podcastId, episode.rssId),
+        podcastId,
       } satisfies typeof schema.episodesTable.$inferInsert
     }),
   )
+
+  return savedEpisodes
+}
+
+async function savePodcastAndEpisodes(
+  podcast: SharedPodcastFields,
+  episodes: Omit<SharedEpisodeFields, "">[],
+) {
+  const savedPodcast = await savePodcast(podcast)
+  const savedEpisodes = await saveEpisodes(savedPodcast.id, episodes)
+
   return {
     savedPodcast,
     savedEpisodes,
+  }
+}
+
+const DEBUG_LOGS_ENABLED = process.env.DEBUG_LOGS_ENABLED === "true"
+const TEST_SYNC_MODE_ON = false
+
+export async function saveEpisodesTransaction(
+  podcastId: number,
+  episodes: Omit<SharedEpisodeFields, "">[],
+) {
+  if (DEBUG_LOGS_ENABLED) {
+    console.log(
+      `🚀 Starting transaction to insert ${episodes.length} episodes for podcast ${podcastId}`,
+    )
+  }
+  try {
+    await drizzleClient.transaction(async (tx) => {
+      for (const episode of episodes) {
+        if (DEBUG_LOGS_ENABLED) {
+          console.log(`📋 Inserting episode: ${episode.title}`)
+        }
+
+        await tx
+          .insert(episodesTable)
+          .values({
+            ...episode,
+            podcastId,
+          })
+          .onConflictDoUpdate({
+            target: [episodesTable.rssId],
+            set: {
+              ...episode,
+              ...(TEST_SYNC_MODE_ON ? { duration: Math.random() * 1000000 } : {}),
+            },
+          })
+      }
+    })
+  } catch (error) {
+    console.error("❌ Transaction failed:", error)
+    throw error
   }
 }
 
