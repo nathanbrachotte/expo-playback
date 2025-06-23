@@ -4,6 +4,9 @@ import ExpoPlaybackModule, {
   SkipSegmentEvent,
   SqLiteTableUpdatedEvent,
   PlayerState,
+  EpisodeMetadataUpdateDownloadProgressEvent,
+  EpisodeMetadataUpdatePlaybackEvent,
+  CoreEpisodeMetadataUpdateEvent,
 } from "./ExpoPlaybackModule"
 
 export { SkipSegment, PlaybackStatus, SkipSegmentEvent }
@@ -50,4 +53,22 @@ export function addSqLiteTableUpdatedListener(listener: (event: SqLiteTableUpdat
 
 export function addSkipSegmentListener(listener: (event: SkipSegmentEvent) => void) {
   return ExpoPlaybackModule.addListener("onSkipSegmentReached", listener)
+}
+
+export function addEpisodeMetadataUpdateDownloadProgressListener(
+  listener: (event: EpisodeMetadataUpdateDownloadProgressEvent) => void,
+) {
+  return ExpoPlaybackModule.addListener("onEpisodeMetadataUpdateDownloadProgress", listener)
+}
+
+export function addEpisodeMetadataUpdatePlaybackListener(
+  listener: (event: EpisodeMetadataUpdatePlaybackEvent) => void,
+) {
+  return ExpoPlaybackModule.addListener("onEpisodeMetadataUpdatePlayback", listener)
+}
+
+export function addCoreEpisodeMetadataUpdateListener(
+  listener: (event: CoreEpisodeMetadataUpdateEvent) => void,
+) {
+  return ExpoPlaybackModule.addListener("onCoreEpisodeMetadataUpdate", listener)
 }

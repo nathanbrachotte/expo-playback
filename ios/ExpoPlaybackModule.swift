@@ -27,21 +27,44 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
 
     // EpisodeDownloaderDelegate implementation
     public func episodeDownloadProgress(episodeId: Int64, currentProgress: NSNumber) {
-        self.sendEpisodeMetadataUpdate()
+        self.sendEpisodeMetadataUpdateDownloadProgress(episodeId: episodeId, downloadProgress: currentProgress.doubleValue)
+    }
+
+    public func episodeDownloadStarted(episodeId: Int64) {
+        self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId)
     }
 
     public func episodeDownloadFinished(episodeId: Int64) {
-        self.sendEpisodeMetadataUpdate()
+        self.sendEpisodeMetadataUpdateDownloadProgress(episodeId: episodeId, downloadProgress: 100)
+        self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId)
     }
 
-    private func sendEpisodeMetadataUpdate() {
-        //        self.sendEvent(
-        //            "onSqLiteTableUpdate",
-        //            [
-        //                "table": "episode_metadata"
-        //            ])
+    private func sendEpisodeMetadataUpdateDownloadProgress(episodeId: Int64, downloadProgress: Double) {
+        self.sendEvent(
+            "onEpisodeMetadataUpdateDownloadProgress",
+            [
+                "episodeId": episodeId,
+                "downloadProgress": downloadProgress
+            ])
     }
 
+    private func sendEpisodeMetadataUpdatePlayback(episodeId: Int64, playback: Double) {
+        self.sendEvent(
+            "onEpisodeMetadataUpdatePlayback",
+            [
+                "episodeId": episodeId,
+                "playback": playback
+            ])
+    }
+
+    private func sendCoreEpisodeMetadataUpdate(episodeId: Int64) {
+        self.sendEvent(
+            "onCoreEpisodeMetadataUpdate",
+            [
+                "episodeId": episodeId
+            ])
+    }
+    
     private func sendPlayerStateUpdate() {
         self.sendEvent(
             "onPlayerStateUpdate",
@@ -58,7 +81,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         Name("ExpoPlayback")
 
         // Events that will be emitted to JavaScript
-        Events("onPlayerStateUpdate", "onSkipSegmentReached", "onSqLiteTableUpdate")
+        Events("onPlayerStateUpdate", "onSkipSegmentReached", "onSqLiteTableUpdate", "onEpisodeMetadataUpdateDownloadProgress", "onEpisodeMetadataUpdatePlayback", "onCoreEpisodeMetadataUpdate")
 
         // Playback control functions
         Function("play") { (episodeId: Int64) in
@@ -106,6 +129,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
 
                     // Delete metadata from database
                     self.metadataRepo.delete(episodeIdValue: episodeId)
+                    self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId)
                     promise.resolve()
                 } catch {
                     print("Error deleting episode: \(error)")
@@ -434,10 +458,10 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
 
                 metadata.playback = Int64(currentTime)
                 metadataRepo.createOrUpdateMetadata(metadata)
-                sendEpisodeMetadataUpdate()
             }
 
             self.sendPlayerStateUpdate()
+            self.sendEpisodeMetadataUpdatePlayback(episodeId: self.currentEpisodeId!, playback: currentTime)
         }
 
         setupRemoteTransportControls()

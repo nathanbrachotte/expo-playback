@@ -81,6 +81,8 @@ export function PlayButton({
   episodeId,
   onPress,
   size = "$4",
+  isDownloaded,
+  isDownloading,
   // Component
   ...props
 }: {
@@ -93,11 +95,8 @@ export function PlayButton({
   // Make iconSize scale based on size
   const iconSize = getVariable(size) * 0.5
   const { activeEpisode, isPlaying } = usePlayerContext()
-  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
-  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadataWithoutDuration(
-    localEpisodeMetadata?.[0]?.episodeMetadata ?? {},
-  )
-  const isEpisodePlaying = Math.random() > 0.5
+
+  const isEpisodePlaying = activeEpisode?.episode?.id === episodeId && isPlaying
 
   const handlePlayPause = useCallback(() => {
     if (!isDownloaded) {
@@ -148,9 +147,12 @@ export function DownloadButton({
   const iconSize = getVariable(size) * 0.5
   const deleteMetadataMutation = useDeleteEpisodeMetadataAndAudioFileMutation()
 
-  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
+  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId, {
+    downloadProgress: true,
+    playback: false,
+  })
   const { isDownloaded, isDownloading } = getEpisodeStateFromMetadataWithoutDuration(
-    localEpisodeMetadata?.[0]?.episodeMetadata ?? {},
+    localEpisodeMetadata?.episodeMetadata,
   )
 
   if (isDownloading) {
@@ -204,13 +206,14 @@ export function PlayButtonsSection({ episodeId }: { episodeId: number }) {
 
 export function MarkAsFinishedButton({ episodeId }: { episodeId: number }) {
   const iconSize = getVariable("$3") * 0.5
-  // FIXME: This is bullshit
-  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
-  // FIXME: This is bullshit
+  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId, {
+    downloadProgress: false,
+    playback: true,
+  })
   const { data: episode } = useGetLiveLocalEpisodeQuery({ id: episodeId.toString() })
 
   const { isFinished } = getEpisodeStateFromMetadata(
-    localEpisodeMetadata?.[0]?.episodeMetadata ?? {},
+    localEpisodeMetadata?.episodeMetadata,
     episode?.[0]?.episode?.duration ?? 0,
   )
 

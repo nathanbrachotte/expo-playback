@@ -2,6 +2,7 @@ import BackgroundTasks
 import Foundation
 
 public protocol EpisodeDownloaderDelegate {
+    func episodeDownloadStarted(episodeId: Int64)
     func episodeDownloadProgress(episodeId: Int64, currentProgress: NSNumber)
     func episodeDownloadFinished(episodeId: Int64)
 }
@@ -64,6 +65,7 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
                 relativeFilePath: nil
             )
         )
+        episodeDownloaderDelegate?.episodeDownloadStarted(episodeId: episodeId)
     }
 
     public func urlSession(

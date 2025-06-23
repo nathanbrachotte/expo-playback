@@ -5,7 +5,12 @@ import { eq } from "drizzle-orm"
 
 import { drizzleClient, schema } from "../db/client"
 import { episodeMetadatasTable, episodesTable, podcastsTable } from "../db/schema"
-import { useNativeSaveLiveQuery } from "../db/useNativeSaveLiveQuery"
+import { useEffect, useMemo, useState } from "react"
+import {
+  addCoreEpisodeMetadataUpdateListener,
+  addEpisodeMetadataUpdateDownloadProgressListener,
+  addEpisodeMetadataUpdatePlaybackListener,
+} from "expo-playback"
 
 export function useLocalPodcastsQuery() {
   return useQuery({
@@ -177,8 +182,87 @@ export const episodeMetadataByIdDbQuery = (episodeId: number) =>
     .from(episodeMetadatasTable)
     .where(sql`${episodeMetadatasTable.episodeId} = ${episodeId}`)
 
-export function useGetLiveLocalEpisodeMetadataQuery(id: number) {
-  return useNativeSaveLiveQuery(episodeMetadataByIdDbQuery(id), ["episode_metadata"])
+export function useGetLiveLocalEpisodeMetadataQuery(
+  id: number,
+  updateConfig: {
+    playback: boolean
+    downloadProgress: boolean
+  } = {
+    playback: false,
+    downloadProgress: false,
+  },
+) {
+  const [playback, setPlayback] = useState(0)
+  const [downloadProgress, setDownloadProgress] = useState(0)
+
+  useEffect(() => {
+    const playbackSubscription = updateConfig.playback
+      ? addEpisodeMetadataUpdatePlaybackListener(({ episodeId, playback }) => {
+          if (episodeId === id) {
+            setPlayback(playback)
+          }
+        })
+      : null
+    const downloadProgressSubscription = updateConfig.downloadProgress
+      ? addEpisodeMetadataUpdateDownloadProgressListener(({ episodeId, downloadProgress }) => {
+          if (episodeId === id) {
+            setDownloadProgress(downloadProgress)
+          }
+        })
+      : null
+    return () => {
+      playbackSubscription?.remove()
+      downloadProgressSubscription?.remove()
+    }
+  }, [updateConfig.playback, updateConfig.downloadProgress, id])
+
+  const { data, refetch, ...rest } = useQuery({
+    queryKey: ["episodeMetadata", id],
+    queryFn: () => episodeMetadataByIdDbQuery(id),
+    enabled: !!id,
+  })
+
+  useEffect(() => {
+    const coreEpisodeMetadataUpdateSubscription = addCoreEpisodeMetadataUpdateListener(
+      ({ episodeId }) => {
+        if (episodeId !== id) return
+        refetch()
+      },
+    )
+    return () => {
+      coreEpisodeMetadataUpdateSubscription?.remove()
+    }
+  }, [id])
+
+  useEffect(() => {
+    if (!data) {
+      return
+    }
+    setPlayback(data?.[0]?.episodeMetadata?.playback ?? 0)
+    setDownloadProgress(data?.[0]?.episodeMetadata?.downloadProgress ?? 0)
+  }, [data, id])
+
+  const mergedEpisodeMetadata = useMemo(() => {
+    const first = data?.[0]
+
+    if (!first) {
+      return undefined
+    }
+
+    return {
+      ...first,
+      episodeMetadata: {
+        ...first?.episodeMetadata,
+        playback,
+        downloadProgress,
+      },
+    }
+  }, [data, playback, downloadProgress])
+
+  return {
+    data: mergedEpisodeMetadata,
+    ...rest,
+  }
 }
 
 async function getAllEpisodes({ pageParam = 0 }: { pageParam?: number }) {

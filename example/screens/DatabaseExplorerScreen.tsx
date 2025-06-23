@@ -5,19 +5,11 @@ import { Button, YStack, XStack, Text, Card, ScrollView, Heading } from "tamagui
 
 import { PureLayout } from "../components/Layout"
 import { drizzleClient, schema } from "../db/client"
-import { TableName } from "../db/schema"
-import { useNativeSaveLiveQuery } from "../db/useNativeSaveLiveQuery"
 import migrations from "../drizzle/migrations"
-
-const tableNames: TableName[] = ["episode_metadata"]
 
 export function DatabaseExplorerScreen() {
   const { data: podcasts } = useLiveQuery(drizzleClient.select().from(schema.podcastsTable))
   const { data: episodes } = useLiveQuery(drizzleClient.select().from(schema.episodesTable))
-  const { data: episodeMetadata } = useNativeSaveLiveQuery(
-    drizzleClient.select().from(schema.episodeMetadatasTable),
-    tableNames,
-  )
 
   const { success, error } = useMigrations(drizzleClient, migrations)
 
@@ -129,13 +121,6 @@ export function DatabaseExplorerScreen() {
                 Episodes (first 10)
               </Text>
               <Text fontSize="$4">{JSON.stringify(episodes.slice(0, 10), null, 2)}</Text>
-            </Card>
-
-            <Card p="$4" gap="$3">
-              <Text fontSize="$6" fontWeight="bold">
-                Episode Metadata
-              </Text>
-              <Text fontSize="$4">{JSON.stringify(episodeMetadata, null, 2)}</Text>
             </Card>
           </YStack>
         </ScrollView>
