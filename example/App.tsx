@@ -28,22 +28,22 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <PlayerProvider>
-        <GestureHandlerRootView
-          style={{
-            flex: 1,
-          }}
-        >
-          <TamaguiProvider
-            config={tamaguiConfig}
-            // config={config}
-            // defaultTheme={colorScheme!}
-            defaultTheme="dark"
+      <QueryClientProvider client={queryClient}>
+        <PlayerProvider>
+          <GestureHandlerRootView
+            style={{
+              flex: 1,
+            }}
           >
-            <Theme name="blue">
-              <PortalProvider>
-                <MigrationsWrapper>
-                  <QueryClientProvider client={queryClient}>
+            <TamaguiProvider
+              config={tamaguiConfig}
+              // config={config}
+              // defaultTheme={colorScheme!}
+              defaultTheme="dark"
+            >
+              <Theme name="blue">
+                <PortalProvider>
+                  <MigrationsWrapper>
                     <I18nProvider
                       language={
                         // getLocales()[0].languageTag
@@ -58,13 +58,13 @@ export default function App() {
                     </I18nProvider>
 
                     <ToastProvider />
-                  </QueryClientProvider>
-                </MigrationsWrapper>
-              </PortalProvider>
-            </Theme>
-          </TamaguiProvider>
-        </GestureHandlerRootView>
-      </PlayerProvider>
+                  </MigrationsWrapper>
+                </PortalProvider>
+              </Theme>
+            </TamaguiProvider>
+          </GestureHandlerRootView>
+        </PlayerProvider>
+      </QueryClientProvider>
     </SafeAreaProvider>
   )
 }
