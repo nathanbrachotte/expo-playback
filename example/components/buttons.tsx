@@ -1,4 +1,4 @@
-import { Check, Download, Pause, Play, Trash2 } from "@tamagui/lucide-icons"
+import { Check, Download, Play, Trash2 } from "@tamagui/lucide-icons"
 import React, { ComponentProps, useCallback } from "react"
 import { Button, ButtonProps, getVariable, Paragraph, Spinner } from "tamagui"
 
@@ -14,6 +14,7 @@ import {
   getEpisodeStateFromMetadataWithoutDuration,
 } from "../utils/metadata.utils"
 import { useDeleteEpisodeMetadataAndAudioFileMutation } from "../clients/local.mutations"
+import { Pause } from "../assets/Pause"
 
 export function ButtonList({
   icon,
@@ -67,12 +68,13 @@ export const CustomButtonIcon = ({
   Component,
   color,
   size,
+  ...props
 }: {
   Component: React.ComponentType<IconProps>
   color?: string
   size?: number
-}) => {
-  return <Component size={size} strokeWidth={2.5} color={color} />
+} & IconProps) => {
+  return <Component size={size} strokeWidth={2.5} color={color} {...props} />
 }
 
 export function PlayButton({
@@ -95,9 +97,7 @@ export function PlayButton({
   const { isDownloaded, isDownloading } = getEpisodeStateFromMetadataWithoutDuration(
     localEpisodeMetadata?.[0]?.episodeMetadata ?? {},
   )
-  // TODO: Erik - use getEpisodeStateFromMetadata
-
-  const isEpisodePlaying = activeEpisode?.episode?.id === episodeId && isPlaying
+  const isEpisodePlaying = Math.random() > 0.5
 
   const handlePlayPause = useCallback(() => {
     if (!isDownloaded) {
@@ -119,7 +119,17 @@ export function PlayButton({
         size={size}
         showBg
         onPress={handlePlayPause}
-        Icon={<CustomButtonIcon Component={isEpisodePlaying ? Pause : Play} size={iconSize} />}
+        Icon={
+          <CustomButtonIcon
+            Component={
+              isEpisodePlaying
+                ? // Since it's a custom icon, we need to make it a bit smaller than the rest
+                  () => <Pause width={iconSize * 0.9} height={iconSize * 0.9} />
+                : Play
+            }
+            size={iconSize}
+          />
+        }
         {...props}
       />
     </PureXStack>

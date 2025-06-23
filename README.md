@@ -46,7 +46,7 @@ cd ios && pod install && cd .. # install pods
 - [x] Player empty state
 - [x] Update weird transparent gradient
 - [x] Make "play" button also show "pause" if actively playing
-  - [ ] Update pause button UI
+  - [x] Update pause button UI
 - [ ] Add logic to refetch latest episodes of each podcast on app mount
   - [x] Pull to refresh on LatestEpisodeScreen
     - [ ] Investigate some duplicated episodes
