@@ -98,14 +98,13 @@ export function PlayButton({
     downloadProgress: true,
     playback: false,
   })
-  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadataWithoutDuration(
+  const { isDownloaded } = getEpisodeStateFromMetadataWithoutDuration(
     localEpisodeMetadata?.episodeMetadata,
   )
 
   const isEpisodePlaying = activeEpisode?.episode?.id === episodeId && isPlaying
 
   const handlePlayPause = useCallback(() => {
-    console.log("handlePlayPause", isDownloaded, isDownloading, isEpisodePlaying)
     if (!isDownloaded) {
       startBackgroundDownload(episodeId)
       return
@@ -115,8 +114,6 @@ export function PlayButton({
       pause()
       return
     }
-
-    console.log("Playing episode", episodeId)
 
     play(episodeId)
   }, [isEpisodePlaying, episodeId, isDownloaded])
