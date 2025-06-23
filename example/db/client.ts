@@ -9,7 +9,7 @@ export { schema }
 // Force it to string since we have a check below
 export const DB_PATH = FileSystem.documentDirectory!
 export const DB_NAME = "purecast_main_db.sqlite"
-export const DB_LOGS_ON = true && process.env.NODE_ENV === "development"
+export const DB_LOGS_ON = false && process.env.NODE_ENV === "development"
 if (!DB_PATH) {
   throw new Error("DB Path not found")
 }

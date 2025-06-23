@@ -38,15 +38,15 @@ cd ios && pod install && cd .. # install pods
   - [x] Abstract EpisodeCard better so it's easily reusable around the app
 
 - [x] Update episode id to be podcastId-creationDate so we can always have the same ids for episodes used in backend
-- [ ] Create script to automatically make 10 random podcasts downloaded/ongoing to simplify testing
 - [ ] Fix starting playing always tries to download
 - [x] Fix padding of EpisodeScreen's description scrollview
 - [x] Handle dates and durations
-- [ ] Hook the "mark as played" / "unplay" button
-- [ ] Hook the Download button
+- [x] Hook the "mark as played" / "unplay" button
+- [x] Hook the Download button
 - [x] Player empty state
 - [x] Update weird transparent gradient
-- [ ] Make "play" button also show "pause" if actively playing
+- [x] Make "play" button also show "pause" if actively playing
+  - [ ] Update pause button UI
 - [ ] Add logic to refetch latest episodes of each podcast on app mount
   - [x] Pull to refresh on LatestEpisodeScreen
     - [ ] Investigate some duplicated episodes

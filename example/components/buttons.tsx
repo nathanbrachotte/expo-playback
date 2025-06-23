@@ -92,20 +92,26 @@ export function PlayButton({
   const iconSize = getVariable(size) * 0.5
   const { activeEpisode, isPlaying } = usePlayerContext()
   const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId)
+  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadataWithoutDuration(
+    localEpisodeMetadata?.[0]?.episodeMetadata ?? {},
+  )
   // TODO: Erik - use getEpisodeStateFromMetadata
-  const downloadProgress = localEpisodeMetadata?.[0]?.episodeMetadata?.downloadProgress ?? 0
-  const isDownloaded = downloadProgress === 100
-  const isDownloading = downloadProgress > 0 && downloadProgress < 100
 
   const isEpisodePlaying = activeEpisode?.episode?.id === episodeId && isPlaying
 
   const handlePlayPause = useCallback(() => {
+    if (!isDownloaded) {
+      startBackgroundDownload(episodeId)
+      return
+    }
+
     if (isEpisodePlaying) {
       pause()
-    } else {
-      play(episodeId)
+      return
     }
-  }, [isEpisodePlaying, episodeId])
+
+    play(episodeId)
+  }, [isEpisodePlaying, episodeId, isDownloaded])
 
   return (
     <PureXStack centered themeInverse>
