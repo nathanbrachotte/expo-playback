@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native"
-import { Minus } from "@tamagui/lucide-icons"
+import { Minus, RefreshCw } from "@tamagui/lucide-icons"
 import React from "react"
 import { FlatList } from "react-native"
 import { Paragraph, Spinner, Button } from "tamagui"
@@ -10,8 +10,9 @@ import {
   useGetLocalEpisodesByPodcastIdQuery,
   useGetLocalPodcastQuery,
 } from "../../clients/local.queries"
+import { useFetchNewEpisodesFromOnePodcastMutation } from "../../clients/rss.queries"
 import { PLayout } from "../../components/Layout"
-import { PureYStack } from "../../components/PureStack"
+import { PureXStack, PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata.utils"
 import { NewEpisodeCard } from "../../components/episode"
@@ -22,9 +23,15 @@ export function LocalPodcastScreen({ id }: { id: string }) {
     useGetLocalEpisodesByPodcastIdQuery(id)
 
   const { mutateAsync: removePodcast, isPending: isRemoving } = useRemovePodcastMutation()
+  const { mutateAsync: fetchNewEpisodes, isPending: isFetching } =
+    useFetchNewEpisodesFromOnePodcastMutation()
 
   if (isLocalLoading || !localPodcast || isLocalEpisodesLoading) {
     return <LoadingScreen />
+  }
+
+  const handleFetchNewEpisodes = () => {
+    fetchNewEpisodes(localPodcast.id)
   }
 
   return (
@@ -34,13 +41,23 @@ export function LocalPodcastScreen({ id }: { id: string }) {
         podcast={localPodcast}
         episodeCount={localEpisodes?.length || 0}
         ActionSection={
-          <Button
-            size="$2.5"
-            onPress={() => removePodcast(String(localPodcast.appleId))}
-            icon={isRemoving ? null : Minus}
-          >
-            {isRemoving ? <Spinner /> : <Paragraph size="$3">Remove from Library</Paragraph>}
-          </Button>
+          <PureXStack gap="$2">
+            <Button
+              size="$2.5"
+              onPress={handleFetchNewEpisodes}
+              icon={isFetching ? null : RefreshCw}
+              disabled={isFetching}
+            >
+              {isFetching ? <Spinner size="small" /> : <Paragraph size="$3">Refresh</Paragraph>}
+            </Button>
+            <Button
+              size="$2.5"
+              onPress={() => removePodcast(String(localPodcast.appleId))}
+              icon={isRemoving ? null : Minus}
+            >
+              {isRemoving ? <Spinner /> : <Paragraph size="$3">Remove from Library</Paragraph>}
+            </Button>
+          </PureXStack>
         }
       />
       {/* Episodes Section */}
