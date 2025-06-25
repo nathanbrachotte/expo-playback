@@ -93,7 +93,7 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
                 // Get audio duration
                 let asset = AVAsset(url: episodeFileURL)
                 let duration = CMTimeGetSeconds(asset.duration)
-                let durationInSeconds = Int64(duration)
+                let durationInMilliSeconds = Int64(duration * 1000)
 
                 // Update episode metadata with new file location and state
                 self.metadataRepo.createOrUpdateMetadata(
@@ -104,7 +104,7 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
                         downloadProgress: 100,
                         fileSize: fileSize,
                         relativeFilePath: fileName,
-                        duration: durationInSeconds
+                        duration: durationInMilliSeconds
                     )
                 )
 

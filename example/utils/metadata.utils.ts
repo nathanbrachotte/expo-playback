@@ -6,7 +6,7 @@ export type PrettyMetadata = {
   isDownloading: boolean
   progress: number
   progressPercentage: number
-  dowloadProgress: number
+  downloadProgress: number
   isInProgress: boolean
 }
 
@@ -77,7 +77,7 @@ export function getEpisodeStateFromMetadata(
     isFinished: getIsFinishedFromMetadata(metadata, progressPercentage),
     isDownloaded: getIsDownloadedFromMetadata(metadata),
     isDownloading: getIsDownloadingFromMetadata(metadata),
-    dowloadProgress: metadata?.downloadProgress ?? 0,
+    downloadProgress: metadata?.downloadProgress ?? 0,
     progress: metadata?.playback ?? 0,
     progressPercentage,
     isInProgress: progressPercentage > 0 && progressPercentage < 95,
@@ -86,11 +86,11 @@ export function getEpisodeStateFromMetadata(
 
 export function getEpisodeStateFromMetadataWithoutDuration(
   metadata: LocalEpisodeMetadata | undefined,
-): Pick<PrettyMetadata, "isDownloaded" | "isDownloading" | "dowloadProgress" | "progress"> {
+): Pick<PrettyMetadata, "isDownloaded" | "isDownloading" | "downloadProgress" | "progress"> {
   return {
     isDownloaded: getIsDownloadedFromMetadata(metadata),
     isDownloading: getIsDownloadingFromMetadata(metadata),
-    dowloadProgress: metadata?.downloadProgress ?? 0,
+    downloadProgress: metadata?.downloadProgress ?? 0,
     progress: metadata?.playback ?? 0,
   }
 }
