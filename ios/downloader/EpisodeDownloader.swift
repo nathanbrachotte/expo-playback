@@ -1,3 +1,4 @@
+import AVFoundation
 import BackgroundTasks
 import Foundation
 
@@ -57,12 +58,7 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
         downloadTask.resume()
         self.metadataRepo.createOrUpdateMetadata(
             EpisodeMetadata(
-                episodeId: episodeId,
-                playback: 0,
-                isFinished: false,
-                downloadProgress: 0,
-                fileSize: nil,
-                relativeFilePath: nil
+                episodeId: episodeId
             )
         )
         episodeDownloaderDelegate?.episodeDownloadStarted(episodeId: episodeId)
@@ -94,6 +90,11 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
                     atPath: episodeFileURL.path)
                 let fileSize = fileAttributes[.size] as? Int64 ?? 0
 
+                // Get audio duration
+                let asset = AVAsset(url: episodeFileURL)
+                let duration = CMTimeGetSeconds(asset.duration)
+                let durationInSeconds = Int64(duration)
+
                 // Update episode metadata with new file location and state
                 self.metadataRepo.createOrUpdateMetadata(
                     EpisodeMetadata(
@@ -102,7 +103,8 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
                         isFinished: false,
                         downloadProgress: 100,
                         fileSize: fileSize,
-                        relativeFilePath: fileName
+                        relativeFilePath: fileName,
+                        duration: durationInSeconds
                     )
                 )
 

@@ -154,7 +154,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
                     var updatedMetadata = metadata
                     updatedMetadata.downloadProgress = 0
                     updatedMetadata.relativeFilePath = nil
-                    updatedMetadata.fileSize = nil
+                    updatedMetadata.fileSize = 0
                     self.metadataRepo.createOrUpdateMetadata(updatedMetadata)
 
                     // Start fresh download

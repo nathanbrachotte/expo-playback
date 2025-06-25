@@ -60,6 +60,7 @@ export const episodeMetadatasTable = sqliteTable(TABLE_NAMES[2], {
   playback: integer("playback", { mode: "number" }).default(0),
   isFinished: integer("is_finished", { mode: "boolean" }).default(false),
   downloadProgress: integer("download_progress", { mode: "number" }).default(0),
-  fileSize: integer("file_size", { mode: "number" }),
+  fileSize: integer("file_size", { mode: "number" }).default(0),
   relativeFilePath: text("relative_file_path"),
+  duration: integer("duration", { mode: "number" }).default(0),
 })
