@@ -5,27 +5,22 @@ import { useWindowDimensions } from "react-native"
 import { Button, H3, H4, Paragraph } from "tamagui"
 import { z } from "zod"
 
-import { useSavePodcastMutation } from "../../clients/local.mutations"
-import {
-  getEpisodeWithPodcastByExternalId,
-  useGetLiveLocalEpisodeQuery,
-} from "../../clients/local.queries"
-import { PLayout } from "../../components/Layout"
-import { PureScrollView } from "../../components/PureScrollview"
-import { PureXStack, PureYStack } from "../../components/PureStack"
+import { useGetLiveLocalEpisodeQuery } from "../../clients/local.queries"
 import { PlayButton } from "../../components/buttons"
-import { usePlayerContext } from "../../providers/PlayerProvider"
-import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../../types/db.types"
-import { EpisodeScreenRouteProp } from "../../types/navigation.types"
-import { getImageFromEntities, getImageFromEntity } from "../../utils/image.utils"
-import { getEpisodeStateFromMetadata } from "../../utils/metadata.utils"
 import {
   DurationAndDateSection,
   EpisodeActionSheet,
   EpisodeDescriptionHtml,
 } from "../../components/episode"
 import { PureImage } from "../../components/image"
+import { PLayout } from "../../components/Layout"
+import { PureScrollView } from "../../components/PureScrollview"
+import { PureXStack, PureYStack } from "../../components/PureStack"
 import { SECTION_PADDING_VALUE } from "../../components/Sections/PureSection"
+import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../../types/db.types"
+import { EpisodeScreenRouteProp } from "../../types/navigation.types"
+import { getImageFromEntities, getImageFromEntity } from "../../utils/image.utils"
+import { getEpisodeStateFromMetadata } from "../../utils/metadata.utils"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -83,74 +78,32 @@ function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
 }
 
 function PlayEpisodeButton({
-  episode,
-  podcast,
+  episodeId,
   episodeMetadata,
 }: {
-  episode: LocalEpisode
-  podcast: LocalPodcast
+  episodeId: number
   episodeMetadata: LocalEpisodeMetadata | null
 }) {
-  const { setActiveEpisodeId } = usePlayerContext()
-
-  const { mutateAsync: savePodcast } = useSavePodcastMutation({
-    podcastId: podcast.id?.toString() || podcast.appleId?.toString() || "",
-  })
-
-  // TODO: Erik, figure out what's needed from this still, but most could be extracted to the button imo
   const handlePlay = useCallback(async () => {
-    // @ts-ignore ds
-    console.log("🚀 ~ downloadAndPlay ~ episode:", JSON.stringify(episode, null, 2))
-    // @ts-ignore ds
-    const res = await getEpisodeWithPodcastByExternalId(episode.id)
-    console.log("🚀 ~ downloadAndPlay ~ res:", res)
-    const localEpisode = res?.episode
-    console.log("🚀 ~ downloadAndPlay ~ localEpisode:", localEpisode)
+    if (episodeId) {
+      return
+    }
 
-    // If episode does not exist locally, save it
-    // if (localEpisode == null) {
-    //   const appleId = getAppleIdFromPodcast(podcast)
-    //   if (!appleId) {
-    //     throw new Error("Apple ID not found for podcast: " + JSON.stringify(podcast, null, 2))
-    //   }
-
-    //   if (!podcastFromQuery) {
-    //     throw new Error("Podcast not found in query")
-    //   }
-
-    //   const res = await savePodcast({ podcast: podcastFromQuery })
-    //   // TODO: Verify this works
-    //   const savedEpisodeId = res?.savedEpisodes.lastInsertRowId
-    //   if (!savedEpisodeId) {
-    //     throw new Error("Something when wrong when saving the podcast: " + JSON.stringify(res, null, 2))
-    //   }
-
-    //   // TODO: Add download mechanism
-    //   setActiveEpisodeId(savedEpisodeId)
-    //   return
-    // }
-    ExpoPlaybackModule.play(episode.id)
-    // If episode exists locally, set it as active directly
-    // setActiveEpisodeId(1)
-  }, [episode])
+    ExpoPlaybackModule.play(episodeId)
+  }, [episodeId])
 
   if (!episodeMetadata) {
-    return (
-      <PlayButton isDownloaded={false} isDownloading={false} episodeId={episode.id} size="$5" />
-    )
+    return <PlayButton isDownloaded={false} isDownloading={false} episodeId={episodeId} size="$5" />
   }
 
-  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(
-    episodeMetadata,
-    episode.duration,
-  )
+  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(episodeMetadata)
 
   return (
     <PlayButton
       isDownloaded={isDownloaded}
       isDownloading={isDownloading}
       size="$5"
-      episodeId={episode.id}
+      episodeId={episodeId}
       onPress={handlePlay}
     />
   )
@@ -166,9 +119,7 @@ function EpisodeDumbScreen({
   episodeMetadata: LocalEpisodeMetadata | null
 }) {
   const image = getImageFromEntities(episode, podcast, "600")
-  const prettyMetadata = episodeMetadata
-    ? getEpisodeStateFromMetadata(episodeMetadata, episode.duration)
-    : null
+  const prettyMetadata = episodeMetadata ? getEpisodeStateFromMetadata(episodeMetadata) : null
 
   return (
     <PLayout.Screen>
@@ -185,7 +136,7 @@ function EpisodeDumbScreen({
         </PureYStack>
         <PureXStack>
           <DurationAndDateSection
-            duration={episode.duration}
+            duration={prettyMetadata?.duration || episode.duration}
             date={episode.publishedAt}
             isFinished={episodeMetadata?.isFinished}
           />
@@ -200,11 +151,7 @@ function EpisodeDumbScreen({
               episodeId={episode.id}
               isDownloaded={prettyMetadata?.isDownloaded}
             />
-            <PlayEpisodeButton
-              episode={episode}
-              podcast={podcast}
-              episodeMetadata={episodeMetadata}
-            />
+            <PlayEpisodeButton episodeId={episode.id} episodeMetadata={episodeMetadata} />
           </PureXStack>
         </PureXStack>
         <PureYStack mt="$2" mx="$-3" flex={1}>

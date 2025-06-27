@@ -9,10 +9,7 @@ import {
 } from "../clients/local.queries"
 import { pause, play, startBackgroundDownload } from "expo-playback"
 import { usePlayerContext } from "../providers/PlayerProvider"
-import {
-  getEpisodeStateFromMetadata,
-  getEpisodeStateFromMetadataWithoutDuration,
-} from "../utils/metadata.utils"
+import { getEpisodeStateFromMetadata } from "../utils/metadata.utils"
 import { useDeleteEpisodeMetadataAndAudioFileMutation } from "../clients/local.mutations"
 import { Pause } from "../assets/Pause"
 
@@ -98,9 +95,7 @@ export function PlayButton({
     downloadProgress: true,
     playback: false,
   })
-  const { isDownloaded } = getEpisodeStateFromMetadataWithoutDuration(
-    localEpisodeMetadata?.episodeMetadata,
-  )
+  const { isDownloaded } = getEpisodeStateFromMetadata(localEpisodeMetadata?.episodeMetadata)
 
   const isEpisodePlaying = activeEpisode?.episode?.id === episodeId && isPlaying
 
@@ -157,7 +152,7 @@ export function DownloadButton({
     downloadProgress: true,
     playback: false,
   })
-  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadataWithoutDuration(
+  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(
     localEpisodeMetadata?.episodeMetadata,
   )
 
@@ -216,12 +211,7 @@ export function MarkAsFinishedButton({ episodeId }: { episodeId: number }) {
     downloadProgress: false,
     playback: true,
   })
-  const { data: episode } = useGetLiveLocalEpisodeQuery({ id: episodeId.toString() })
-
-  const { isFinished } = getEpisodeStateFromMetadata(
-    localEpisodeMetadata?.episodeMetadata,
-    episode?.[0]?.episode?.duration ?? 0,
-  )
+  const { isFinished } = getEpisodeStateFromMetadata(localEpisodeMetadata?.episodeMetadata)
 
   if (isFinished) {
     return (

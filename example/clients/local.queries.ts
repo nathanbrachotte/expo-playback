@@ -416,7 +416,7 @@ async function getAllInProgressEpisodes({ pageParam = 0 }: { pageParam?: number 
     .innerJoin(episodeMetadatasTable, sql`${episodesTable.id} = ${episodeMetadatasTable.episodeId}`)
     .where(
       // AI Black magic. Don't ask me.
-      sql`(${episodeMetadatasTable.isFinished} = false) AND (CAST(${episodeMetadatasTable.playback} AS FLOAT) / CAST(${episodesTable.duration} AS FLOAT) > 0 AND CAST(${episodeMetadatasTable.playback} AS FLOAT) / CAST(${episodesTable.duration} AS FLOAT) < 0.95)`,
+      sql`(${episodeMetadatasTable.isFinished} = false) AND ${episodeMetadatasTable.playback} > 0)`,
     )
     .orderBy(desc(episodesTable.publishedAt))
     .limit(limit)

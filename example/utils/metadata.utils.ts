@@ -8,28 +8,17 @@ export type PrettyMetadata = {
   progressPercentage: number
   downloadProgress: number
   isInProgress: boolean
+  duration: number
 }
 
 export function getProgressPercentageFromMetadata(
   metadata: LocalEpisodeMetadata | undefined,
-  totalDuration: number,
 ): number {
-  if (!metadata) {
+  if (!metadata || !metadata.duration) {
     return 0
   }
 
-  return ((metadata.playback ?? 0) / totalDuration) * 100
-}
-
-export function getIsFinishedFromMetadata(
-  metadata: LocalEpisodeMetadata | undefined,
-  progressPercentage: number,
-): boolean {
-  if (!metadata) {
-    return false
-  }
-
-  return metadata.isFinished || progressPercentage >= 95
+  return ((metadata.playback ?? 0) / metadata.duration) * 100
 }
 
 export function getIsDownloadedFromMetadata(metadata: LocalEpisodeMetadata | undefined): boolean {
@@ -62,35 +51,17 @@ export function getIsDownloadingFromMetadata(metadata: LocalEpisodeMetadata | un
 
 export function getEpisodeStateFromMetadata(
   metadata: LocalEpisodeMetadata | undefined,
-  duration: number | null,
 ): PrettyMetadata {
-  if (!duration) {
-    console.warn("🚀 ~ Found an episode with no duration: ", {
-      metadata: JSON.stringify(metadata, null, 2),
-      duration,
-    })
-  }
-
-  const progressPercentage = getProgressPercentageFromMetadata(metadata, duration ?? 0)
+  const progressPercentage = getProgressPercentageFromMetadata(metadata)
 
   return {
-    isFinished: getIsFinishedFromMetadata(metadata, progressPercentage),
+    isFinished: metadata?.isFinished ?? false,
     isDownloaded: getIsDownloadedFromMetadata(metadata),
     isDownloading: getIsDownloadingFromMetadata(metadata),
     downloadProgress: metadata?.downloadProgress ?? 0,
     progress: metadata?.playback ?? 0,
     progressPercentage,
-    isInProgress: progressPercentage > 0 && progressPercentage < 95,
-  }
-}
-
-export function getEpisodeStateFromMetadataWithoutDuration(
-  metadata: LocalEpisodeMetadata | undefined,
-): Pick<PrettyMetadata, "isDownloaded" | "isDownloading" | "downloadProgress" | "progress"> {
-  return {
-    isDownloaded: getIsDownloadedFromMetadata(metadata),
-    isDownloading: getIsDownloadingFromMetadata(metadata),
-    downloadProgress: metadata?.downloadProgress ?? 0,
-    progress: metadata?.playback ?? 0,
+    isInProgress: progressPercentage > 0 && metadata?.isFinished !== true,
+    duration: metadata?.duration ?? 0,
   }
 }

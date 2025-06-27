@@ -224,7 +224,7 @@ export const NewEpisodeCard = ({
   cardProps,
 }: EpisodeCardProps) => {
   const image = getImageFromEntities(episode, podcast)
-  const { isFinished, isDownloaded, progress, isInProgress, progressPercentage } =
+  const { isFinished, isDownloaded, progress, isInProgress, progressPercentage, duration } =
     prettyMetadata || {}
 
   return (
@@ -263,7 +263,7 @@ export const NewEpisodeCard = ({
         <PureYStack gap="$1.5">
           <CleanEpisodeDescription description={episode.description} />
           <DurationAndDateSection
-            duration={episode.duration}
+            duration={duration || episode.duration}
             date={episode.publishedAt}
             isFinished={isFinished}
             progress={progress}

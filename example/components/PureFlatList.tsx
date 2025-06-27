@@ -114,7 +114,7 @@ export function PureFlatList({
       indicatorStyle="white"
       renderItem={({ item }) => {
         const prettyMetadata = item.episodeMetadata
-          ? getEpisodeStateFromMetadata(item.episodeMetadata, item.episode.duration)
+          ? getEpisodeStateFromMetadata(item.episodeMetadata)
           : null
 
         return (

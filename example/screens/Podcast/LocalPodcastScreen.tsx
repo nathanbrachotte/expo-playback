@@ -93,7 +93,7 @@ export function LocalEpisodesSection({ id }: { id: string }) {
         const episode = item.episode
 
         const prettyMetadata = item.episodeMetadata
-          ? getEpisodeStateFromMetadata(item.episodeMetadata, episode.duration ?? 0)
+          ? getEpisodeStateFromMetadata(item.episodeMetadata)
           : null
 
         return (

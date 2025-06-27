@@ -63,7 +63,7 @@ export function DownloadedEpisodesScreen() {
           const episode = item.episode
           const podcast = item.podcast
           const prettyMetadata = item.episodeMetadata
-            ? getEpisodeStateFromMetadata(item.episodeMetadata, episode.duration)
+            ? getEpisodeStateFromMetadata(item.episodeMetadata)
             : null
           // if (episode.id === 516) {
           //   console.log(
