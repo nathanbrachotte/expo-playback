@@ -57,8 +57,8 @@ cd ios && pod install && cd .. # install pods
 - [ ] Why are search not case insensitive?
 - [ ] Use Flashlist for long lists of episodes
 - [ ] Search & Add Podcasts issues
-- [ ] „Fest &“ also can’t find it maybe search issues with special chars
-- [ ] KFC Radio breaks
+  - [ ] „Fest &“ also can’t find it maybe search issues with special chars
+  - [ ] KFC Radio breaks
 - [ ]
 
 #### Future N8

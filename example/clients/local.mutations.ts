@@ -57,46 +57,6 @@ async function savePodcastAndEpisodes(
   }
 }
 
-const DEBUG_LOGS_ENABLED = process.env.DEBUG_LOGS_ENABLED === "true"
-const TEST_SYNC_MODE_ON = false
-
-export async function saveEpisodesTransaction(
-  podcastId: number,
-  episodes: Omit<SharedEpisodeFields, "">[],
-) {
-  if (DEBUG_LOGS_ENABLED) {
-    console.log(
-      `🚀 Starting transaction to insert ${episodes.length} episodes for podcast ${podcastId}`,
-    )
-  }
-  try {
-    await drizzleClient.transaction(async (tx) => {
-      for (const episode of episodes) {
-        if (DEBUG_LOGS_ENABLED) {
-          console.log(`📋 Inserting episode: ${episode.title}`)
-        }
-
-        await tx
-          .insert(episodesTable)
-          .values({
-            ...episode,
-            podcastId,
-          })
-          .onConflictDoUpdate({
-            target: [episodesTable.rssId],
-            set: {
-              ...episode,
-              ...(TEST_SYNC_MODE_ON ? { duration: Math.random() * 1000000 } : {}),
-            },
-          })
-      }
-    })
-  } catch (error) {
-    console.error("❌ Transaction failed:", error)
-    throw error
-  }
-}
-
 export function useSavePodcastMutation({ podcastId }: { podcastId: string }) {
   const queryClient = useQueryClient()
 
