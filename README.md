@@ -79,7 +79,7 @@ cd ios && pod install && cd .. # install pods
 - [x] Recover from download interruption
 - [ ] Auto-download last 3 episodes of each podcast?
 - [ ] Instantly play episode even when not downloaded
-- [ ] Remove all downloads when podcast is removed from library
+- [x] Remove all downloads when podcast is removed from library
 
 #### Future Erik
 

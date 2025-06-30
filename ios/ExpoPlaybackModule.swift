@@ -135,7 +135,10 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
                     print("Error deleting episode: \(error)")
                     promise.reject(error)
                 }
+            } else {
+                promise.resolve()
             }
+            
         }
 
         // Restart incomplete downloads by removing partial file and starting fresh
