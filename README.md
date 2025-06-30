@@ -38,7 +38,7 @@ cd ios && pod install && cd .. # install pods
   - [x] Abstract EpisodeCard better so it's easily reusable around the app
 
 - [x] Update episode id to be podcastId-creationDate so we can always have the same ids for episodes used in backend
-- [ ] Fix starting playing always tries to download
+- [x] Fix starting playing always tries to download
 - [x] Fix padding of EpisodeScreen's description scrollview
 - [x] Handle dates and durations
 - [x] Hook the "mark as played" / "unplay" button
@@ -56,8 +56,9 @@ cd ios && pod install && cd .. # install pods
 - [ ] Have a download and a play button even if the episode is not downloaded
 - [ ] Why are search not case insensitive?
 - [ ] Use Flashlist for long lists of episodes
-- [ ]
-- [ ]
+- [ ] Search & Add Podcasts issues
+- [ ] „Fest &“ also can’t find it maybe search issues with special chars
+- [ ] KFC Radio breaks
 - [ ]
 
 #### Future N8
