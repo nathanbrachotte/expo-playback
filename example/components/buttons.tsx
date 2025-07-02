@@ -3,15 +3,13 @@ import React, { ComponentProps, useCallback } from "react"
 import { Button, ButtonProps, getVariable, Paragraph, Spinner } from "tamagui"
 
 import { PureXStack } from "./PureStack"
-import {
-  useGetLiveLocalEpisodeMetadataQuery,
-  useGetLiveLocalEpisodeQuery,
-} from "../clients/local.queries"
+import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
 import { pause, play, startBackgroundDownload } from "expo-playback"
 import { usePlayerContext } from "../providers/PlayerProvider"
 import { getEpisodeStateFromMetadata } from "../utils/metadata.utils"
 import { useDeleteEpisodeMetadataAndAudioFileMutation } from "../clients/local.mutations"
 import { Pause } from "../assets/Pause"
+import { CircularLoader } from "./CircularLoader"
 
 export function ButtonList({
   icon,
@@ -78,15 +76,18 @@ function PlayButtonIcon({
   isEpisodePlaying,
   isDownloading,
   iconSize,
+  downloadProgress,
 }: {
   isEpisodePlaying: boolean
   isDownloading: boolean
   iconSize: number
+  downloadProgress: number
 }) {
   if (isDownloading) {
-    return <Spinner size="small" />
+    return (
+      <CircularLoader progress={downloadProgress} size={iconSize} color="#000000" strokeWidth={3} />
+    )
   }
-
   if (isEpisodePlaying) {
     return <Pause width={iconSize * 0.9} height={iconSize * 0.9} />
   }
@@ -109,7 +110,7 @@ export function PlayButton({
     downloadProgress: true,
     playback: false,
   })
-  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(
+  const { isDownloaded, isDownloading, downloadProgress } = getEpisodeStateFromMetadata(
     localEpisodeMetadata?.episodeMetadata,
   )
 
@@ -144,6 +145,7 @@ export function PlayButton({
           <PlayButtonIcon
             isEpisodePlaying={isEpisodePlaying}
             isDownloading={isDownloading}
+            downloadProgress={downloadProgress}
             iconSize={iconSize}
           />
         }

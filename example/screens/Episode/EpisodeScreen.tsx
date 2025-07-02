@@ -93,20 +93,10 @@ function PlayEpisodeButton({
   }, [episodeId])
 
   if (!episodeMetadata) {
-    return <PlayButton isDownloaded={false} isDownloading={false} episodeId={episodeId} size="$5" />
+    return <PlayButton episodeId={episodeId} size="$5" />
   }
 
-  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(episodeMetadata)
-
-  return (
-    <PlayButton
-      isDownloaded={isDownloaded}
-      isDownloading={isDownloading}
-      size="$5"
-      episodeId={episodeId}
-      onPress={handlePlay}
-    />
-  )
+  return <PlayButton size="$5" episodeId={episodeId} onPress={handlePlay} />
 }
 
 function EpisodeDumbScreen({
@@ -170,8 +160,8 @@ function EpisodeDumbScreen({
 
 export function EpisodeScreen() {
   const route = useRoute<EpisodeScreenRouteProp>()
-  const { episodeId, podcastId } = route.params
-  const { data: localEpisode, error, updatedAt } = useGetLiveLocalEpisodeQuery({ id: episodeId })
+  const { episodeId } = route.params
+  const { data: localEpisode } = useGetLiveLocalEpisodeQuery({ id: episodeId })
 
   // if (isLoading) {
   //   return (

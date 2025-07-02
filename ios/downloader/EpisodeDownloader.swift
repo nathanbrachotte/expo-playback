@@ -129,17 +129,17 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
     ) {
 
         let calculatedProgress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
-        let progress = NSNumber(value: (max(calculatedProgress, 1))) // always use at least 1 to not jump from 1 to 0
+        let progress = NSNumber(value: calculatedProgress)
 
         if let episodeId = Int64(downloadTask.taskDescription ?? "") {
             if var metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId) {
-                let newProgress = Int64(progress.doubleValue * 100)
-                if metadata.downloadProgress >= newProgress { return }
+                let newProgress = max(Int64(progress.doubleValue * 100), 1) // always use at least 1% to not jump from 1 to 0
+                if metadata.downloadProgress == newProgress { return }
                 metadata.downloadProgress = newProgress
                 metadataRepo.createOrUpdateMetadata(metadata)
 
                 episodeDownloaderDelegate?.episodeDownloadProgress(
-                    episodeId: episodeId, currentProgress: progress)
+                    episodeId: episodeId, currentProgress: NSNumber(value: newProgress))
             }
         }
 
