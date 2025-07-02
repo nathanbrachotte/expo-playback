@@ -58,7 +58,9 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
         downloadTask.resume()
         self.metadataRepo.createOrUpdateMetadata(
             EpisodeMetadata(
-                episodeId: episodeId
+                episodeId: episodeId,
+                // set to 1 to indicate that the download started
+                downloadProgress: 1
             )
         )
         episodeDownloaderDelegate?.episodeDownloadStarted(episodeId: episodeId)
@@ -127,7 +129,7 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
     ) {
 
         let calculatedProgress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
-        let progress = NSNumber(value: calculatedProgress)
+        let progress = NSNumber(value: (max(calculatedProgress, 1))) // always use at least 1 to not jump from 1 to 0
 
         if let episodeId = Int64(downloadTask.taskDescription ?? "") {
             if var metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId) {

@@ -4,7 +4,15 @@ import { AppState } from "react-native"
 import { useGetLiveLocalEpisodeQuery } from "../clients/local.queries"
 import { LocalEpisode } from "../types/db.types"
 import { PlayerState } from "expo-playback/ExpoPlaybackModule"
-import { addPlayerStateListener, getPlayerState, pause, play, seek, skip } from "expo-playback"
+import {
+  addEpisodeMetadataUpdateDownloadProgressListener,
+  addPlayerStateListener,
+  getPlayerState,
+  pause,
+  play,
+  seek,
+  skip,
+} from "expo-playback"
 
 type PlayerContextType = {
   togglePlayPause: VoidFunction
@@ -13,6 +21,7 @@ type PlayerContextType = {
   skipBackward: VoidFunction
   skipForward: VoidFunction
   onSliderValueChange: (id: number[]) => void
+  setEpisodeIdForPlayAfterDownload: (id: number) => void
   isPlaying: boolean
 }
 
@@ -20,6 +29,7 @@ const PlayerContext = createContext<PlayerContextType | null>(null)
 
 export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
   const [playerState, setPlayerState] = useState<PlayerState | null>(null)
+  const [episodeIdForPlayAfterDownload, setEpisodeIdForPlayAfterDownload] = useState<number>()
   const { data: activeEpisodeData } = useGetLiveLocalEpisodeQuery({
     id: playerState?.currentEpisodeId?.toString() ?? null,
   })
@@ -27,6 +37,23 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     setPlayerState(getPlayerState())
   }, [])
+
+  useEffect(() => {
+    const subscription = addEpisodeMetadataUpdateDownloadProgressListener(
+      ({ episodeId, downloadProgress }) => {
+        if (downloadProgress !== 100) {
+          return
+        }
+
+        if (episodeId === episodeIdForPlayAfterDownload) {
+          play(episodeIdForPlayAfterDownload)
+          setEpisodeIdForPlayAfterDownload(undefined)
+        }
+      },
+    )
+
+    return subscription.remove
+  }, [episodeIdForPlayAfterDownload])
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -56,6 +83,12 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
 
     return subscription.remove
   }, [])
+
+  // If the player is playing a different episode, reset the episode id for play after download
+  // since the user intended to play something else between starting the download and the download finishing
+  useEffect(() => {
+    setEpisodeIdForPlayAfterDownload(undefined)
+  }, [playerState?.currentEpisodeId])
 
   const setActiveEpisodeId = useCallback((id: number | null) => {
     if (!id) return
@@ -103,6 +136,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
         skipForward,
         onSliderValueChange,
         isPlaying: playerState?.status === "playing",
+        setEpisodeIdForPlayAfterDownload,
       }}
     >
       {children}

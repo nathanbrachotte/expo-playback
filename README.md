@@ -78,7 +78,7 @@ cd ios && pod install && cd .. # install pods
 - [x] Seeking
 - [x] Recover from download interruption
 - [ ] Auto-download last 3 episodes of each podcast?
-- [ ] Instantly play episode even when not downloaded
+- [x] Instantly play episode even when not downloaded (changed to start downloading and then playing with one button press)
 - [x] Remove all downloads when podcast is removed from library
 
 #### Future Erik

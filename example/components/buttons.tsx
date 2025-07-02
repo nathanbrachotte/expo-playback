@@ -74,34 +74,55 @@ export const CustomButtonIcon = ({
   return <Component size={size} strokeWidth={2.5} color={color} {...props} />
 }
 
+function PlayButtonIcon({
+  isEpisodePlaying,
+  isDownloading,
+  iconSize,
+}: {
+  isEpisodePlaying: boolean
+  isDownloading: boolean
+  iconSize: number
+}) {
+  if (isDownloading) {
+    return <Spinner size="small" />
+  }
+
+  if (isEpisodePlaying) {
+    return <Pause width={iconSize * 0.9} height={iconSize * 0.9} />
+  }
+
+  return <Play />
+}
+
 export function PlayButton({
   episodeId,
-  onPress,
   size = "$4",
-  // Component
   ...props
 }: {
-  isDownloaded?: boolean
-  isDownloading?: boolean
   episodeId: number
   size?: React.ComponentProps<typeof Button>["size"]
-  // Component: React.ComponentType<typeof Button>
 } & ButtonProps) {
-  // Make iconSize scale based on size
   const iconSize = getVariable(size) * 0.5
-  const { activeEpisode, isPlaying } = usePlayerContext()
+  const { activeEpisode, isPlaying, setEpisodeIdForPlayAfterDownload } = usePlayerContext()
 
   const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId, {
     downloadProgress: true,
     playback: false,
   })
-  const { isDownloaded } = getEpisodeStateFromMetadata(localEpisodeMetadata?.episodeMetadata)
+  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(
+    localEpisodeMetadata?.episodeMetadata,
+  )
 
   const isEpisodePlaying = activeEpisode?.episode?.id === episodeId && isPlaying
 
   const handlePlayPause = useCallback(() => {
+    if (isDownloading) {
+      return
+    }
+
     if (!isDownloaded) {
       startBackgroundDownload(episodeId)
+      setEpisodeIdForPlayAfterDownload(episodeId)
       return
     }
 
@@ -111,7 +132,7 @@ export function PlayButton({
     }
 
     play(episodeId)
-  }, [isEpisodePlaying, episodeId, isDownloaded])
+  }, [isEpisodePlaying, episodeId, isDownloaded, isDownloading, setEpisodeIdForPlayAfterDownload])
 
   return (
     <PureXStack centered themeInverse>
@@ -120,14 +141,10 @@ export function PlayButton({
         showBg
         onPress={handlePlayPause}
         Icon={
-          <CustomButtonIcon
-            Component={
-              isEpisodePlaying
-                ? // Since it's a custom icon, we need to make it a bit smaller than the rest
-                  () => <Pause width={iconSize * 0.9} height={iconSize * 0.9} />
-                : Play
-            }
-            size={iconSize}
+          <PlayButtonIcon
+            isEpisodePlaying={isEpisodePlaying}
+            isDownloading={isDownloading}
+            iconSize={iconSize}
           />
         }
         {...props}
