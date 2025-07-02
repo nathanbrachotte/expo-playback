@@ -7,54 +7,79 @@ import { drizzleClient, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
 import { generateEpisodeId, generateRssId } from "../utils/episodes.utils"
 import { deleteEpisodeAudioFileAndMetadata } from "expo-playback"
-import { episodesTable } from "../db/schema"
-
-export async function savePodcast(podcast: SharedPodcastFields) {
-  const [savedPodcast] = await drizzleClient
-    .insert(schema.podcastsTable)
-    .values({
-      id: podcast.appleId,
-      author: podcast.author,
-      description: podcast.description,
-      image30: podcast.image30,
-      image60: podcast.image60,
-      image100: podcast.image100,
-      image600: podcast.image600,
-      title: podcast.title,
-      appleId: podcast.appleId,
-      rssFeedUrl: podcast.rssFeedUrl,
-    } satisfies typeof schema.podcastsTable.$inferInsert)
-    .returning()
-
-  return savedPodcast
-}
-
-export async function saveEpisodes(podcastId: number, episodes: Omit<SharedEpisodeFields, "">[]) {
-  const savedEpisodes = await drizzleClient.insert(schema.episodesTable).values(
-    episodes.map((episode) => {
-      return {
-        ...episode,
-        id: generateEpisodeId(podcastId, episode.publishedAt),
-        rssId: generateRssId(podcastId, episode.rssId),
-        podcastId,
-      } satisfies typeof schema.episodesTable.$inferInsert
-    }),
-  )
-
-  return savedEpisodes
-}
 
 async function savePodcastAndEpisodes(
   podcast: SharedPodcastFields,
-  episodes: Omit<SharedEpisodeFields, "">[],
+  episodes: SharedEpisodeFields[],
 ) {
-  const savedPodcast = await savePodcast(podcast)
-  const savedEpisodes = await saveEpisodes(savedPodcast.id, episodes)
+  return await drizzleClient.transaction(async (tx) => {
+    console.log("🚀 Starting transaction to save podcast:", podcast.title)
 
-  return {
-    savedPodcast,
-    savedEpisodes,
-  }
+    try {
+      const [savedPodcast] = await tx
+        .insert(schema.podcastsTable)
+        .values({
+          id: podcast.appleId,
+          author: podcast.author,
+          description: podcast.description,
+          image30: podcast.image30,
+          image60: podcast.image60,
+          image100: podcast.image100,
+          image600: podcast.image600,
+          title: podcast.title,
+          appleId: podcast.appleId,
+          rssFeedUrl: podcast.rssFeedUrl,
+        } satisfies typeof schema.podcastsTable.$inferInsert)
+        .returning()
+
+      console.log("✅ Podcast saved successfully:", savedPodcast.id)
+
+      for (const episode of episodes) {
+        const rssId = generateRssId(savedPodcast.id, episode.rssId)
+        const id = generateEpisodeId(
+          savedPodcast.id,
+          episode.publishedAt,
+          episode.rssId || undefined,
+        )
+
+        console.log("🚀 ~ savePodcastAndEpisodes ~ id:", id)
+        console.log("🚀 ~ savePodcastAndEpisodes ~ rssId:", rssId)
+
+        await tx
+          .insert(schema.episodesTable)
+          .values({
+            ...episode,
+            rssId,
+            episodeRssId: episode.rssId,
+            podcastId: savedPodcast.id,
+          } satisfies typeof schema.episodesTable.$inferInsert)
+          .onConflictDoUpdate({
+            target: [schema.episodesTable.rssId],
+            set: {
+              title: episode.title,
+              description: episode.description,
+              image30: episode.image30,
+              image60: episode.image60,
+              image100: episode.image100,
+              image600: episode.image600,
+              publishedAt: episode.publishedAt,
+              duration: episode.duration,
+              downloadUrl: episode.downloadUrl,
+            },
+          })
+      }
+
+      console.log("✅ Episodes saved successfully:", episodes.length, "episodes")
+
+      return {
+        savedPodcast,
+        savedEpisodes: episodes.length,
+      }
+    } catch (error) {
+      console.error("❌ Transaction failed:", error)
+      throw error
+    }
+  })
 }
 
 export function useSavePodcastMutation({ podcastId }: { podcastId: string }) {
@@ -63,7 +88,9 @@ export function useSavePodcastMutation({ podcastId }: { podcastId: string }) {
   return useMutation({
     mutationKey: ["savePodcast", podcastId],
     mutationFn: async ({ podcast }: { podcast: SharedPodcastFields }) => {
+      // Fetch Feed + validate Podcast
       const res = await fetchAndValidateRssFeed(podcast.rssFeedUrl)
+      // Validate Episodes
       const rssEpisodes = validateRSSEpisodes(res).map((episode) => ({
         ...episode,
         podcastId: podcast.appleId,
@@ -73,9 +100,7 @@ export function useSavePodcastMutation({ podcastId }: { podcastId: string }) {
     },
     onError: (err) => {
       console.error("Failed to save podcast:", podcastId)
-      if (false) {
-        console.log("🚀 ~ useSavePodcastMutation ~ err:", err)
-      }
+      console.log("🚀 ~ useSavePodcastMutation ~ err:", err)
       PURE_TOASTS.error({ message: "Failed to save" })
     },
     onSuccess: ({ savedPodcast, savedEpisodes }) => {

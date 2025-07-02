@@ -101,11 +101,18 @@ const RssFeedSchema = z.object({
 export type RssFeed = z.infer<typeof RssFeedSchema>
 export type RssChannel = z.infer<typeof RssChannelSchema>
 export type RssItem = z.infer<typeof RssItemSchema>
+export const DEBUG_RSS_FEED = false
 
 export function validateRSSEpisodes(data: RssFeed) {
   try {
     const episodes = Array.isArray(data.rss.channel.item)
       ? data.rss.channel.item.map((episode) => {
+          if (DEBUG_RSS_FEED) {
+            console.log(
+              "🚀 ~ ?data.rss.channel.item.map ~ episode:",
+              JSON.stringify(episode, null, 2),
+            )
+          }
           try {
             return FromRSSItemToLocalEpisodeSchema.parse(episode)
           } catch (error) {
@@ -127,6 +134,10 @@ export function validateRSSEpisodes(data: RssFeed) {
 }
 
 export async function fetchAndValidateRssFeed(feedUrl: string | null): Promise<RssFeed> {
+  if (DEBUG_RSS_FEED) {
+    console.log("🚀 ~ fetchAndValidateRssFeed ~ feedUrl:", feedUrl)
+  }
+
   if (!feedUrl) {
     throw new Error("Feed URL is required")
   }
@@ -150,6 +161,7 @@ export async function fetchAndValidateRssFeed(feedUrl: string | null): Promise<R
   })
 
   const parsedData = parser.parse(xmlText)
+  console.log("🚀 ~ fetchAndValidateRssFeed ~ parsedData:", parsedData)
 
   try {
     const validatedData = RssFeedSchema.parse(parsedData)

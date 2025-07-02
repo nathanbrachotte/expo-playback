@@ -36,6 +36,8 @@ export const episodesTable = sqliteTable(
     podcastId: integer("podcast_id")
       .notNull()
       .references(() => podcastsTable.id),
+    // Really depends on the RSS feed. See RssItemSchema for more details.
+    episodeRssId: text("episode_rss_id").unique(),
     title: text("title").notNull(),
     description: text("description").notNull(),
     image30: text("image_30"),

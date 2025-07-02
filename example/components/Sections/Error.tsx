@@ -1,7 +1,7 @@
 import { H5, Paragraph } from "tamagui"
 
 import { PURECAST_EMAIL } from "../../utils/constants"
-import { PureLayout } from "../Layout"
+import { PLayout } from "../Layout"
 import { PureYStack } from "../PureStack"
 
 export function ErrorSection() {
@@ -17,8 +17,8 @@ export function ErrorSection() {
 
 export function ErrorScreen({ header }: { header?: React.ReactNode }) {
   return (
-    <PureLayout header={header}>
+    <PLayout.Screen header={header}>
       <ErrorSection />
-    </PureLayout>
+    </PLayout.Screen>
   )
 }

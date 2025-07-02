@@ -86,6 +86,12 @@ cd ios && pod install && cd .. # install pods
 - [ ] Android
 - [ ]
 
+## Known issues
+
+- [ ] KFC Radio podcast # of episode goes from 934 episodes on itunes to 909 once downloaded form RSS feed. Itunes might be wrong, or something goes wrong for these episodes.
+- [ ] When saving a podcast and its episodes and an episode contains bad data, the podcast is still saved although we're in a transaction.
+- [ ]
+
 ## Resources
 
 ### SponsorBlock

@@ -5,6 +5,7 @@ import { useInfiniteAllEpisodesQuery } from "../clients/local.queries"
 import { useFetchNewEpisodesMutation } from "../clients/rss.queries"
 import { PLayout } from "../components/Layout"
 import { PureFlatList } from "../components/PureFlatList"
+import { EmptySection } from "../components/Sections/Empty"
 
 export function LatestEpisodesScreen() {
   const {
@@ -23,7 +24,6 @@ export function LatestEpisodesScreen() {
 
   const handleRefresh = async () => {
     try {
-      console.log("🚀 ~ handleRefresh ~ fetchNewEpisodes:")
       // First fetch new episodes from RSS feeds
       await fetchNewEpisodes()
       // Then refetch local data to show the updated episodes
@@ -33,18 +33,24 @@ export function LatestEpisodesScreen() {
     }
   }
 
+  const hasData = (data?.pages.flat().length ?? -1) > 0
+
   return (
     <PLayout.Screen header={<H3>Latest episodes</H3>}>
-      <PureFlatList
-        data={data?.pages.flat()}
-        error={error}
-        isLoading={isLoading}
-        fetchNextPage={fetchNextPage}
-        hasNextPage={hasNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-        onRefresh={handleRefresh}
-        isRefreshing={isFetchingNewEpisodes || isRefetching}
-      />
+      {hasData ? (
+        <PureFlatList
+          data={data?.pages.flat()}
+          error={error}
+          isLoading={isLoading}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          onRefresh={handleRefresh}
+          isRefreshing={isFetchingNewEpisodes || isRefetching}
+        />
+      ) : (
+        <EmptySection />
+      )}
     </PLayout.Screen>
   )
 }

@@ -5,8 +5,12 @@ export type LocalEpisode = typeof episodesTable.$inferSelect
 export type LocalEpisodeInsert = typeof episodesTable.$inferInsert
 
 // This is to be able to consume both fetched and local episodes in the app
-export type SharedEpisodeFields = Omit<LocalEpisode, "createdAt" | "updatedAt" | "id">
-export type RSSFeedEpisodeFields = Omit<SharedEpisodeFields, "podcastId">
+export type SharedEpisodeFields = Omit<
+  LocalEpisode,
+  "createdAt" | "updatedAt" | "id" | "episodeRssId"
+>
+// PodcastId and EpisodeRssId are not part of the RSS feed, they are added later.
+export type RSSFeedEpisodeFields = Omit<SharedEpisodeFields, "podcastId" | "episodeRssId">
 
 export type LocalPodcast = typeof podcastsTable.$inferSelect
 export type LocalPodcastInsert = typeof podcastsTable.$inferInsert
