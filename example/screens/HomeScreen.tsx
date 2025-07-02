@@ -102,16 +102,16 @@ export function HomeScreen() {
           <Spinner size="small" color="$color10" />
           <Paragraph color="$color10">Fetching new episodes...</Paragraph>
         </PureXStack>
-      ) : (
-        /**
-         * TODO: Make this automatically fetch new episodes when the app is opened once the performances are acceptable
-         */
+      ) : /**
+       * TODO: Make this automatically fetch new episodes when the app is opened once the performances are acceptable
+       */
+      hasSavedPodcasts ? (
         <PureYStack centered mt="$2" mb="$2" gap="$2">
           <Button onPress={handleRefetchNewEpisodes} icon={RefreshCw}>
             <Button.Text>Fetch new episodes</Button.Text>
           </Button>
         </PureYStack>
-      )}
+      ) : null}
 
       <PureYStack flex={1}>
         {hasSavedPodcasts ? (
