@@ -86,6 +86,8 @@ cd ios && pod install && cd .. # install pods
 - [ ] Auto-download last 3 episodes of each podcast?
 - [x] Instantly play episode even when not downloaded (changed to start downloading and then playing with one button press)
 - [x] Remove all downloads when podcast is removed from library
+- [ ] Pick up last progress when a episode is played
+- [ ] Sync progress in list with current progress
 
 #### Future Erik
 
