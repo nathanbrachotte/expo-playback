@@ -31,6 +31,10 @@ export function getPlayerState(): PlayerState {
   return ExpoPlaybackModule.getState()
 }
 
+export function findNextUnfinishedEpisodeId(episodeId: number): number {
+  return ExpoPlaybackModule.findNextUnfinishedEpisodeId(episodeId)
+}
+
 export function stop(): void {
   ExpoPlaybackModule.stop()
 }

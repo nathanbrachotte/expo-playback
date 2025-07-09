@@ -74,7 +74,7 @@ cd ios && pod install && cd .. # install pods
 
 ### Erik
 
-- [ ] Auto-play next episode in background
+- [x] Auto-play next episode in background
 - [x] Fix scenario where download is stopped
 - [x] Remove download feature
 - [x] Use duration from metadata once file is downloaded

@@ -63,6 +63,7 @@ declare class ExpoPlaybackModule extends NativeModule<{
   skip(seconds: number): void
   cleanup(): void
   getState(): PlayerState
+  findNextUnfinishedEpisodeId(episodeId: number): number
   deleteEpisodeAudioFileAndMetadata(episodeId: number): Promise<void>
 }
 

@@ -92,6 +92,10 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             return self.getState()
         }
 
+        Function("findNextUnfinishedEpisodeId") { (episodeId: Int64) in
+            return self.findNextUnfinishedEpisodeId(currentEpisodeId: episodeId)
+        }
+
         Function("startBackgroundDownload") { (episodeId: Int64) in
             startBackgroundDownload(episodeId: episodeId)
         }
@@ -194,7 +198,54 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
 
     @objc func playerDidFinishPlaying(note: NSNotification) {
         print("episode finished ", self.currentEpisodeId!)
-        self.currentEpisodeId = nil
+        if let nextEpisodeId = findNextUnfinishedEpisodeId(currentEpisodeId: self.currentEpisodeId!) {
+            do {
+                try self.play(episodeId: nextEpisodeId)
+                return
+            } catch {
+                // nothing to do
+            }
+        }
+        self.cleanup()
+    }
+
+    private func findNextUnfinishedEpisodeId(currentEpisodeId: Int64) -> Int64? {
+        guard let currentEpisode = episodeRepo.getEpisodeById(episodeIdValue: currentEpisodeId) else {
+            return nil
+        }
+        
+        // Get all episodes for the same podcast
+        let podcastEpisodes = episodeRepo.getEpisodesByPodcastId(podcastIdValue: currentEpisode.podcastId)
+        
+        // Sort episodes by pubDate descending (most recent first)
+        let sortedEpisodes = podcastEpisodes.sorted { (episode1: Episode, episode2: Episode) in
+            episode1.publishedAt > episode2.publishedAt
+        }
+        
+        // Find current episode index
+        guard let currentIndex = sortedEpisodes.firstIndex(where: { $0.id == currentEpisodeId }) else {
+            return nil
+        }
+        
+        // First try to find a newer unfinished episode
+        for episode in sortedEpisodes[..<currentIndex] {
+            if let metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episode.id),
+               !metadata.isFinished,
+               metadata.downloadProgress == 100 { // Only consider downloaded episodes
+                return episode.id
+            }
+        }
+        
+        // If no newer episodes, look for older unfinished episodes
+        for episode in sortedEpisodes[(currentIndex + 1)...] {
+            if let metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episode.id),
+               !metadata.isFinished,
+               metadata.downloadProgress == 100 { // Only consider downloaded episodes
+                return episode.id
+            }
+        }
+        
+        return nil
     }
 
     enum PlaybackError: LocalizedError {
