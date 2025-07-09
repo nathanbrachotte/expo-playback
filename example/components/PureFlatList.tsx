@@ -7,7 +7,7 @@ import { ErrorSection } from "./Sections/Error"
 import { LoadingSection } from "./Sections/Loading"
 import { SECTION_PADDING_VALUE } from "./Sections/PureSection"
 import { getEpisodeStateFromMetadata } from "../utils/metadata.utils"
-import { NewEpisodeCard } from "./episode"
+import { EpisodeCard } from "./episode"
 import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../types/db.types"
 
 type EpisodeWithPodcast = {
@@ -118,7 +118,7 @@ export function PureFlatList({
           : null
 
         return (
-          <NewEpisodeCard
+          <EpisodeCard
             episode={item.episode}
             podcast={item.podcast}
             prettyMetadata={prettyMetadata}

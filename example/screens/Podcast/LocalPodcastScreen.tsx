@@ -15,7 +15,7 @@ import { PLayout } from "../../components/Layout"
 import { PureXStack, PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { getEpisodeStateFromMetadata } from "../../utils/metadata.utils"
-import { NewEpisodeCard } from "../../components/episode"
+import { EpisodeCard } from "../../components/episode"
 
 export function LocalPodcastScreen({ id }: { id: string }) {
   const { data: localPodcast, isLoading: isLocalLoading } = useGetLocalPodcastQuery(id)
@@ -97,7 +97,7 @@ export function LocalEpisodesSection({ id }: { id: string }) {
           : null
 
         return (
-          <NewEpisodeCard
+          <EpisodeCard
             episode={episode}
             podcast={localPodcast}
             prettyMetadata={prettyMetadata}

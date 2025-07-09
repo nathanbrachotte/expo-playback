@@ -34,9 +34,7 @@ cd ios && pod install && cd .. # install pods
 - [x] When removing podcast, must remove episode and episodeMetadata too
 - [x] Finish Downloaded / InProgress screens
 - [x] Make scrollbar light
-
   - [x] Abstract EpisodeCard better so it's easily reusable around the app
-
 - [x] Update episode id to be podcastId-creationDate so we can always have the same ids for episodes used in backend
 - [x] Fix starting playing always tries to download
 - [x] Fix padding of EpisodeScreen's description scrollview
@@ -47,19 +45,27 @@ cd ios && pod install && cd .. # install pods
 - [x] Update weird transparent gradient
 - [x] Make "play" button also show "pause" if actively playing
   - [x] Update pause button UI
-- [ ] Add logic to refetch latest episodes of each podcast on app mount
+- [x] Add logic to refetch latest episodes of each podcast on app mount
   - [x] Pull to refresh on LatestEpisodeScreen
-    - [ ] Investigate some duplicated episodes
-- [ ] Live updates (when something updates on native side, reflect it on RN)
+    - [x] Investigate some duplicated episodes
+- [x] Live updates (when something updates on native side, reflect it on RN)
 - [x] Action sheet on Episode Screen
-- [ ] Build / Send to AppStore
-- [ ] Have a download and a play button even if the episode is not downloaded
+- [x] Have a download and a play button even if the episode is not downloaded
 - [ ] Why are search not case insensitive?
 - [ ] Use Flashlist for long lists of episodes
 - [ ] Search & Add Podcasts issues
   - [ ] „Fest &“ also can’t find it maybe search issues with special chars
   - [ ] KFC Radio breaks
-- [ ]
+- [ ] Progress bar should show at least a little
+  - [ ] Use a progress bar that doesn't animate at all time
+- [ ] Players icons should be same width
+- [ ] Language support?
+
+#### Release strategy
+
+- [ ] Buy a bunch of reddit accounts
+- [ ] Figure out app store keywords
+- [ ] Build / Send to AppStore
 
 #### Future N8
 

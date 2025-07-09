@@ -10,7 +10,7 @@ import { PLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { SECTION_PADDING_VALUE } from "../../components/Sections/PureSection"
-import { NewEpisodeCard } from "../../components/episode"
+import { EpisodeCard } from "../../components/episode"
 
 const LIMIT_ITUNES_INITIAL_FETCH = 15
 
@@ -87,7 +87,7 @@ export function RemoteEpisodesSection({ id }: { id: string }) {
       data={episodesWithPodcastId}
       renderItem={({ item }) => {
         return (
-          <NewEpisodeCard
+          <EpisodeCard
             cardProps={{
               opacity: 0.5,
               hoverStyle: { scale: 1 },

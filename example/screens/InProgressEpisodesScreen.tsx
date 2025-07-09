@@ -9,7 +9,7 @@ import { ErrorScreen } from "../components/Sections/Error"
 import { LoadingScreen } from "../components/Sections/Loading"
 import { getEpisodeStateFromMetadata } from "../utils/metadata.utils"
 import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
-import { NewEpisodeCard } from "../components/episode"
+import { EpisodeCard } from "../components/episode"
 
 export function Header() {
   return <H3>In Progress</H3>
@@ -67,7 +67,7 @@ export function InProgressEpisodesScreen() {
             : null
 
           return (
-            <NewEpisodeCard
+            <EpisodeCard
               episode={episode}
               podcast={podcast}
               prettyMetadata={prettyMetadata}

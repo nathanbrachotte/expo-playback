@@ -216,7 +216,7 @@ export type EpisodeCardProps = {
   cardProps?: CardProps
 }
 
-export const NewEpisodeCard = ({
+export const EpisodeCard = ({
   episode,
   podcast,
   prettyMetadata,
