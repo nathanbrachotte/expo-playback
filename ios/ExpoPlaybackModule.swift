@@ -432,6 +432,10 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
 
         self.player = AVPlayer(playerItem: playerItem)
 
+        if metadata.playback > 0 {
+            self.player?.seek(to: CMTime(seconds: Double(metadata.playback), preferredTimescale: CMTimeScale(NSEC_PER_SEC)))
+        }
+
         // Load duration asynchronously
         Task {
             do {
