@@ -87,7 +87,11 @@ cd ios && pod install && cd .. # install pods
 - [x] Instantly play episode even when not downloaded (changed to start downloading and then playing with one button press)
 - [x] Remove all downloads when podcast is removed from library
 - [x] Pick up last progress when a episode is played
-- [ ] Sync progress in list with current progress
+- [x] Sync progress in list with current progress
+- [ ] Mark as finished button
+- [ ] Live updates on delete episode
+- [ ] Live updates on first playing an episode after download in list
+- [ ] Live updates on progress for time left on list
 
 #### Future Erik
 

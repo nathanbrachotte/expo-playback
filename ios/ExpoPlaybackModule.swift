@@ -412,12 +412,13 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         guard let podcast = podcastRepo.getPodcastById(podcastId: episode.podcastId) else {
             throw Exception(name: "podcast_not_found", description: "podcast_not_found")
         }
-
-        guard
-            let episodeFileURL = try? EpisodeDownloader.getEpisodeFileURL(
-                relativeFilePath: metadata.relativeFilePath!)
+        guard let relativeFilePath = metadata.relativeFilePath else {
+            throw Exception(name: "episode_not_downloaded", description: "episode_not_downloaded")
+        }
+        guard let episodeFileURL = try? EpisodeDownloader.getEpisodeFileURL(
+            relativeFilePath: relativeFilePath)
         else {
-            throw Exception(name: "podcast_not_downloaded", description: "podcast_not_downloaded")
+            throw Exception(name: "episode_not_downloaded", description: "episode_not_downloaded")
         }
 
         let playerItem = AVPlayerItem(url: episodeFileURL)
@@ -433,7 +434,16 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         self.player = AVPlayer(playerItem: playerItem)
 
         if metadata.playback > 0 {
-            self.player?.seek(to: CMTime(seconds: Double(metadata.playback), preferredTimescale: CMTimeScale(NSEC_PER_SEC)))
+            // Check if there are less than 10 seconds left and start from beginning if so
+            let duration = Double(metadata.duration)
+            let playback = Double(metadata.playback)
+            let timeRemaining = duration - playback
+        
+            if timeRemaining < 30 {
+                self.player?.seek(to: CMTime(seconds: 0, preferredTimescale: CMTimeScale(NSEC_PER_SEC)))
+            } else {
+                self.player?.seek(to: CMTime(seconds: Double(metadata.playback), preferredTimescale: CMTimeScale(NSEC_PER_SEC)))
+            }
         }
 
         // Load duration asynchronously
@@ -507,19 +517,24 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             if var metadata = metadataRepo.getMetadataForEpisode(
                 episodeIdValue: self.currentEpisodeId!)
             {
+                var isFinishedChanged = false
                 if !metadata.isFinished {
                     let progress = (currentTime / duration) * 100
                     if progress >= 95 {
                         metadata.isFinished = true
+                        isFinishedChanged = true
                     }
                 }
 
-                metadata.playback = Int64(currentTime)
+                metadata.playback = Int64(currentTime * 1000)
                 metadataRepo.createOrUpdateMetadata(metadata)
+                if isFinishedChanged {
+                    self.sendCoreEpisodeMetadataUpdate(episodeId: self.currentEpisodeId!)
+                }
             }
 
             self.sendPlayerStateUpdate()
-            self.sendEpisodeMetadataUpdatePlayback(episodeId: self.currentEpisodeId!, playback: currentTime)
+            self.sendEpisodeMetadataUpdatePlayback(episodeId: self.currentEpisodeId!, playback: currentTime * 1000)
         }
 
         setupRemoteTransportControls()

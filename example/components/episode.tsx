@@ -1,5 +1,5 @@
 import { Check, CheckCircle2, Minus } from "@tamagui/lucide-icons"
-import React, { ComponentProps, useState } from "react"
+import React, { ComponentProps, useEffect, useState } from "react"
 import { getVariable, Paragraph, useTheme } from "tamagui"
 import { formatDate, formatDuration, formatRemainingTime } from "../utils/time.utils"
 import { PureXStack, PureYStack } from "./PureStack"
@@ -17,7 +17,12 @@ import { ActionSheet, ActionSheetAction } from "./ActionSheet"
 import { PureImage } from "./image"
 import { getImageFromEntities } from "../utils/image.utils"
 import { EntityImage } from "../types/db.types"
-import { PrettyMetadata } from "../utils/metadata.utils"
+import {
+  getEpisodeStateFromMetadata,
+  getProgressPercentageFromMetadata,
+  PrettyMetadata,
+} from "../utils/metadata.utils"
+import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
 
 type BaseTitleProps = {
   children: React.ReactNode
@@ -211,7 +216,7 @@ export type EpisodeCardProps = {
     id: number
     title: string
   } & EntityImage
-  prettyMetadata?: Optional<PrettyMetadata>
+  initialPrettyMetadata?: Optional<PrettyMetadata>
   onCardPress?: VoidFunction
   cardProps?: CardProps
 }
@@ -219,11 +224,21 @@ export type EpisodeCardProps = {
 export const EpisodeCard = ({
   episode,
   podcast,
-  prettyMetadata,
+  initialPrettyMetadata,
   onCardPress,
   cardProps,
 }: EpisodeCardProps) => {
   const image = getImageFromEntities(episode, podcast)
+  const { data: metadata } = useGetLiveLocalEpisodeMetadataQuery(episode.id ?? 0)
+
+  const [prettyMetadata, setPrettyMetadata] = useState(initialPrettyMetadata)
+
+  useEffect(() => {
+    if (metadata) {
+      setPrettyMetadata(getEpisodeStateFromMetadata(metadata.episodeMetadata))
+    }
+  }, [metadata])
+
   const { isFinished, isDownloaded, progress, isInProgress, progressPercentage, duration } =
     prettyMetadata || {}
 
@@ -276,15 +291,44 @@ export const EpisodeCard = ({
             <EpisodeActionSheet episodeId={episode.id} isDownloaded={isDownloaded} />
           </PureXStack>
           {isInProgress ? (
-            <PureXStack flex={1} px="$4" w="100%">
-              <Progress value={progressPercentage} size="$1" bg="$color1" w="100%">
-                <Progress.Indicator animation="quick" bg="$color10" />
-              </Progress>
-            </PureXStack>
+            <EpisodeCardProgress episodeId={episode.id} initialProgress={progressPercentage} />
           ) : null}
           {episode.id ? <PlayButtonsSection episodeId={episode.id} /> : null}
         </Card.Footer>
       </PureYStack>
     </Card>
+  )
+}
+
+const EpisodeCardProgress = ({
+  episodeId,
+  initialProgress = 0,
+}: {
+  episodeId: number | undefined
+  initialProgress?: number
+}) => {
+  const [progress, setProgress] = useState(initialProgress)
+
+  const { data: metadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId ?? 0, {
+    playback: true,
+    downloadProgress: false,
+  })
+
+  useEffect(() => {
+    if (metadata) {
+      setProgress(getProgressPercentageFromMetadata(metadata.episodeMetadata))
+    }
+  }, [metadata])
+
+  if (progress === 0) {
+    return null
+  }
+
+  return (
+    <PureXStack flex={1} px="$4" w="100%">
+      <Progress value={progress} size="$1" bg="$color1" w="100%">
+        <Progress.Indicator animation="quick" bg="$color10" />
+      </Progress>
+    </PureXStack>
   )
 }

@@ -92,15 +92,13 @@ export function LocalEpisodesSection({ id }: { id: string }) {
       renderItem={({ item }) => {
         const episode = item.episode
 
-        const prettyMetadata = item.episodeMetadata
-          ? getEpisodeStateFromMetadata(item.episodeMetadata)
-          : null
+        const prettyMetadata = getEpisodeStateFromMetadata(item.episodeMetadata)
 
         return (
           <EpisodeCard
             episode={episode}
             podcast={localPodcast}
-            prettyMetadata={prettyMetadata}
+            initialPrettyMetadata={prettyMetadata}
             onCardPress={() => {
               navigation.navigate("Episode", {
                 episodeId: String(episode.id),
