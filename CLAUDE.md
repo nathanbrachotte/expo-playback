@@ -70,6 +70,28 @@ cd backend && npm run db:migrate
 cd backend && npm run db:studio
 ```
 
+### PNPM Commands
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start the React Native app
+pnpm --filter example start
+
+# Run on iOS
+pnpm --filter example ios
+
+# Run on Android
+pnpm --filter example android
+
+# Type checking
+pnpm --filter example type:check
+
+# Generate database migrations
+pnpm --filter example db:generate
+```
+
 ## Architecture Overview
 
 ### React Native App Structure (`/example/`)

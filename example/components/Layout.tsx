@@ -1,7 +1,7 @@
-import { useNavigation, useNavigationState } from "@react-navigation/native"
+import { useNavigation } from "@react-navigation/native"
 import { ChevronLeft } from "@tamagui/lucide-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { Button, AnimatePresence, YStackProps } from "tamagui"
+import { Button, YStackProps } from "tamagui"
 
 import { PureXStack, PureYStack, PureYStackProps } from "./PureStack"
 
@@ -13,35 +13,32 @@ export function PureLayout({
   header,
   actionSection,
   containerStyle,
+  showBackButton = "auto",
 }: {
   children: React.ReactNode
   header?: React.ReactNode
   actionSection?: React.ReactNode
   containerStyle?: PureYStackProps
+  showBackButton?: boolean | "auto"
 }) {
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
-  // const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-  const isFirstScreen = useNavigationState((state) => state?.routes.length <= 1)
+
+  // Use React Navigation's built-in canGoBack() method for better reliability
+  const shouldShowBackButton = showBackButton === "auto" ? navigation.canGoBack() : showBackButton
 
   return (
     // SafeAreaView is not working, so we need to use YStack to get the insets, see: https://reactnative.dev/docs/safeareaview
     <PureYStack bg="$background" flex={1} pt={insets.top} pl={insets.left} pr={insets.right}>
       <PureXStack justifyContent="space-between" alignItems="center" px="$3" py="$2">
         <PureXStack flex={0.5} justifyContent="flex-start" minWidth={40}>
-          <AnimatePresence>
-            {!isFirstScreen && (
-              <Button
-                size="$3"
-                icon={<ChevronLeft size={20} />}
-                onPress={() => navigation.goBack()}
-                animation="quick"
-                enterStyle={{ opacity: 0 }}
-                exitStyle={{ opacity: 0 }}
-                opacity={1}
-              />
-            )}
-          </AnimatePresence>
+          {shouldShowBackButton && (
+            <Button
+              size="$3"
+              icon={<ChevronLeft size={20} />}
+              onPress={() => navigation.goBack()}
+            />
+          )}
         </PureXStack>
 
         <PureXStack flex={2} justifyContent="center" alignItems="center">
