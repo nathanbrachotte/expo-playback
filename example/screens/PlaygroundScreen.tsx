@@ -6,6 +6,7 @@ import { PureXStack, PureYStack } from "../components/PureStack"
 import { Minus, Plus } from "@tamagui/lucide-icons"
 import { GhostButton } from "../components/buttons"
 import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
+import { PureProgressBar } from "../components/PureProgressBar"
 
 export function PlaygroundScreen() {
   return (
@@ -54,6 +55,11 @@ export function PlaygroundScreen() {
             <GhostButton Icon={Minus} onPress={() => {}} />
           </PureXStack>
         </PureYStack>
+        <PureProgressBar value={50} />
+        <PureProgressBar value={50} animated />
+        <PureProgressBar value={80} />
+        <PureProgressBar value={100} />
+        <PureProgressBar value={120} />
       </PureScrollView>
     </PureLayout>
   )

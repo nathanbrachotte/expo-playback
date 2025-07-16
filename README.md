@@ -56,6 +56,8 @@ cd ios && pod install && cd .. # install pods
 - [ ] Search & Add Podcasts issues
   - [ ] „Fest &“ also can’t find it maybe search issues with special chars
   - [ ] KFC Radio breaks
+  - [ ] EKN Radio Network breaks
+  - [ ] Vastuullisuuden
 - [ ] Progress bar should show at least a little
   - [ ] Use a progress bar that doesn't animate at all time
 - [ ] Players icons should be same width

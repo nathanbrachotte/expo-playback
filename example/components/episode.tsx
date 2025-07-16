@@ -8,7 +8,7 @@ import RenderHtml from "react-native-render-html"
 import { useWindowDimensions } from "react-native"
 import { cleanHtmlText } from "../utils/text.utils"
 import { Ellipsis, Trash2, Copy } from "@tamagui/lucide-icons"
-import { Card, CardProps, Progress } from "tamagui"
+import { Card, CardProps } from "tamagui"
 import * as Clipboard from "expo-clipboard"
 import { useDeleteEpisodeMetadataAndAudioFileMutation } from "../clients/local.mutations"
 
@@ -23,6 +23,7 @@ import {
   PrettyMetadata,
 } from "../utils/metadata.utils"
 import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
+import { PureProgressBar } from "./PureProgressBar"
 
 type BaseTitleProps = {
   children: React.ReactNode
@@ -326,9 +327,7 @@ const EpisodeCardProgress = ({
 
   return (
     <PureXStack flex={1} px="$4" w="100%">
-      <Progress value={progress} size="$1" bg="$color1" w="100%">
-        <Progress.Indicator animation="quick" bg="$color10" />
-      </Progress>
+      <PureProgressBar value={progress} height={4} />
     </PureXStack>
   )
 }
