@@ -89,6 +89,7 @@ export function PodcastSearchScreen() {
           {isSearching ? "" : "Search"}
         </Button>
       </XStack>
+      <Button onPress={() => setSearchQuery("Fest & Flauschig")}>Set Fest & Flauschig</Button>
 
       {error ? (
         <PureYStack centered flex={1}>

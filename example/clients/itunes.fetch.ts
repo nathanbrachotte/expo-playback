@@ -2,6 +2,7 @@ import { ToLocalPodcastSchema } from "./schemas"
 import { AppleEpisodeResponse, ApplePodcastResponse } from "../types/purecast.types"
 import { EPISODES_RESPONSE_MOCK, PODCASTS_SEARCH_RESPONSE_MOCK } from "./itunes.mock"
 import { BooleanFilter } from "../utils/types.utils"
+import { getDeviceCountryCode } from "../utils/locale.utils"
 
 /**
  * This API absolutely sucks but is free.
@@ -29,19 +30,37 @@ export async function searchPodcast(query: string | null) {
       }),
     }
   }
-  const encodedQuery = encodeURIComponent(query.trim())
+
+  // Clean and prepare the query for better search results
+  const cleanedQuery = query
+    .trim()
+    .replace(/\s+/g, " ") // Normalize whitespace
+    .replace(/[^\w\s.-]/g, "") // Remove special characters except -, and .
+    .trim()
+
+  const deviceCountry = getDeviceCountryCode()
+  console.log("🚀 ~ searchPodcast ~ deviceCountry:", deviceCountry)
+
   const queryParams = new URLSearchParams({
     media: "podcast",
-    term: encodedQuery,
-    // country: "FR", // ?
+    term: cleanedQuery,
+    // limit: "",
+    country: deviceCountry,
   })
+
+  console.log(`🔍 Searching for: "${cleanedQuery}" in country: ${deviceCountry}`)
+
   const response = await fetch(`${ITUNES_API_BASE_URL}/search?${queryParams.toString()}`)
 
   if (!response.ok) {
+    const errorText = await response.text()
+    console.error(`iTunes API request failed with status ${response.status}:`, errorText)
     throw new Error(`API request failed with status ${response.status}`)
   }
 
   const data = (await response.json()) as ApplePodcastResponse
+
+  console.log(`🔍 Search results: ${data.resultCount} podcasts found`)
 
   return {
     resultCount: data.resultCount,
@@ -82,9 +101,12 @@ export async function fetchPodcastAndEpisodes({
     return EPISODES_RESPONSE_MOCK
   }
 
+  const deviceCountry = getDeviceCountryCode()
+  console.log("🚀 ~ deviceCountry:", deviceCountry)
+
   const queryParams = new URLSearchParams({
     id: podcastId.toString(),
-    // country: "DE", //?
+    country: deviceCountry,
     media: "podcast",
     entity: "podcastEpisode", // Remove this and it only returns the podcast
     limit: limit.toString(),
