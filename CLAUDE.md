@@ -169,6 +169,7 @@ pnpm --filter example db:generate
 - Use early return pattern for cleaner code
 - Implement IoC (Inversion of Control) for reusable components
 - Use TanStack Query for all data fetching (queries and mutations)
+- Always prioritize using the IoC (Inversion of Control) pattern when writing components
 
 ### Navigation
 

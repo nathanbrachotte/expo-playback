@@ -220,6 +220,10 @@ export type EpisodeCardProps = {
   initialPrettyMetadata?: Optional<PrettyMetadata>
   onCardPress?: VoidFunction
   cardProps?: CardProps
+  imageProps?: {
+    lazy?: boolean
+    priority?: "low" | "normal" | "high"
+  }
 }
 
 export const EpisodeCard = ({
@@ -228,6 +232,7 @@ export const EpisodeCard = ({
   initialPrettyMetadata,
   onCardPress,
   cardProps,
+  imageProps,
 }: EpisodeCardProps) => {
   const image = getImageFromEntities(episode, podcast)
   const { data: metadata } = useGetLiveLocalEpisodeMetadataQuery(episode.id ?? 0)
@@ -259,7 +264,9 @@ export const EpisodeCard = ({
     >
       <PureYStack flex={1}>
         <PureXStack flex={1} gap="$2">
-          {image && <PureImage uri={image} width="$5" height="$5" />}
+          {image ? (
+            <PureImage uri={image} width="$5" height="$5" priority={imageProps?.priority} />
+          ) : null}
           <PureYStack flex={1}>
             {/* Podcast title, in small */}
             {podcast?.title ? (

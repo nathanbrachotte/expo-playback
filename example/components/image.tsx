@@ -8,6 +8,7 @@ type FastImageProps = {
   onLoadEnd?: () => void
   onError?: () => void
   resizeMode?: "cover" | "contain" | "stretch" | "center"
+  priority?: "low" | "normal" | "high"
 } & Omit<SquareProps, "children">
 
 const StyledFastImage = styled(FastImage, {
@@ -21,6 +22,7 @@ export function PureImage({
   onError,
   resizeMode = "cover",
   borderRadius = "$3",
+  priority = "normal",
   ...props
 }: FastImageProps) {
   const [isLoading, setIsLoading] = useState(true)
@@ -59,7 +61,11 @@ export function PureImage({
           height: "100%",
           borderRadius: borderRadiusNumber,
         }}
-        source={{ uri }}
+        source={{
+          uri,
+          priority: FastImage.priority[priority],
+          cache: FastImage.cacheControl.immutable,
+        }}
         onLoadEnd={() => {
           setIsLoading(false)
           onLoadEnd?.()

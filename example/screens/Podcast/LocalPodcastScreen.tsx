@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native"
 import { Minus, RefreshCw } from "@tamagui/lucide-icons"
-import React from "react"
-import { FlatList } from "react-native"
+import React, { useMemo } from "react"
+import { FlashList } from "@shopify/flash-list"
 import { Paragraph, Spinner, Button } from "tamagui"
 
 import { AboutSection } from "./shared"
@@ -74,6 +74,46 @@ export function LocalEpisodesSection({ id }: { id: string }) {
   const { data: localEpisodes, isLoading: isLocalEpisodesLoading } =
     useGetLocalEpisodesByPodcastIdQuery(id)
 
+  const flashListData = useMemo(() => {
+    if (!localEpisodes || !localPodcast) {
+      return []
+    }
+
+    return localEpisodes.map((episode) => ({ ...episode, podcastId: localPodcast.appleId }))
+  }, [localEpisodes, localPodcast])
+
+  const renderItem = useMemo(() => {
+    return ({ item }: { item: (typeof flashListData)[0] }) => {
+      const episode = item.episode
+
+      const prettyMetadata = item.episodeMetadata
+        ? getEpisodeStateFromMetadata(item.episodeMetadata)
+        : null
+
+      if (!localPodcast) {
+        return null
+      }
+
+      return (
+        <EpisodeCard
+          episode={episode}
+          podcast={localPodcast}
+          initialPrettyMetadata={prettyMetadata}
+          onCardPress={() => {
+            navigation.navigate("Episode", {
+              episodeId: String(episode.id),
+              podcastId: String(episode.podcastId),
+            })
+          }}
+          imageProps={{
+            lazy: true,
+            priority: "low",
+          }}
+        />
+      )
+    }
+  }, [localPodcast, navigation])
+
   if (isLocalEpisodesLoading || isLocalPodcastLoading || !localEpisodes || !localPodcast) {
     return (
       <PureYStack centered flex={1}>
@@ -83,31 +123,17 @@ export function LocalEpisodesSection({ id }: { id: string }) {
   }
 
   return (
-    <FlatList
-      indicatorStyle="white"
+    <FlashList
+      data={flashListData}
+      renderItem={renderItem}
+      estimatedItemSize={150} // Estimated height of EpisodeCard
       contentContainerStyle={{
         paddingHorizontal: 14,
       }}
-      data={localEpisodes.map((episode) => ({ ...episode, podcastId: localPodcast.appleId }))}
-      renderItem={({ item }) => {
-        const episode = item.episode
-
-        const prettyMetadata = getEpisodeStateFromMetadata(item.episodeMetadata)
-
-        return (
-          <EpisodeCard
-            episode={episode}
-            podcast={localPodcast}
-            initialPrettyMetadata={prettyMetadata}
-            onCardPress={() => {
-              navigation.navigate("Episode", {
-                episodeId: String(episode.id),
-                podcastId: String(episode.podcastId),
-              })
-            }}
-          />
-        )
-      }}
+      showsVerticalScrollIndicator
+      removeClippedSubviews
+      drawDistance={100}
+      keyExtractor={(item) => `episode-${item.episode.id}`}
     />
   )
 }
