@@ -51,11 +51,11 @@ cd ios && pod install && cd .. # install pods
 - [x] Live updates (when something updates on native side, reflect it on RN)
 - [x] Action sheet on Episode Screen
 - [x] Have a download and a play button even if the episode is not downloaded
-- [ ] Why are search not case insensitive?
-- [ ] Use Flashlist for long lists of episodes
+- [x] Why are search not case insensitive?
+- [x] Use Flashlist for long lists of episodes
 - [ ] Search & Add Podcasts issues
-  - [ ] „Fest &“ also can’t find it maybe search issues with special chars
-  - [ ] KFC Radio breaks
+  - [x] „Fest &“ also can’t find it maybe search issues with special chars
+  - [x] KFC Radio breaks
   - [ ] EKN Radio Network breaks
   - [ ] Vastuullisuuden
 - [ ] Progress bar should show at least a little
