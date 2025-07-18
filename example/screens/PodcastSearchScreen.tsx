@@ -5,11 +5,12 @@ import { useDebounceValue } from "usehooks-ts"
 import { FlatList } from "react-native"
 
 import { useSearchItunesPodcastsQuery } from "../clients/itunes.queries"
-import { useSavePodcastMutation } from "../clients/local.mutations"
+import { useRemovePodcastMutation, useSavePodcastMutation } from "../clients/local.mutations"
 import { PLayout } from "../components/Layout"
 import { PodcastCard } from "../components/PodcastCard"
 import { PureYStack } from "../components/PureStack"
 import { getImageFromEntity } from "../utils/image.utils"
+import { useGetLocalPodcastQuery } from "../clients/local.queries"
 
 const getRandomLetters = () => {
   const letters = "abcdefghijklmnopqrstuvwxyz"
@@ -134,6 +135,9 @@ function SearchResultCard({
     podcastId: entry.appleId.toString() || entry.title || entry.author,
   })
 
+  const { data: localPodcast } = useGetLocalPodcastQuery(entry.appleId.toString())
+  const { mutateAsync: deletePodcast, isPending: isDeleting } = useRemovePodcastMutation()
+
   if (!("appleId" in entry)) {
     console.warn(
       "🚀 ~ PodcastSearchScreen ~ data.map ~ Wrong shape result:",
@@ -151,12 +155,22 @@ function SearchResultCard({
       cover={getImageFromEntity(entry, "100")}
       Actions={
         <PureYStack centered>
-          <Button
-            circular
-            icon={isSaving ? () => <Spinner /> : () => <Plus size={16} />}
-            onPress={() => savePodcast({ podcast: { ...entry, isFollowed: false } })}
-            disabled={isSaving}
-          />
+          {!localPodcast ? (
+            <Button
+              circular
+              icon={isSaving ? () => <Spinner /> : () => <Plus size={16} />}
+              onPress={() => savePodcast({ podcast: { ...entry, isFollowed: false } })}
+              disabled={isSaving}
+            />
+          ) : null}
+          {localPodcast ? (
+            <Button
+              circular
+              icon={() => <X size={16} />}
+              onPress={() => deletePodcast(entry.appleId.toString())}
+              disabled={isDeleting}
+            />
+          ) : null}
         </PureYStack>
       }
     />

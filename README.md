@@ -62,6 +62,7 @@ cd ios && pod install && cd .. # install pods
   - [ ] Use a progress bar that doesn't animate at all time
 - [ ] Players icons should be same width
 - [ ] Language support?
+- [x] Search not showing adding podcasts - Plus
 
 #### Release strategy
 
