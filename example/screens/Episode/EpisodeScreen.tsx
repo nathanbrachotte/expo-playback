@@ -140,6 +140,7 @@ function EpisodeDumbScreen({
             <EpisodeActionSheet
               episodeId={episode.id}
               isDownloaded={prettyMetadata?.isDownloaded}
+              isFinished={prettyMetadata?.isFinished}
             />
             <PlayEpisodeButton episodeId={episode.id} episodeMetadata={episodeMetadata} />
           </PureXStack>

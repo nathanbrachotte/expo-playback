@@ -90,7 +90,7 @@ cd ios && pod install && cd .. # install pods
 - [x] Remove all downloads when podcast is removed from library
 - [x] Pick up last progress when a episode is played
 - [x] Sync progress in list with current progress
-- [ ] Mark as finished button
+- [x] Mark as finished button
 - [ ] Live updates on delete episode
 - [ ] Live updates on first playing an episode after download in list
 - [ ] Live updates on progress for time left on list

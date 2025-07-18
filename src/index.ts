@@ -59,6 +59,10 @@ export function addSkipSegmentListener(listener: (event: SkipSegmentEvent) => vo
   return ExpoPlaybackModule.addListener("onSkipSegmentReached", listener)
 }
 
+export function toggleIsFinished(episodeId: number): void {
+  ExpoPlaybackModule.toggleIsFinished(episodeId)
+}
+
 export function addEpisodeMetadataUpdateDownloadProgressListener(
   listener: (event: EpisodeMetadataUpdateDownloadProgressEvent) => void,
 ) {

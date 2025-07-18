@@ -99,6 +99,14 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         Function("startBackgroundDownload") { (episodeId: Int64) in
             startBackgroundDownload(episodeId: episodeId)
         }
+        
+        Function("toggleIsFinished") { (episodeId: Int64) in
+            if var metadata = self.metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId) {
+                metadata.isFinished = !metadata.isFinished
+                self.metadataRepo.createOrUpdateMetadata(metadata)
+                self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId)
+            }
+        }
 
         Function("pause") { () in
             self.pause()

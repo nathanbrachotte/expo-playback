@@ -1,5 +1,5 @@
 import { Check, CheckCircle2, Minus } from "@tamagui/lucide-icons"
-import React, { ComponentProps, useEffect, useState } from "react"
+import React, { ComponentProps, useEffect, useMemo, useState } from "react"
 import { getVariable, Paragraph, useTheme } from "tamagui"
 import { formatDate, formatDuration, formatRemainingTime } from "../utils/time.utils"
 import { PureXStack, PureYStack } from "./PureStack"
@@ -23,6 +23,7 @@ import {
   PrettyMetadata,
 } from "../utils/metadata.utils"
 import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
+import { toggleIsFinished } from "expo-playback"
 import { PureProgressBar } from "./PureProgressBar"
 
 type BaseTitleProps = {
@@ -136,14 +137,11 @@ export function DurationAndDateSection({
 export function EpisodeActionSheet({
   episodeId,
   isDownloaded,
-  onMarkAsFinished,
-  onForgetEpisodePress,
+  isFinished,
 }: {
   episodeId?: number
   isDownloaded?: boolean
-  onDelete?: VoidFunction
-  onMarkAsFinished?: VoidFunction
-  onForgetEpisodePress?: VoidFunction
+  isFinished?: boolean
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const deleteMetadataMutation = useDeleteEpisodeMetadataAndAudioFileMutation()
@@ -154,37 +152,45 @@ export function EpisodeActionSheet({
     }
   }
 
-  const actions: ActionSheetAction[] = [
-    {
-      label: "Mark as finished",
-      onPress: () => {},
-      Icon: Check,
-    },
-    {
-      label: "Forget episode",
-      onPress: deleteMetadataAndAudioFile,
-      Icon: Minus,
-    },
-  ]
-
-  if (__DEV__ && episodeId) {
-    actions.push({
-      label: "Copy episode ID",
-      onPress: async () => {
-        await Clipboard.setStringAsync(episodeId.toString())
+  const actions = useMemo<ActionSheetAction[]>(() => {
+    const newActions: ActionSheetAction[] = [
+      {
+        label: isFinished ? "Mark as unfinished" : "Mark as finished",
+        onPress: () => {
+          if (episodeId) {
+            toggleIsFinished(episodeId)
+          }
+        },
+        Icon: Check,
       },
-      Icon: Copy,
-    })
-  }
+      {
+        label: "Forget episode",
+        onPress: deleteMetadataAndAudioFile,
+        Icon: Minus,
+      },
+    ]
 
-  if (isDownloaded) {
-    actions.push({
-      label: "Delete download",
-      onPress: deleteMetadataAndAudioFile,
-      isDestructive: true,
-      Icon: <Trash2 color="$red10" />,
-    })
-  }
+    if (__DEV__ && episodeId) {
+      newActions.push({
+        label: "Copy episode ID",
+        onPress: async () => {
+          await Clipboard.setStringAsync(episodeId.toString())
+        },
+        Icon: Copy,
+      })
+    }
+
+    if (isDownloaded) {
+      newActions.push({
+        label: "Delete download",
+        onPress: deleteMetadataAndAudioFile,
+        isDestructive: true,
+        Icon: Trash2,
+      })
+    }
+
+    return newActions
+  }, [deleteMetadataAndAudioFile, episodeId, isDownloaded, isFinished])
 
   return (
     <>
@@ -296,7 +302,11 @@ export const EpisodeCard = ({
           <PureXStack centered gap="$2">
             {episode.id ? <MarkAsFinishedButton episodeId={episode.id} /> : null}
             {/* Menu */}
-            <EpisodeActionSheet episodeId={episode.id} isDownloaded={isDownloaded} />
+            <EpisodeActionSheet
+              episodeId={episode.id}
+              isDownloaded={isDownloaded}
+              isFinished={isFinished}
+            />
           </PureXStack>
           {isInProgress ? (
             <EpisodeCardProgress episodeId={episode.id} initialProgress={progressPercentage} />

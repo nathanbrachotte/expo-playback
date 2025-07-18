@@ -65,6 +65,7 @@ declare class ExpoPlaybackModule extends NativeModule<{
   getState(): PlayerState
   findNextUnfinishedEpisodeId(episodeId: number): number
   deleteEpisodeAudioFileAndMetadata(episodeId: number): Promise<void>
+  toggleIsFinished(episodeId: number): void
 }
 
 export default requireNativeModule<ExpoPlaybackModule>("ExpoPlayback")
