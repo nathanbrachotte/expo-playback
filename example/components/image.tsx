@@ -64,7 +64,6 @@ export function PureImage({
         source={{
           uri,
           priority: FastImage.priority[priority],
-          cache: FastImage.cacheControl.immutable,
         }}
         onLoadEnd={() => {
           setIsLoading(false)

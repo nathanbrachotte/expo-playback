@@ -5,7 +5,7 @@ import { Button, Slider, AnimatePresence, Sheet, H4, H6, Separator, Paragraph } 
 
 import { usePlayerContext } from "../../providers/PlayerProvider"
 import { formatPlayerTime, formatPlayerRemainingTimeFromDuration } from "../../utils/time.utils"
-import { getImageFromEntity } from "../../utils/image.utils"
+import { getImageFromEntities } from "../../utils/image.utils"
 import { DEVICE_WIDTH, FULL_PLAYER_IMAGE_SIZE } from "../../utils/constants"
 import { PureYStack, PureXStack } from "../PureStack"
 import { LargePlayerSection, SmallPlayerSection } from "./PlayerButtons"
@@ -81,9 +81,8 @@ function PlayerSheet({
   const { title: podcastTitle } = activeEpisode?.podcast ?? {}
   const insets = useSafeAreaInsets()
 
-  const episodeImage = getImageFromEntity(activeEpisode?.episode ?? {}, "100")
-  const podcastImage = getImageFromEntity(activeEpisode?.podcast ?? {}, "100")
-  const imageSource = episodeImage ?? podcastImage ?? null
+  const imageSource = getImageFromEntities(activeEpisode?.episode, activeEpisode?.podcast, "600")
+
   // Convert duration from milliseconds to seconds for display
   const totalDurationSeconds = (activeEpisode?.episode?.duration ?? 0) / 1000
 
@@ -118,6 +117,7 @@ function PlayerSheet({
             uri={imageSource}
             width={FULL_PLAYER_IMAGE_SIZE}
             height={FULL_PLAYER_IMAGE_SIZE}
+            priority="high"
           />
 
           {/* Description */}
@@ -142,7 +142,7 @@ function PlayerSheet({
 export function SmallPlayer({ openSheet }: { openSheet: VoidFunction }) {
   const { activeEpisode } = usePlayerContext()
 
-  const episodeImage = getImageFromEntity(activeEpisode?.episode ?? {}, "100")
+  const imageSource = getImageFromEntities(activeEpisode?.episode, activeEpisode?.podcast, "100")
 
   return (
     <AnimatePresence>
@@ -167,8 +167,8 @@ export function SmallPlayer({ openSheet }: { openSheet: VoidFunction }) {
           opacity={1}
         >
           <PureXStack justifyContent="space-between" alignItems="center">
-            {episodeImage ? (
-              <PureImage uri={episodeImage} width={50} height={50} borderRadius="$2" />
+            {imageSource ? (
+              <PureImage uri={imageSource} width={50} height={50} borderRadius="$2" />
             ) : (
               <PureYStack width={50} height={50} bg="$blue8" borderRadius="$2" overflow="hidden" />
             )}
