@@ -59,10 +59,11 @@ cd ios && pod install && cd .. # install pods
   - [ ] EKN Radio Network breaks
   - [ ] Vastuullisuuden
 - [ ] Progress bar should show at least a little
-  - [ ] Use a progress bar that doesn't animate at all time
+  - [x] Use a progress bar that doesn't animate at all time
 - [ ] Players icons should be same width
-- [ ] Language support?
 - [x] Search not showing adding podcasts - Plus
+- [ ] Splash screen
+- [ ] Make sure localization is only asked at search and explain why
 
 #### Release strategy
 
@@ -72,6 +73,7 @@ cd ios && pod install && cd .. # install pods
 
 #### Future N8
 
+- [ ] Language support
 - [ ] "To listen later" playlist
 - [ ] Build "segemented progress" component
 

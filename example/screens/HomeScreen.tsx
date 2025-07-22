@@ -86,7 +86,9 @@ export function HomeScreen() {
       header={
         <XStack justifyContent="center" alignItems="center" gap="$2">
           <H2>Purecast</H2>
-          <PurecastLogo height={35} width={35} />
+          <PureYStack ml="$-2">
+            <PurecastLogo height={45} width={45} />
+          </PureYStack>
         </XStack>
       }
       actionSection={
