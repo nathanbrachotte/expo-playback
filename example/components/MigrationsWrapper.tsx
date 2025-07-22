@@ -5,11 +5,14 @@ import React, { PropsWithChildren, useEffect } from "react"
 import { PURE_TOASTS } from "./toasts"
 import { db, drizzleClient } from "../db/client"
 import migrations from "../drizzle/migrations"
+import { useFetchNewEpisodesMutation } from "../clients/rss.queries"
 
 export function MigrationsWrapper({ children }: PropsWithChildren) {
   useDrizzleStudio(db)
 
   const { success, error } = useMigrations(drizzleClient, migrations)
+  const { mutateAsync: fetchNewEpisodes } = useFetchNewEpisodesMutation()
+
   const lastSuccessRef = React.useRef(success)
 
   useEffect(() => {
@@ -21,7 +24,7 @@ export function MigrationsWrapper({ children }: PropsWithChildren) {
 
     if (!lastSuccessRef.current && success) {
       console.log("🚀 initial SQLite migration successful")
-
+      fetchNewEpisodes()
       lastSuccessRef.current = true
     }
   }, [error, success])
