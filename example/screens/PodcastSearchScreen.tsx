@@ -11,6 +11,7 @@ import { PodcastCard } from "../components/PodcastCard"
 import { PureYStack } from "../components/PureStack"
 import { getImageFromEntity } from "../utils/image.utils"
 import { useGetLocalPodcastQuery } from "../clients/local.queries"
+import { PureButton } from "../components/buttons"
 
 const getRandomLetters = () => {
   const letters = "abcdefghijklmnopqrstuvwxyz"
@@ -156,7 +157,7 @@ function SearchResultCard({
       Actions={
         <PureYStack centered>
           {!localPodcast ? (
-            <Button
+            <PureButton
               circular
               icon={isSaving ? () => <Spinner /> : () => <Plus size={16} />}
               onPress={() => savePodcast({ podcast: { ...entry, isFollowed: false } })}
@@ -164,8 +165,9 @@ function SearchResultCard({
             />
           ) : null}
           {localPodcast ? (
-            <Button
+            <PureButton
               circular
+              variant="destructive"
               icon={() => <X size={16} />}
               onPress={() => deletePodcast(entry.appleId.toString())}
               disabled={isDeleting}

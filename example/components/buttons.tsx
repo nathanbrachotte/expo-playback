@@ -1,6 +1,6 @@
 import { Check, Download, Play, Trash2 } from "@tamagui/lucide-icons"
 import React, { ComponentProps, useCallback } from "react"
-import { Button, ButtonProps, getVariable, Paragraph, Spinner } from "tamagui"
+import { Button, ButtonProps, getVariable, Paragraph, Spinner, styled } from "tamagui"
 
 import { PureXStack } from "./PureStack"
 import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
@@ -31,6 +31,17 @@ export function ButtonList({
     </Button>
   )
 }
+
+export const PureButton = styled(Button, {
+  variants: {
+    variant: {
+      destructive: {
+        bg: "$red5",
+        color: "$red11",
+      },
+    },
+  },
+})
 
 export function GhostButton({
   Icon,
