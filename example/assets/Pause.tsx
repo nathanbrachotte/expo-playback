@@ -1,17 +1,12 @@
 import * as React from "react"
 import Svg, { Path, SvgProps } from "react-native-svg"
 
-export function Pause(props: SvgProps) {
-  return (
-    <Svg width="800px" height="800px" viewBox="-1 0 8 8" {...props}>
-      <Path
-        d="M172 3605a1 1 0 00-1 1v6a1 1 0 002 0v-6a1 1 0 00-1-1m5 1v6a1 1 0 01-2 0v-6a1 1 0 012 0"
-        transform="translate(-227 -3765) translate(56 160)"
-        fill="#000"
-        stroke="none"
-        strokeWidth={1}
-        fillRule="evenodd"
-      />
-    </Svg>
-  )
-}
+export const Pause = (props: SvgProps & { size?: number }) => (
+  <Svg viewBox="0 0 16 16" width={props.size} height={props.size} {...props}>
+    <Path
+      fillRule="evenodd"
+      d="M5 2a1 1 0 0 1 1 1v10a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1m6 0a1 1 0 0 1 1 1v10a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1"
+      clipRule="evenodd"
+    />
+  </Svg>
+)

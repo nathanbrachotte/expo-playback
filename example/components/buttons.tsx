@@ -39,6 +39,10 @@ export const PureButton = styled(Button, {
         bg: "$red5",
         color: "$red11",
       },
+      ghost: {
+        color: "$color11",
+        circular: true,
+      },
     },
   },
 })
@@ -99,8 +103,9 @@ function PlayButtonIcon({
       <CircularLoader progress={downloadProgress} size={iconSize} color="#000000" strokeWidth={3} />
     )
   }
+
   if (isEpisodePlaying) {
-    return <Pause width={iconSize * 0.9} height={iconSize * 0.9} />
+    return <Pause size={iconSize * 1.1} />
   }
 
   return <Play />
@@ -148,11 +153,11 @@ export function PlayButton({
 
   return (
     <PureXStack centered themeInverse>
-      <GhostButton
+      <PureButton
         size={size}
-        showBg
+        variant="ghost"
         onPress={handlePlayPause}
-        Icon={
+        icon={
           <PlayButtonIcon
             isEpisodePlaying={isEpisodePlaying}
             isDownloading={isDownloading}
