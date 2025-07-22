@@ -133,7 +133,7 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
 
         if let episodeId = Int64(downloadTask.taskDescription ?? "") {
             if var metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId) {
-                let newProgress = max(Int64(progress.doubleValue * 100), 1) // always use at least 1% to not jump from 1 to 0
+                let newProgress = max(max(Int64(progress.doubleValue * 100), 1), 99)  // always use at least 1% to not jump from 1 to 0, and never go above 99% since the file is not moved to the correct place yet.
                 if metadata.downloadProgress == newProgress { return }
                 metadata.downloadProgress = newProgress
                 metadataRepo.createOrUpdateMetadata(metadata)

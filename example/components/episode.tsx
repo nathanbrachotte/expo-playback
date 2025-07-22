@@ -335,6 +335,8 @@ const EpisodeCardProgress = ({
   useEffect(() => {
     if (metadata) {
       setProgress(getProgressPercentageFromMetadata(metadata.episodeMetadata))
+    } else {
+      setProgress(0)
     }
   }, [metadata])
 

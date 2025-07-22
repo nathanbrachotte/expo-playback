@@ -5,7 +5,7 @@ import { useGetLiveLocalEpisodeQuery } from "../clients/local.queries"
 import { LocalEpisode } from "../types/db.types"
 import { PlayerState } from "expo-playback/ExpoPlaybackModule"
 import {
-  addEpisodeMetadataUpdateDownloadProgressListener,
+  addCoreEpisodeMetadataUpdateListener,
   addPlayerStateListener,
   getPlayerState,
   pause,
@@ -39,18 +39,18 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   useEffect(() => {
-    const subscription = addEpisodeMetadataUpdateDownloadProgressListener(
-      ({ episodeId, downloadProgress }) => {
-        if (downloadProgress !== 100) {
-          return
-        }
+    const subscription = addCoreEpisodeMetadataUpdateListener(({ episodeId, trigger }) => {
+      if (episodeId !== episodeIdForPlayAfterDownload) {
+        return
+      }
 
-        if (episodeId === episodeIdForPlayAfterDownload) {
-          play(episodeIdForPlayAfterDownload)
-          setEpisodeIdForPlayAfterDownload(undefined)
-        }
-      },
-    )
+      if (trigger !== "downloadFinished") {
+        return
+      }
+
+      play(episodeIdForPlayAfterDownload)
+      setEpisodeIdForPlayAfterDownload(undefined)
+    })
 
     return subscription.remove
   }, [episodeIdForPlayAfterDownload])

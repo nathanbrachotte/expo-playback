@@ -44,6 +44,7 @@ export interface EpisodeMetadataUpdatePlaybackEvent {
  */
 export interface CoreEpisodeMetadataUpdateEvent {
   episodeId: number
+  trigger: "downloadFinished" | "deleted" | null
 }
 
 declare class ExpoPlaybackModule extends NativeModule<{

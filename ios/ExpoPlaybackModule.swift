@@ -36,7 +36,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
 
     public func episodeDownloadFinished(episodeId: Int64) {
         self.sendEpisodeMetadataUpdateDownloadProgress(episodeId: episodeId, downloadProgress: 100)
-        self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId)
+        self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId, trigger: .downloadFinished)
     }
 
     private func sendEpisodeMetadataUpdateDownloadProgress(episodeId: Int64, downloadProgress: Double) {
@@ -57,11 +57,17 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             ])
     }
 
-    private func sendCoreEpisodeMetadataUpdate(episodeId: Int64) {
+    private enum MetadataUpdateTrigger: String {
+        case downloadFinished = "downloadFinished"
+        case deleted = "deleted"
+    }
+    
+    private func sendCoreEpisodeMetadataUpdate(episodeId: Int64, trigger: MetadataUpdateTrigger? = nil) {
         self.sendEvent(
             "onCoreEpisodeMetadataUpdate",
             [
-                "episodeId": episodeId
+                "episodeId": episodeId,
+                "trigger": trigger?.rawValue
             ])
     }
     
@@ -141,7 +147,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
 
                     // Delete metadata from database
                     self.metadataRepo.delete(episodeIdValue: episodeId)
-                    self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId)
+                    self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId, trigger: .deleted)
                     promise.resolve()
                 } catch {
                     print("Error deleting episode: \(error)")
@@ -412,20 +418,25 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         self.currentEpisodeId = episodeId
 
         guard let episode = episodeRepo.getEpisodeById(episodeIdValue: episodeId) else {
+            self.cleanup()
             throw Exception(name: "episode_not_found", description: "episode_not_found")
         }
         guard let metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId) else {
+            self.cleanup()
             throw Exception(name: "metadata_not_found", description: "metadata_not_found")
         }
         guard let podcast = podcastRepo.getPodcastById(podcastId: episode.podcastId) else {
+            self.cleanup()
             throw Exception(name: "podcast_not_found", description: "podcast_not_found")
         }
         guard let relativeFilePath = metadata.relativeFilePath else {
+            self.cleanup()
             throw Exception(name: "episode_not_downloaded", description: "episode_not_downloaded")
         }
         guard let episodeFileURL = try? EpisodeDownloader.getEpisodeFileURL(
             relativeFilePath: relativeFilePath)
         else {
+            self.cleanup()
             throw Exception(name: "episode_not_downloaded", description: "episode_not_downloaded")
         }
 
