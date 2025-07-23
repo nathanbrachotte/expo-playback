@@ -1,4 +1,3 @@
-import { formatDuration as formatDurationFn } from "@goomba/date-fns"
 import { format } from "date-fns"
 
 export function formatDuration(milliseconds: number): string {
@@ -11,19 +10,13 @@ export function formatDuration(milliseconds: number): string {
   const minutes = Math.floor((totalSeconds % 3600) / 60)
   const seconds = totalSeconds % 60
 
-  // Construct the duration object for @goomba/date-fns
-  const durationObject = {
-    hours,
-    minutes,
-    seconds,
+  if (hours > 0) {
+    return `${hours}h ${minutes}m ${seconds}s`
+  } else if (minutes > 0) {
+    return `${minutes}m ${seconds}s`
+  } else {
+    return `${seconds}s`
   }
-
-  // Format string to display hours, minutes, and seconds
-  const formatString = hours > 0 ? "h'h' m'm' s's'" : minutes > 0 ? "m 'm' s 's'" : "s 's'"
-
-  const formatted = formatDurationFn(durationObject, formatString)
-
-  return formatted === null ? "0s" : formatted
 }
 
 /**
