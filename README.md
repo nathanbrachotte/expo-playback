@@ -5,13 +5,17 @@ Expo Module to handle audio playback from native
 ## Commands
 
 ```shell
+# Install libs
 npx expo install <lib>
-npm run ios
-npm db:generate
 cd ios && pod install && cd .. # install pods
+# DB
+npm db:generate
+# Run
+npm run ios # Run simulator
+npm run start # Run expo, then build from Xcode
 
-
-npx expo-doctor # checks and suggests solution to fix all deps
+# Fix deps
+npx expo-doctor
 ```
 
 ## TODO
