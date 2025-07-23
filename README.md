@@ -97,9 +97,11 @@ npx expo-doctor # checks and suggests solution to fix all deps
 - [x] Pick up last progress when a episode is played
 - [x] Sync progress in list with current progress
 - [x] Mark as finished button
-- [ ] Live updates on delete episode
+- [x] Live updates on delete episode
 - [ ] Live updates on first playing an episode after download in list
 - [ ] Live updates on progress for time left on list
+- [ ] Handle deletion while playing an episode
+- [ ] Decouple episode metadata from download
 
 #### Future Erik
 

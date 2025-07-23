@@ -246,13 +246,18 @@ export const EpisodeCard = ({
   const [prettyMetadata, setPrettyMetadata] = useState(initialPrettyMetadata)
 
   useEffect(() => {
-    if (metadata) {
-      setPrettyMetadata(getEpisodeStateFromMetadata(metadata.episodeMetadata))
+    if (metadata == null) {
+      setPrettyMetadata(undefined)
+      return
     }
+    setPrettyMetadata(getEpisodeStateFromMetadata(metadata?.episodeMetadata))
   }, [metadata])
 
   const { isFinished, isDownloaded, progress, isInProgress, progressPercentage, duration } =
     prettyMetadata || {}
+  if (episode.id === 1752861201491) {
+    console.log("prettyMetadata", prettyMetadata, metadata)
+  }
 
   return (
     <Card

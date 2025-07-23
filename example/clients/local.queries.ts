@@ -1,4 +1,4 @@
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query"
+import { useQuery, useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
 import { desc, sql } from "drizzle-orm"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { eq } from "drizzle-orm"
@@ -194,6 +194,7 @@ export function useGetLiveLocalEpisodeMetadataQuery(
 ) {
   const [playback, setPlayback] = useState(0)
   const [downloadProgress, setDownloadProgress] = useState(0)
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     const playbackSubscription = updateConfig.playback
@@ -224,8 +225,13 @@ export function useGetLiveLocalEpisodeMetadataQuery(
 
   useEffect(() => {
     const coreEpisodeMetadataUpdateSubscription = addCoreEpisodeMetadataUpdateListener(
-      ({ episodeId }) => {
+      ({ episodeId, trigger }) => {
         if (episodeId !== id) return
+
+        if (trigger === "deleted") {
+          queryClient.invalidateQueries({ queryKey: ["episodeMetadata", id] })
+          return
+        }
         refetch()
       },
     )
@@ -236,6 +242,8 @@ export function useGetLiveLocalEpisodeMetadataQuery(
 
   useEffect(() => {
     if (!data) {
+      setPlayback(0)
+      setDownloadProgress(0)
       return
     }
     setPlayback(data?.[0]?.episodeMetadata?.playback ?? 0)

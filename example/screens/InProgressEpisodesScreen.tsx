@@ -9,7 +9,7 @@ import { ErrorScreen } from "../components/Sections/Error"
 import { LoadingScreen } from "../components/Sections/Loading"
 import { getEpisodeStateFromMetadata } from "../utils/metadata.utils"
 import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
-import { EpisodeCard } from "../components/episode"
+import { EpisodeCard } from "../components/EpisodeCard"
 
 export function Header() {
   return <H3>In Progress</H3>
@@ -70,7 +70,7 @@ export function InProgressEpisodesScreen() {
             <EpisodeCard
               episode={episode}
               podcast={podcast}
-              prettyMetadata={prettyMetadata}
+              initialPrettyMetadata={prettyMetadata}
               onCardPress={() => {
                 navigation.navigate("Episode", {
                   episodeId: String(episode.id),

@@ -11,7 +11,7 @@ import {
   DurationAndDateSection,
   EpisodeActionSheet,
   EpisodeDescriptionHtml,
-} from "../../components/episode"
+} from "../../components/EpisodeCard"
 import { PureImage } from "../../components/image"
 import { PLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"

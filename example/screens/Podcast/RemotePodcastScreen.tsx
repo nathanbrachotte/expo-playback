@@ -10,7 +10,7 @@ import { PLayout } from "../../components/Layout"
 import { PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
 import { SECTION_PADDING_VALUE } from "../../components/Sections/PureSection"
-import { EpisodeCard } from "../../components/episode"
+import { EpisodeCard } from "../../components/EpisodeCard"
 
 const LIMIT_ITUNES_INITIAL_FETCH = 15
 
