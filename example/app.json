@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "expo-playback-example",
-    "slug": "expo-playback-example",
+    "name": "Purecast",
+    "slug": "purecast",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,14 +14,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "expo.modules.playback.example"
+      "bundleIdentifier": "com.n8.purecast"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "expo.modules.playback.example"
+      "package": "com.n8.purecast"
     },
     "web": {
       "favicon": "./assets/favicon.png"
