@@ -1,18 +1,17 @@
 import { useState } from "react"
-import FastImage from "react-native-fast-image"
+import { Image } from "expo-image"
 import { getVariable, Square, SquareProps, styled } from "tamagui"
 
-type FastImageProps = {
+type ImageProps = {
   uri: string | null
   fallbackColor?: string
   onLoadEnd?: () => void
   onError?: () => void
-  resizeMode?: "cover" | "contain" | "stretch" | "center"
   priority?: "low" | "normal" | "high"
 } & Omit<SquareProps, "children">
 
-const StyledFastImage = styled(FastImage, {
-  name: "StyledFastImage",
+const StyledImage = styled(Image, {
+  name: "StyledImage",
 })
 
 export function PureImage({
@@ -20,11 +19,10 @@ export function PureImage({
   fallbackColor = "$color5",
   onLoadEnd,
   onError,
-  resizeMode = "cover",
   borderRadius = "$3",
   priority = "normal",
   ...props
-}: FastImageProps) {
+}: ImageProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
 
@@ -55,7 +53,7 @@ export function PureImage({
           zIndex={1}
         />
       )}
-      <StyledFastImage
+      <StyledImage
         style={{
           width: "100%",
           height: "100%",
@@ -63,9 +61,8 @@ export function PureImage({
         }}
         source={{
           uri,
-          priority: FastImage.priority[priority],
         }}
-        onLoadEnd={() => {
+        onLoad={() => {
           setIsLoading(false)
           onLoadEnd?.()
         }}
@@ -73,7 +70,6 @@ export function PureImage({
           setHasError(true)
           onError?.()
         }}
-        resizeMode={FastImage.resizeMode[resizeMode]}
       />
     </Square>
   )

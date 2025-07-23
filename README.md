@@ -9,6 +9,9 @@ npx expo install <lib>
 npm run ios
 npm db:generate
 cd ios && pod install && cd .. # install pods
+
+
+npx expo-doctor # checks and suggests solution to fix all deps
 ```
 
 ## TODO

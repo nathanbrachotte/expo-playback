@@ -1,4 +1,4 @@
-package expo.modules.playback.example
+package com.n8.purecast
 
 import android.app.Application
 import android.content.res.Configuration

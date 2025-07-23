@@ -2,7 +2,6 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
-// #import <ExpoModulesCore-Swift.h>
 
 @implementation AppDelegate
 
@@ -10,13 +9,9 @@
 {
   self.moduleName = @"main";
 
-  // [[ExpoPlaybackWrapper shared] setup]; just left here in case we need swift in objc the whole bridging is not used right now though
-  
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
-  
-  [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
