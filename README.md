@@ -1,4 +1,4 @@
-# expo-playback
+# Purecast
 
 Expo Module to handle audio playback from native
 
@@ -11,8 +11,9 @@ cd ios && pod install && cd .. # install pods
 # DB
 npm db:generate
 # Run
-npm run ios # Run simulator
+npm run ios # Build and run simulator
 npm run start # Run expo, then build from Xcode
+npx expo start --clear # Clear build
 
 # Fix deps
 npx expo-doctor
@@ -65,12 +66,14 @@ npx expo-doctor
   - [x] KFC Radio breaks
   - [ ] EKN Radio Network breaks
   - [ ] Vastuullisuuden
+  - [ ] Rock2Life
 - [ ] Progress bar should show at least a little
   - [x] Use a progress bar that doesn't animate at all time
 - [ ] Players icons should be same width
 - [x] Search not showing adding podcasts - Plus
 - [ ] Splash screen
 - [ ] Make sure localization is only asked at search and explain why
+- [ ] Logging podcast failures
 
 #### Release strategy
 
