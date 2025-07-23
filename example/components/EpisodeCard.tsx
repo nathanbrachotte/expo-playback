@@ -255,6 +255,7 @@ export const EpisodeCard = ({
 
   const { isFinished, isDownloaded, progress, isInProgress, progressPercentage, duration } =
     prettyMetadata || {}
+
   if (episode.id === 1752861201491) {
     console.log("prettyMetadata", prettyMetadata, metadata)
   }

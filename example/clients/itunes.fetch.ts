@@ -102,7 +102,6 @@ export async function fetchPodcastAndEpisodes({
   }
 
   const deviceCountry = getDeviceCountryCode()
-  console.log("🚀 ~ deviceCountry:", deviceCountry)
 
   const queryParams = new URLSearchParams({
     id: podcastId.toString(),
