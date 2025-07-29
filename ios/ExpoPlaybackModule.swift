@@ -136,6 +136,10 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         }
 
         AsyncFunction("deleteEpisodeAudioFileAndMetadata") { (episodeId: Int64, promise: Promise) in
+            if self.currentEpisodeId == episodeId {
+                self.stop()
+            }
+
             if let metadata = self.metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId),
                 let relativeFilePath = metadata.relativeFilePath
             {
