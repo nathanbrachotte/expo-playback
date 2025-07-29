@@ -107,7 +107,7 @@ npx expo-doctor
 - [x] Live updates on delete episode
 - [x] Live updates on first playing an episode after download in list
 - [x] Live updates on progress for time left on list
-- [ ] Handle deletion while playing an episode
+- [x] Handle deletion while playing an episode
 - [ ] Decouple episode metadata from download
 
 #### Future Erik
