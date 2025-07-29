@@ -69,6 +69,7 @@ npx expo-doctor
   - [x] Vastuullisuuden
   - [ ] Rock2Life
     - [ ] Can't download
+    - [x] UI bug Podcast description/authors
 
 - [ ] Progress bar should show at least a little
   - [x] Use a progress bar that doesn't animate at all time
