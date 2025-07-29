@@ -121,7 +121,7 @@ function PlayerSheet({
           />
 
           {/* Description */}
-          <Sheet.ScrollView f={1} gap="$4" px="$4" alwaysBounceVertical={false}>
+          <Sheet.ScrollView mt="$3" f={1} gap="$4" px="$4" alwaysBounceVertical={false}>
             <EpisodeDescriptionHtml description={activeEpisode?.episode?.description} />
           </Sheet.ScrollView>
         </PureYStack>
