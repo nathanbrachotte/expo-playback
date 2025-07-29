@@ -105,8 +105,8 @@ npx expo-doctor
 - [x] Sync progress in list with current progress
 - [x] Mark as finished button
 - [x] Live updates on delete episode
-- [ ] Live updates on first playing an episode after download in list
-- [ ] Live updates on progress for time left on list
+- [x] Live updates on first playing an episode after download in list
+- [x] Live updates on progress for time left on list
 - [ ] Handle deletion while playing an episode
 - [ ] Decouple episode metadata from download
 

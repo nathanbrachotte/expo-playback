@@ -90,18 +90,29 @@ export function EpisodeDescriptionHtml({ description }: { description: string })
 }
 
 export function DurationAndDateSection({
-  duration,
+  episodeId,
   date,
-  isFinished,
-  progress,
+  fallbackDuration,
   size = "$2",
 }: {
-  duration: number | null
+  episodeId: number
   date: Date | null
-  isFinished?: Optional<boolean>
-  progress?: Optional<number>
+  fallbackDuration: number | null
   size?: ComponentProps<typeof Paragraph>["size"]
 }) {
+  const { data: metadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId, {
+    playback: true,
+    downloadProgress: false,
+  })
+
+  const {
+    isFinished,
+    duration: metadataDuration,
+    progress,
+  } = getEpisodeStateFromMetadata(metadata?.episodeMetadata)
+
+  const duration = metadataDuration || fallbackDuration
+
   return (
     <PureXStack jc="flex-start" ai="center">
       <Paragraph size={size}>{date ? formatDate(date) : ""}</Paragraph>
@@ -253,8 +264,7 @@ export const EpisodeCard = ({
     setPrettyMetadata(getEpisodeStateFromMetadata(metadata?.episodeMetadata))
   }, [metadata])
 
-  const { isFinished, isDownloaded, progress, isInProgress, progressPercentage, duration } =
-    prettyMetadata || {}
+  const { isFinished, isDownloaded, isInProgress, progressPercentage } = prettyMetadata || {}
 
   if (episode.id === 1752861201491) {
     console.log("prettyMetadata", prettyMetadata, metadata)
@@ -263,7 +273,6 @@ export const EpisodeCard = ({
   return (
     <Card
       bordered
-      animation="bouncy"
       hoverStyle={{ scale: 0.95 }}
       pressStyle={{ scale: 0.95 }}
       size="$4"
@@ -298,10 +307,9 @@ export const EpisodeCard = ({
         <PureYStack gap="$1.5">
           <CleanEpisodeDescription description={episode.description} />
           <DurationAndDateSection
-            duration={duration || episode.duration}
+            episodeId={episode.id ?? 0}
+            fallbackDuration={episode.duration}
             date={episode.publishedAt}
-            isFinished={isFinished}
-            progress={progress}
           />
         </PureYStack>
         <Card.Footer alignItems="center" justifyContent="space-between">
@@ -314,9 +322,8 @@ export const EpisodeCard = ({
               isFinished={isFinished}
             />
           </PureXStack>
-          {isInProgress ? (
-            <EpisodeCardProgress episodeId={episode.id} initialProgress={progressPercentage} />
-          ) : null}
+          <EpisodeCardProgress episodeId={episode.id} initialProgress={progressPercentage} />
+
           {episode.id ? <PlayButtonsSection episodeId={episode.id} /> : null}
         </Card.Footer>
       </PureYStack>
@@ -346,7 +353,7 @@ const EpisodeCardProgress = ({
     }
   }, [metadata])
 
-  if (progress === 0) {
+  if (progress < 1) {
     return null
   }
 
