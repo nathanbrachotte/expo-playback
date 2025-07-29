@@ -4,7 +4,7 @@ import React, { useMemo } from "react"
 import { FlashList } from "@shopify/flash-list"
 import { Paragraph, Spinner, Button } from "tamagui"
 
-import { AboutSection } from "./shared"
+import { AboutSection } from "./PodcastScreen.shared"
 import { useRemovePodcastMutation } from "../../clients/local.mutations"
 import {
   useGetLocalEpisodesByPodcastIdQuery,

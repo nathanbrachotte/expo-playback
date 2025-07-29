@@ -62,11 +62,14 @@ npx expo-doctor
 - [x] Why are search not case insensitive?
 - [x] Use Flashlist for long lists of episodes
 - [ ] Search & Add Podcasts issues
+
   - [x] „Fest &“ also can’t find it maybe search issues with special chars
   - [x] KFC Radio breaks
-  - [ ] EKN Radio Network breaks
-  - [ ] Vastuullisuuden
+  - [x] EKN Radio Network breaks
+  - [x] Vastuullisuuden
   - [ ] Rock2Life
+    - [ ] Can't download
+
 - [ ] Progress bar should show at least a little
   - [x] Use a progress bar that doesn't animate at all time
 - [ ] Players icons should be same width

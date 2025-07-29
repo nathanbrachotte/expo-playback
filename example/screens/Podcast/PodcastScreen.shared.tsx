@@ -27,7 +27,9 @@ export function AboutSection({
         <PureYStack flex={1} gap="$2">
           <PureYStack flex={1} jc="flex-start" ai="flex-start">
             <H5 numberOfLines={2}>{podcast.title}</H5>
-            <Paragraph size="$4">Author(s): {podcast.author}</Paragraph>
+            <Paragraph size="$4" numberOfLines={2}>
+              Author(s): {podcast.author}
+            </Paragraph>
             <Paragraph size="$4">Episodes: {episodeCount}</Paragraph>
           </PureYStack>
         </PureYStack>

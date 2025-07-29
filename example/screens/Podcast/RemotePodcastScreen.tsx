@@ -3,7 +3,7 @@ import React from "react"
 import { FlatList } from "react-native"
 import { Paragraph, Spinner, Button } from "tamagui"
 
-import { AboutSection } from "./shared"
+import { AboutSection } from "./PodcastScreen.shared"
 import { useGetItunesPodcastAndEpisodesQuery } from "../../clients/itunes.queries"
 import { useSavePodcastMutation } from "../../clients/local.mutations"
 import { PLayout } from "../../components/Layout"

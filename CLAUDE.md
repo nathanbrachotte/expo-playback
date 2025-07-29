@@ -158,6 +158,7 @@ pnpm --filter example db:generate
 - Using React Native styles will break the app - always use Tamagui
 - With highest priority use to custom components, they usually start with "Pure" or "P" and then component name. Example: PureYStack, PureXStack, PureSection, etc.
 - Otherwise use Tamagui components as default instead of React Native ones, unless stated otherwise.
+- **Default to always use the custom components I've built first**
 
 **TypeScript Requirements**
 
