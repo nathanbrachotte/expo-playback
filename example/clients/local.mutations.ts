@@ -42,8 +42,8 @@ async function savePodcastAndEpisodes(
           episode.rssId || undefined,
         )
 
-        console.log("🚀 ~ savePodcastAndEpisodes ~ id:", id)
-        console.log("🚀 ~ savePodcastAndEpisodes ~ rssId:", rssId)
+        console.log("💾 Saving episode:", id)
+        console.log("💾 Saving episode rssId:", rssId)
 
         await tx
           .insert(schema.episodesTable)

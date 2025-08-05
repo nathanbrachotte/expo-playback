@@ -86,6 +86,8 @@ npx expo-doctor
 - [x] Splash screen
 - [ ] Make sure localization is only asked at search and explain why
 - [ ] Logging podcast failures
+- [ ] In-progress page not working anymore
+- [ ] Latest episode shows "no episode" for a second
 
 #### Release strategy
 
