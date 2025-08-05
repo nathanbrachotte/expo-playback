@@ -273,7 +273,6 @@ export const EpisodeCard = ({
   return (
     <Card
       bordered
-      hoverStyle={{ scale: 0.95 }}
       pressStyle={{ scale: 0.95 }}
       size="$4"
       marginVertical="$2"
