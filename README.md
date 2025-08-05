@@ -19,6 +19,14 @@ npx expo start --clear # Clear build
 npx expo-doctor
 ```
 
+## Release strategy
+
+- Release to family and friends under my N8 account
+- Gather feedback while we also keep building the skip ad feature
+- Once we are confident this is stable and the skip ad feature is ready
+  - Make a GBR
+  - Release under a GBR
+
 ## TODO
 
 ### N8
@@ -75,7 +83,7 @@ npx expo-doctor
   - [x] Use a progress bar that doesn't animate at all time
 - [ ] Players icons should be same width
 - [x] Search not showing adding podcasts - Plus
-- [ ] Splash screen
+- [x] Splash screen
 - [ ] Make sure localization is only asked at search and explain why
 - [ ] Logging podcast failures
 
