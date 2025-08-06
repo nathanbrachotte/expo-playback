@@ -75,11 +75,11 @@ npx expo-doctor
   - [x] KFC Radio breaks
   - [x] EKN Radio Network breaks
   - [x] Vastuullisuuden
-  - [ ] Rock2Life
-    - [ ] Can't download
+  - [x] Rock2Life
+    - [x] Can't download
     - [x] UI bug Podcast description/authors
 
-- [ ] Progress bar should show at least a little
+- [x] Progress bar should show at least a little
   - [x] Use a progress bar that doesn't animate at all time
 - [ ] Players icons should be same width
 - [x] Search not showing adding podcasts - Plus
@@ -123,6 +123,7 @@ npx expo-doctor
 - [x] Live updates on progress for time left on list
 - [x] Handle deletion while playing an episode
 - [ ] Decouple episode metadata from download
+- [ ] Mark as played doesn't work
 
 #### Future Erik
 
