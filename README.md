@@ -84,7 +84,7 @@ npx expo-doctor
 - [x] Players icons should be same width
 - [x] Search not showing adding podcasts - Plus
 - [x] Splash screen
-- [ ] Make sure localization is only asked at search and explain why
+- [x] Make sure localization is only asked at search and explain why
 - [ ] Logging podcast failures
 - [ ] In-progress page not working anymore
 - [ ] Latest episode shows "no episode" for a second
