@@ -69,7 +69,7 @@ npx expo-doctor
 - [x] Have a download and a play button even if the episode is not downloaded
 - [x] Why are search not case insensitive?
 - [x] Use Flashlist for long lists of episodes
-- [ ] Search & Add Podcasts issues
+- [x] Search & Add Podcasts issues
 
   - [x] „Fest &“ also can’t find it maybe search issues with special chars
   - [x] KFC Radio breaks
@@ -81,7 +81,7 @@ npx expo-doctor
 
 - [x] Progress bar should show at least a little
   - [x] Use a progress bar that doesn't animate at all time
-- [ ] Players icons should be same width
+- [x] Players icons should be same width
 - [x] Search not showing adding podcasts - Plus
 - [x] Splash screen
 - [ ] Make sure localization is only asked at search and explain why
