@@ -88,6 +88,7 @@ npx expo-doctor
 - [ ] Logging podcast failures
 - [ ] In-progress page not working anymore
 - [ ] Latest episode shows "no episode" for a second
+- [ ] Fix JS dying on html renderer
 
 #### Release strategy
 
@@ -130,11 +131,10 @@ npx expo-doctor
 - [ ] Android
 - [ ]
 
-## Known issues
+## Known issues - Fix later
 
 - [ ] KFC Radio podcast # of episode goes from 934 episodes on itunes to 909 once downloaded form RSS feed. Itunes might be wrong, or something goes wrong for these episodes.
 - [ ] When saving a podcast and its episodes and an episode contains bad data, the podcast is still saved although we're in a transaction.
-- [ ]
 
 ## Resources
 
@@ -142,7 +142,12 @@ npx expo-doctor
 
 - https://sb.ltn.fi/video/aEsNRUMySIg/
 - https://sponsor.ajay.app/donate/
--
+
+### All tamagui sheets/performance issues we should know about
+
+- https://github.com/tamagui/tamagui/issues/3436
+- https://github.com/tamagui/tamagui/issues/3419
+- https://github.com/tamagui/tamagui/issues/3427
 
 ## SQLite
 

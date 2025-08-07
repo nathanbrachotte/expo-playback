@@ -105,13 +105,13 @@ function PlayerSheet({
       <Sheet.Frame bg="$backgroundHover" gap="$2" py="$2" alignItems="center">
         <Sheet.Handle backgroundColor="$borderColor" width="$5" height="$0.5" />
         {/* Header */}
-        <PureYStack>
+        <PureYStack px="$6">
           <H6 textAlign="center">{podcastTitle}</H6>
           <Separator mt="$1.5" mb="$1" borderBottomColor="$color7" />
           <H4 textAlign="center">{title}</H4>
         </PureYStack>
 
-        <PureYStack f={1} gap="$2" mt="$2" ai="center" px="$2">
+        <PureYStack f={1} gap="$2" mt="$2" ai="center">
           {/* Image */}
           <PureImage
             uri={imageSource}
@@ -121,7 +121,15 @@ function PlayerSheet({
           />
 
           {/* Description */}
-          <Sheet.ScrollView mt="$3" f={1} gap="$4" px="$4" alwaysBounceVertical={false}>
+          <Sheet.ScrollView
+            mt="$3"
+            f={1}
+            gap="$4"
+            px="$4"
+            maxWidth={DEVICE_WIDTH * 0.99}
+            alwaysBounceVertical={false}
+            alwaysBounceHorizontal={false}
+          >
             <EpisodeDescriptionHtml description={activeEpisode?.episode?.description} />
           </Sheet.ScrollView>
         </PureYStack>
