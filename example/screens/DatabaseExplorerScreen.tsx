@@ -3,7 +3,7 @@ import { useMigrations } from "drizzle-orm/expo-sqlite/migrator"
 import React from "react"
 import { Button, YStack, XStack, Text, Card, ScrollView, Heading } from "tamagui"
 
-import { PureLayout } from "../components/Layout"
+import { PLayout } from "../components/Layout"
 import { drizzleClient, schema } from "../db/client"
 import migrations from "../drizzle/migrations"
 
@@ -76,25 +76,25 @@ export function DatabaseExplorerScreen() {
 
   if (error) {
     return (
-      <PureLayout>
+      <PLayout.Screen>
         <YStack p="$4">
           <Text color="$red10">Migration error: {error.message}</Text>
         </YStack>
-      </PureLayout>
+      </PLayout.Screen>
     )
   }
   if (!success) {
     return (
-      <PureLayout>
+      <PLayout.Screen>
         <YStack p="$4">
           <Text>Migration is in progress...</Text>
         </YStack>
-      </PureLayout>
+      </PLayout.Screen>
     )
   }
 
   return (
-    <PureLayout header={<Heading>Database Explorer</Heading>}>
+    <PLayout.Screen header={<Heading>Database Explorer</Heading>}>
       <YStack p="$4" gap="$4">
         <XStack gap="$2">
           <Button onPress={resetDatabase} theme="red">
@@ -125,6 +125,6 @@ export function DatabaseExplorerScreen() {
           </YStack>
         </ScrollView>
       </YStack>
-    </PureLayout>
+    </PLayout.Screen>
   )
 }

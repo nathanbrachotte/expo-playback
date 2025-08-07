@@ -3,7 +3,7 @@ import { Database, Play, TestTube } from "@tamagui/lucide-icons"
 import React from "react"
 import { H5 } from "tamagui"
 
-import { PureLayout } from "../components/Layout"
+import { PLayout } from "../components/Layout"
 import { PureYStack } from "../components/PureStack"
 import { ButtonList } from "../components/buttons"
 
@@ -11,7 +11,7 @@ export function SettingsScreen() {
   const navigation = useNavigation()
 
   return (
-    <PureLayout header={<H5>Settings</H5>}>
+    <PLayout.Screen header={<H5>Settings</H5>}>
       <PureYStack px="$3" gap="$3" mt="$3">
         <ButtonList
           icon={<Database size={20} />}
@@ -29,6 +29,6 @@ export function SettingsScreen() {
           onPress={() => navigation.navigate("TestArea")}
         />
       </PureYStack>
-    </PureLayout>
+    </PLayout.Screen>
   )
 }

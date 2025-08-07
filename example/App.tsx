@@ -15,6 +15,7 @@ import { I18nProvider } from "./providers/LangProvider"
 import { PlayerProvider } from "./providers/PlayerProvider"
 // import config from "./tamagui.config"
 import { tamaguiConfig } from "./tamagui.config"
+import { PostHogProvider } from "posthog-react-native"
 
 const queryClient = new QueryClient({})
 
@@ -53,7 +54,20 @@ export default function App() {
                       <NavigationContainer
                         theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
                       >
-                        <Routes />
+                        <PostHogProvider
+                          apiKey="phc_ku6c5WzjqoLheLR4FDAjo0hI1sJgDaVgsIO6lNAzKDi"
+                          options={{
+                            host: "https://eu.i.posthog.com",
+                            enableSessionReplay: true,
+                            captureAppLifecycleEvents: true,
+                          }}
+                          autocapture={{
+                            captureScreens: false, // Screen events are handled differently for react-native-navigation
+                            captureTouches: true,
+                          }}
+                        >
+                          <Routes />
+                        </PostHogProvider>
                       </NavigationContainer>
                     </I18nProvider>
 

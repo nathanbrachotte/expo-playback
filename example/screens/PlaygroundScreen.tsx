@@ -1,16 +1,16 @@
 import { Button, H1, H2, H3, H4, H5, H6, Heading, Paragraph } from "tamagui"
 
-import { PureLayout } from "../components/Layout"
+import { PLayout } from "../components/Layout"
+import { PureProgressBar } from "../components/PureProgressBar"
 import { PureScrollView } from "../components/PureScrollview"
 import { PureXStack, PureYStack } from "../components/PureStack"
+import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
 import { Minus, Plus } from "@tamagui/lucide-icons"
 import { GhostButton } from "../components/buttons"
-import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
-import { PureProgressBar } from "../components/PureProgressBar"
 
 export function PlaygroundScreen() {
   return (
-    <PureLayout header={<H5>Playground</H5>}>
+    <PLayout.Screen header={<H5>Playground</H5>}>
       <PureScrollView>
         <PureYStack gap="$2">
           <PureXStack w="$1" h="$1" bg="$color8" />
@@ -61,6 +61,6 @@ export function PlaygroundScreen() {
         <PureProgressBar value={100} />
         <PureProgressBar value={120} />
       </PureScrollView>
-    </PureLayout>
+    </PLayout.Screen>
   )
 }

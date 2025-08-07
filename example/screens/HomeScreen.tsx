@@ -20,6 +20,7 @@ import { PureSection } from "../components/Sections/PureSection"
 import { ButtonList } from "../components/buttons"
 import { getImageFromEntity } from "../utils/image.utils"
 import { PureXStack, PureYStack } from "../components/PureStack"
+import { usePostHog } from "posthog-react-native"
 
 function PodcastsList() {
   const { data: podcastList } = useLocalPodcastsQuery()
@@ -75,9 +76,13 @@ export function HomeScreen() {
   const { mutateAsync, isPending } = useFetchNewEpisodesMutation()
 
   const hasSavedPodcasts = podcastList && podcastList?.length > 0
+  const posthog = usePostHog()
+  // Enable debug mode
+  posthog.debug(true)
 
   // Fetch new episodes on app mount
   const handleRefetchNewEpisodes = () => {
+    posthog.capture("refetch_new_episodes")
     mutateAsync()
   }
 

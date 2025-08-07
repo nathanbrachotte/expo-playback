@@ -1,14 +1,12 @@
-import { useNavigation } from "@react-navigation/native"
+import { useNavigation, useRoute } from "@react-navigation/native"
 import { ChevronLeft } from "@tamagui/lucide-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Button, YStackProps } from "tamagui"
 
 import { PureXStack, PureYStack, PureYStackProps } from "./PureStack"
+import { usePostHog } from "posthog-react-native"
 
-/**
- * @deprecated Use PLayout.Screen instead
- */
-export function PureLayout({
+function PureLayout({
   children,
   header,
   actionSection,
@@ -23,6 +21,10 @@ export function PureLayout({
 }) {
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
+  const route = useRoute()
+  const posthog = usePostHog()
+
+  posthog.screen(route.name, {})
 
   // Use React Navigation's built-in canGoBack() method for better reliability
   const shouldShowBackButton = showBackButton === "auto" ? navigation.canGoBack() : showBackButton
@@ -57,8 +59,6 @@ export function PureLayout({
   )
 }
 
-const Screen = PureLayout
-
 const Container = ({ children, ...props }: { children: React.ReactNode } & YStackProps) => {
   return (
     <PureYStack flex={1} px="$2" {...props}>
@@ -68,6 +68,6 @@ const Container = ({ children, ...props }: { children: React.ReactNode } & YStac
 }
 
 export const PLayout = {
-  Screen,
+  Screen: PureLayout,
   Container,
 }

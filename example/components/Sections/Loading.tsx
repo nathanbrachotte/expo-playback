@@ -1,6 +1,6 @@
 import { Spinner } from "tamagui"
 
-import { PureLayout } from "../Layout"
+import { PLayout } from "../Layout"
 import { PureYStack } from "../PureStack"
 
 export function LoadingSection({ children }: { children?: React.ReactNode }) {
@@ -14,10 +14,10 @@ export function LoadingSection({ children }: { children?: React.ReactNode }) {
 
 export function LoadingScreen({ header }: { header?: React.ReactNode }) {
   return (
-    <PureLayout header={header}>
+    <PLayout.Screen header={header}>
       <PureYStack f={1} centered>
         <Spinner />
       </PureYStack>
-    </PureLayout>
+    </PLayout.Screen>
   )
 }
