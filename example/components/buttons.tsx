@@ -4,7 +4,7 @@ import { Button, ButtonProps, getVariable, Paragraph, Spinner, styled } from "ta
 
 import { PureXStack } from "./PureStack"
 import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
-import { pause, play, startBackgroundDownload } from "expo-playback"
+import { pause, play, startBackgroundDownload, toggleIsFinished } from "expo-playback"
 import { usePlayerContext } from "../providers/PlayerProvider"
 import { getEpisodeStateFromMetadata } from "../utils/metadata.utils"
 import { useDeleteEpisodeMetadataAndAudioFileMutation } from "../clients/local.mutations"
@@ -248,22 +248,14 @@ export function MarkAsFinishedButton({ episodeId }: { episodeId: number }) {
   })
   const { isFinished } = getEpisodeStateFromMetadata(localEpisodeMetadata?.episodeMetadata)
 
-  if (isFinished) {
-    return (
-      <GhostButton
-        size="$3"
-        showBg
-        onPress={() => {}}
-        Icon={<CustomButtonIcon Component={Check} size={iconSize} />}
-      />
-    )
-  }
-
   return (
     <GhostButton
       size="$3"
       showBg
-      onPress={() => {}}
+      color={isFinished ? "$green9" : "$color11"}
+      onPress={() => {
+        toggleIsFinished(episodeId)
+      }}
       Icon={<CustomButtonIcon Component={Check} size={iconSize} />}
     />
   )

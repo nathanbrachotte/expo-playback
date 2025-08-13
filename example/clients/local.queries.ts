@@ -228,7 +228,7 @@ export function useGetLiveLocalEpisodeMetadataQuery(
       ({ episodeId, trigger }) => {
         if (episodeId !== id) return
 
-        if (trigger === "deleted") {
+        if (trigger === "deletedAudioFile") {
           queryClient.invalidateQueries({ queryKey: ["episodeMetadata", id] })
           return
         }

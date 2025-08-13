@@ -27,7 +27,8 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
 
     // EpisodeDownloaderDelegate implementation
     public func episodeDownloadProgress(episodeId: Int64, currentProgress: NSNumber) {
-        self.sendEpisodeMetadataUpdateDownloadProgress(episodeId: episodeId, downloadProgress: currentProgress.doubleValue)
+        self.sendEpisodeMetadataUpdateDownloadProgress(
+            episodeId: episodeId, downloadProgress: currentProgress.doubleValue)
     }
 
     public func episodeDownloadStarted(episodeId: Int64) {
@@ -39,12 +40,14 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId, trigger: .downloadFinished)
     }
 
-    private func sendEpisodeMetadataUpdateDownloadProgress(episodeId: Int64, downloadProgress: Double) {
+    private func sendEpisodeMetadataUpdateDownloadProgress(
+        episodeId: Int64, downloadProgress: Double
+    ) {
         self.sendEvent(
             "onEpisodeMetadataUpdateDownloadProgress",
             [
                 "episodeId": episodeId,
-                "downloadProgress": downloadProgress
+                "downloadProgress": downloadProgress,
             ])
     }
 
@@ -53,24 +56,26 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             "onEpisodeMetadataUpdatePlayback",
             [
                 "episodeId": episodeId,
-                "playback": playback
+                "playback": playback,
             ])
     }
 
     private enum MetadataUpdateTrigger: String {
         case downloadFinished = "downloadFinished"
-        case deleted = "deleted"
+        case deletedAudioFile = "deletedAudioFile"
     }
-    
-    private func sendCoreEpisodeMetadataUpdate(episodeId: Int64, trigger: MetadataUpdateTrigger? = nil) {
+
+    private func sendCoreEpisodeMetadataUpdate(
+        episodeId: Int64, trigger: MetadataUpdateTrigger? = nil
+    ) {
         self.sendEvent(
             "onCoreEpisodeMetadataUpdate",
             [
                 "episodeId": episodeId,
-                "trigger": trigger?.rawValue
+                "trigger": trigger?.rawValue,
             ])
     }
-    
+
     private func sendPlayerStateUpdate() {
         self.sendEvent(
             "onPlayerStateUpdate",
@@ -87,7 +92,10 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         Name("ExpoPlayback")
 
         // Events that will be emitted to JavaScript
-        Events("onPlayerStateUpdate", "onSkipSegmentReached", "onSqLiteTableUpdate", "onEpisodeMetadataUpdateDownloadProgress", "onEpisodeMetadataUpdatePlayback", "onCoreEpisodeMetadataUpdate")
+        Events(
+            "onPlayerStateUpdate", "onSkipSegmentReached", "onSqLiteTableUpdate",
+            "onEpisodeMetadataUpdateDownloadProgress", "onEpisodeMetadataUpdatePlayback",
+            "onCoreEpisodeMetadataUpdate")
 
         // Playback control functions
         Function("play") { (episodeId: Int64) in
@@ -105,13 +113,17 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
         Function("startBackgroundDownload") { (episodeId: Int64) in
             startBackgroundDownload(episodeId: episodeId)
         }
-        
+
         Function("toggleIsFinished") { (episodeId: Int64) in
-            if var metadata = self.metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId) {
-                metadata.isFinished = !metadata.isFinished
-                self.metadataRepo.createOrUpdateMetadata(metadata)
-                self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId)
-            }
+            let metadata = self.metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId)
+            let isFinished = metadata?.isFinished ?? false
+            self.metadataRepo.createOrUpdateMetadata(
+                PartialEpisodeMetadata(
+                    episodeId: episodeId,
+                    isFinished: .setValue(!isFinished)
+                ))
+            self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId)
+        
         }
 
         Function("pause") { () in
@@ -135,7 +147,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             self.skipSegments = segments
         }
 
-        AsyncFunction("deleteEpisodeAudioFileAndMetadata") { (episodeId: Int64, promise: Promise) in
+        AsyncFunction("deleteEpisodeAudioFile") { (episodeId: Int64, promise: Promise) in
             if self.currentEpisodeId == episodeId {
                 self.stop()
             }
@@ -149,9 +161,15 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
                         relativeFilePath: relativeFilePath)
                     try? FileManager.default.removeItem(at: fileURL)
 
-                    // Delete metadata from database
-                    self.metadataRepo.delete(episodeIdValue: episodeId)
-                    self.sendCoreEpisodeMetadataUpdate(episodeId: episodeId, trigger: .deleted)
+                    self.metadataRepo.createOrUpdateMetadata(
+                        PartialEpisodeMetadata(
+                            episodeId: episodeId,
+                            downloadProgress: .setValue(0),
+                            fileSize: .setValue(0),
+                            relativeFilePath: .setNil
+                        ))
+                    self.sendCoreEpisodeMetadataUpdate(
+                        episodeId: episodeId, trigger: .deletedAudioFile)
                     promise.resolve()
                 } catch {
                     print("Error deleting episode: \(error)")
@@ -160,7 +178,7 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             } else {
                 promise.resolve()
             }
-            
+
         }
 
         // Restart incomplete downloads by removing partial file and starting fresh
@@ -176,11 +194,14 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
                     try? FileManager.default.removeItem(at: fileURL)
 
                     // Reset metadata download progress
-                    var updatedMetadata = metadata
-                    updatedMetadata.downloadProgress = 0
-                    updatedMetadata.relativeFilePath = nil
-                    updatedMetadata.fileSize = 0
-                    self.metadataRepo.createOrUpdateMetadata(updatedMetadata)
+                    self.metadataRepo.createOrUpdateMetadata(
+                        PartialEpisodeMetadata(
+                            episodeId: episodeId,
+                            downloadProgress: .setValue(0),
+                            fileSize: .setValue(0),
+                            relativeFilePath: .setNil
+                        )
+                    )
 
                     // Start fresh download
                     startBackgroundDownload(episodeId: episodeId)
@@ -216,7 +237,8 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
 
     @objc func playerDidFinishPlaying(note: NSNotification) {
         print("episode finished ", self.currentEpisodeId!)
-        if let nextEpisodeId = findNextUnfinishedEpisodeId(currentEpisodeId: self.currentEpisodeId!) {
+        if let nextEpisodeId = findNextUnfinishedEpisodeId(currentEpisodeId: self.currentEpisodeId!)
+        {
             do {
                 try self.play(episodeId: nextEpisodeId)
                 return
@@ -228,41 +250,46 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
     }
 
     private func findNextUnfinishedEpisodeId(currentEpisodeId: Int64) -> Int64? {
-        guard let currentEpisode = episodeRepo.getEpisodeById(episodeIdValue: currentEpisodeId) else {
+        guard let currentEpisode = episodeRepo.getEpisodeById(episodeIdValue: currentEpisodeId)
+        else {
             return nil
         }
-        
+
         // Get all episodes for the same podcast
-        let podcastEpisodes = episodeRepo.getEpisodesByPodcastId(podcastIdValue: currentEpisode.podcastId)
-        
+        let podcastEpisodes = episodeRepo.getEpisodesByPodcastId(
+            podcastIdValue: currentEpisode.podcastId)
+
         // Sort episodes by pubDate descending (most recent first)
         let sortedEpisodes = podcastEpisodes.sorted { (episode1: Episode, episode2: Episode) in
             episode1.publishedAt > episode2.publishedAt
         }
-        
+
         // Find current episode index
-        guard let currentIndex = sortedEpisodes.firstIndex(where: { $0.id == currentEpisodeId }) else {
+        guard let currentIndex = sortedEpisodes.firstIndex(where: { $0.id == currentEpisodeId })
+        else {
             return nil
         }
-        
+
         // First try to find a newer unfinished episode
         for episode in sortedEpisodes[..<currentIndex] {
             if let metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episode.id),
-               !metadata.isFinished,
-               metadata.downloadProgress == 100 { // Only consider downloaded episodes
+                !metadata.isFinished,
+                metadata.downloadProgress == 100
+            {  // Only consider downloaded episodes
                 return episode.id
             }
         }
-        
+
         // If no newer episodes, look for older unfinished episodes
         for episode in sortedEpisodes[(currentIndex + 1)...] {
             if let metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episode.id),
-               !metadata.isFinished,
-               metadata.downloadProgress == 100 { // Only consider downloaded episodes
+                !metadata.isFinished,
+                metadata.downloadProgress == 100
+            {  // Only consider downloaded episodes
                 return episode.id
             }
         }
-        
+
         return nil
     }
 
@@ -437,8 +464,9 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             self.cleanup()
             throw Exception(name: "episode_not_downloaded", description: "episode_not_downloaded")
         }
-        guard let episodeFileURL = try? EpisodeDownloader.getEpisodeFileURL(
-            relativeFilePath: relativeFilePath)
+        guard
+            let episodeFileURL = try? EpisodeDownloader.getEpisodeFileURL(
+                relativeFilePath: relativeFilePath)
         else {
             self.cleanup()
             throw Exception(name: "episode_not_downloaded", description: "episode_not_downloaded")
@@ -461,11 +489,15 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
             let duration = Double(metadata.duration)
             let playback = Double(metadata.playback)
             let timeRemaining = duration - playback
-        
+
             if timeRemaining < 30 {
-                self.player?.seek(to: CMTime(seconds: 0, preferredTimescale: CMTimeScale(NSEC_PER_SEC)))
+                self.player?.seek(
+                    to: CMTime(seconds: 0, preferredTimescale: CMTimeScale(NSEC_PER_SEC)))
             } else {
-                self.player?.seek(to: CMTime(seconds: Double(metadata.playback), preferredTimescale: CMTimeScale(NSEC_PER_SEC)))
+                self.player?.seek(
+                    to: CMTime(
+                        seconds: Double(metadata.playback),
+                        preferredTimescale: CMTimeScale(NSEC_PER_SEC)))
             }
         }
 
@@ -537,27 +569,39 @@ public class ExpoPlaybackModule: Module, EpisodeDownloaderDelegate {
 
             let duration = self.player?.currentItem?.duration.seconds ?? 0
 
-            if var metadata = metadataRepo.getMetadataForEpisode(
+            if let metadata = metadataRepo.getMetadataForEpisode(
                 episodeIdValue: self.currentEpisodeId!)
             {
                 var isFinishedChanged = false
+                var newIsFinished = false
+
                 if !metadata.isFinished {
                     let progress = (currentTime / duration) * 100
                     if progress >= 95 {
-                        metadata.isFinished = true
+                        newIsFinished = true
                         isFinishedChanged = true
                     }
                 }
 
-                metadata.playback = Int64(currentTime * 1000)
-                metadataRepo.createOrUpdateMetadata(metadata)
+                let currentTimeInMillis = Int64(currentTime * 1000)
+
+                // Update only the fields we want to change
+                metadataRepo.createOrUpdateMetadata(
+                    PartialEpisodeMetadata(
+                        episodeId: self.currentEpisodeId!,
+                        playback: .setValue(currentTimeInMillis),
+                        isFinished: .setValue(newIsFinished)
+                    )
+                )
+
                 if isFinishedChanged {
                     self.sendCoreEpisodeMetadataUpdate(episodeId: self.currentEpisodeId!)
                 }
             }
 
             self.sendPlayerStateUpdate()
-            self.sendEpisodeMetadataUpdatePlayback(episodeId: self.currentEpisodeId!, playback: currentTime * 1000)
+            self.sendEpisodeMetadataUpdatePlayback(
+                episodeId: self.currentEpisodeId!, playback: currentTime * 1000)
         }
 
         setupRemoteTransportControls()

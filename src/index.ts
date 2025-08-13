@@ -43,8 +43,8 @@ export function skip(seconds: number): void {
   ExpoPlaybackModule.skip(seconds)
 }
 
-export function deleteEpisodeAudioFileAndMetadata(episodeId: number): Promise<void> {
-  return ExpoPlaybackModule.deleteEpisodeAudioFileAndMetadata(episodeId)
+export function deleteEpisodeAudioFile(episodeId: number): Promise<void> {
+  return ExpoPlaybackModule.deleteEpisodeAudioFile(episodeId)
 }
 
 export function addPlayerStateListener(listener: (event: PlayerState) => void) {

@@ -1,5 +1,50 @@
 import SQLite
 
+protocol FieldUpdateType {}
+extension Int64: FieldUpdateType {}
+extension String: FieldUpdateType {}
+extension String?: FieldUpdateType {}
+extension Bool: FieldUpdateType {}
+
+enum FieldUpdate<T: FieldUpdateType> {
+    case unchanged
+    case setValue(T)
+    case setNil
+
+    var value: T? {
+        switch self {
+        case .unchanged:
+            return nil
+        case .setValue(let value):
+            return value
+        case .setNil:
+            return nil
+        }
+    }
+
+    func resolve(with existing: T) -> T {
+        switch self {
+        case .unchanged:
+            return existing
+        case .setValue(let value):
+            return value
+        case .setNil:
+            // Return appropriate default values based on type
+            if T.self == Int64.self {
+                return 0 as! T
+            } else if T.self == Bool.self {
+                return false as! T
+            } else if T.self == String?.self {
+                let nilValue: String? = nil
+                return nilValue as! T
+            } else {
+                // For non-optional String, return empty string
+                return "" as! T
+            }
+        }
+    }
+}
+
 struct EpisodeMetadata {
     var episodeId: Int64
     var playback: Int64
@@ -25,6 +70,78 @@ struct EpisodeMetadata {
         self.fileSize = fileSize
         self.relativeFilePath = relativeFilePath
         self.duration = duration
+    }
+}
+
+struct PartialEpisodeMetadata {
+    let episodeId: Int64
+    let playback: FieldUpdate<Int64>
+    let isFinished: FieldUpdate<Bool>
+    let downloadProgress: FieldUpdate<Int64>
+    let fileSize: FieldUpdate<Int64>
+    let relativeFilePath: FieldUpdate<String?>
+    let duration: FieldUpdate<Int64>
+
+    init(
+        episodeId: Int64,
+        playback: FieldUpdate<Int64> = .unchanged,
+        isFinished: FieldUpdate<Bool> = .unchanged,
+        downloadProgress: FieldUpdate<Int64> = .unchanged,
+        fileSize: FieldUpdate<Int64> = .unchanged,
+        relativeFilePath: FieldUpdate<String?> = .unchanged,
+        duration: FieldUpdate<Int64> = .unchanged
+    ) {
+        self.episodeId = episodeId
+        self.playback = playback
+        self.isFinished = isFinished
+        self.downloadProgress = downloadProgress
+        self.fileSize = fileSize
+        self.relativeFilePath = relativeFilePath
+        self.duration = duration
+    }
+}
+
+// Convenience extensions for easier usage
+extension PartialEpisodeMetadata {
+    // Convenience initializer for setting relativeFilePath to a specific value
+    static func withFilePath(
+        episodeId: Int64,
+        relativeFilePath: String,
+        playback: FieldUpdate<Int64> = .unchanged,
+        isFinished: FieldUpdate<Bool> = .unchanged,
+        downloadProgress: FieldUpdate<Int64> = .unchanged,
+        fileSize: FieldUpdate<Int64> = .unchanged,
+        duration: FieldUpdate<Int64> = .unchanged
+    ) -> PartialEpisodeMetadata {
+        return PartialEpisodeMetadata(
+            episodeId: episodeId,
+            playback: playback,
+            isFinished: isFinished,
+            downloadProgress: downloadProgress,
+            fileSize: fileSize,
+            relativeFilePath: .setValue(relativeFilePath),
+            duration: duration
+        )
+    }
+
+    // Convenience initializer for clearing relativeFilePath (set to nil)
+    static func clearingFilePath(
+        episodeId: Int64,
+        playback: FieldUpdate<Int64> = .unchanged,
+        isFinished: FieldUpdate<Bool> = .unchanged,
+        downloadProgress: FieldUpdate<Int64> = .unchanged,
+        fileSize: FieldUpdate<Int64> = .unchanged,
+        duration: FieldUpdate<Int64> = .unchanged
+    ) -> PartialEpisodeMetadata {
+        return PartialEpisodeMetadata(
+            episodeId: episodeId,
+            playback: playback,
+            isFinished: isFinished,
+            downloadProgress: downloadProgress,
+            fileSize: fileSize,
+            relativeFilePath: .setNil,
+            duration: duration
+        )
     }
 }
 
@@ -64,40 +181,70 @@ class EpisodeMetadataRepository {
     }
 
     @discardableResult
-    func createOrUpdateMetadata(_ metadata: EpisodeMetadata) -> EpisodeMetadata? {
+    func createOrUpdateMetadata(_ partialMetadata: PartialEpisodeMetadata) -> EpisodeMetadata? {
         guard let db = db else { return nil }
 
         do {
-            let query = episodeMetadata.filter(episodeId == metadata.episodeId)
+            let query = episodeMetadata.filter(episodeId == partialMetadata.episodeId)
 
-            // Check if record exists
-            if try db.pluck(query) != nil {
-                // Update existing record
+            if let existingRow = try db.pluck(query) {
+                // Update existing record, merging with provided values
+                let merged = EpisodeMetadata(
+                    episodeId: partialMetadata.episodeId,
+                    playback: partialMetadata.playback.resolve(with: existingRow[playback]),
+                    isFinished: partialMetadata.isFinished.resolve(with: existingRow[isFinished]),
+                    downloadProgress: partialMetadata.downloadProgress.resolve(
+                        with: existingRow[downloadProgress]),
+                    fileSize: partialMetadata.fileSize.resolve(with: existingRow[fileSize]),
+                    relativeFilePath: partialMetadata.relativeFilePath.resolve(
+                        with: existingRow[relativeFilePath]),
+                    duration: partialMetadata.duration.resolve(with: existingRow[duration])
+                )
+
                 try db.run(
                     query.update(
-                        playback <- metadata.playback,
-                        isFinished <- metadata.isFinished,
-                        downloadProgress <- metadata.downloadProgress,
-                        fileSize <- metadata.fileSize,
-                        relativeFilePath <- metadata.relativeFilePath,
-                        duration <- metadata.duration
+                        playback <- merged.playback,
+                        isFinished <- merged.isFinished,
+                        downloadProgress <- merged.downloadProgress,
+                        fileSize <- merged.fileSize,
+                        relativeFilePath <- merged.relativeFilePath,
+                        duration <- merged.duration
                     ))
+
+                return merged
             } else {
-                // Insert new record
+                // Insert new record with defaults for nil values
+                let defaultMetadata = EpisodeMetadata(episodeId: partialMetadata.episodeId)
+                let newMetadata = EpisodeMetadata(
+                    episodeId: partialMetadata.episodeId,
+                    playback: partialMetadata.playback.resolve(with: defaultMetadata.playback),
+                    isFinished: partialMetadata.isFinished.resolve(
+                        with: defaultMetadata.isFinished),
+                    downloadProgress: partialMetadata.downloadProgress.resolve(
+                        with: defaultMetadata.downloadProgress),
+                    fileSize: partialMetadata.fileSize.resolve(with: defaultMetadata.fileSize),
+                    relativeFilePath: partialMetadata.relativeFilePath.resolve(
+                        with: defaultMetadata.relativeFilePath),
+                    duration: partialMetadata.duration.resolve(with: defaultMetadata.duration)
+                )
+
                 try db.run(
                     episodeMetadata.insert(
-                        episodeId <- metadata.episodeId,
-                        playback <- metadata.playback,
-                        isFinished <- metadata.isFinished,
-                        downloadProgress <- metadata.downloadProgress,
-                        fileSize <- metadata.fileSize,
-                        relativeFilePath <- metadata.relativeFilePath,
-                        duration <- metadata.duration
+                        episodeId <- newMetadata.episodeId,
+                        playback <- newMetadata.playback,
+                        isFinished <- newMetadata.isFinished,
+                        downloadProgress <- newMetadata.downloadProgress,
+                        fileSize <- newMetadata.fileSize,
+                        relativeFilePath <- newMetadata.relativeFilePath,
+                        duration <- newMetadata.duration
                     ))
+
+                return newMetadata
             }
-            return metadata
         } catch {
-            print("❌ Error creating/updating metadata for episode \(metadata.episodeId): \(error)")
+            print(
+                "❌ Error creating/updating metadata for episode \(partialMetadata.episodeId): \(error)"
+            )
             return nil
         }
     }

@@ -57,10 +57,10 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
         downloadTask.taskDescription = String(episodeId)
         downloadTask.resume()
         self.metadataRepo.createOrUpdateMetadata(
-            EpisodeMetadata(
+            PartialEpisodeMetadata(
                 episodeId: episodeId,
                 // set to 1 to indicate that the download started
-                downloadProgress: 1
+                downloadProgress: .setValue(1)
             )
         )
         episodeDownloaderDelegate?.episodeDownloadStarted(episodeId: episodeId)
@@ -99,14 +99,12 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
 
                 // Update episode metadata with new file location and state
                 self.metadataRepo.createOrUpdateMetadata(
-                    EpisodeMetadata(
+                    PartialEpisodeMetadata(
                         episodeId: episodeId,
-                        playback: 0,
-                        isFinished: false,
-                        downloadProgress: 100,
-                        fileSize: fileSize,
-                        relativeFilePath: fileName,
-                        duration: durationInMilliSeconds
+                        downloadProgress: .setValue(100),
+                        fileSize: .setValue(fileSize),
+                        relativeFilePath: .setValue(fileName),
+                        duration: .setValue(durationInMilliSeconds)
                     )
                 )
 
@@ -132,11 +130,14 @@ public class EpisodeDownloader: NSObject, URLSessionDownloadDelegate {
         let progress = NSNumber(value: calculatedProgress)
 
         if let episodeId = Int64(downloadTask.taskDescription ?? "") {
-            if var metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId) {
+            if let metadata = metadataRepo.getMetadataForEpisode(episodeIdValue: episodeId) {
                 let newProgress = min(max(Int64(progress.doubleValue * 100), 1), 99)  // always use at least 1% to not jump from 1 to 0, and never go above 99% since the file is not moved to the correct place yet.
                 if metadata.downloadProgress == newProgress { return }
-                metadata.downloadProgress = newProgress
-                metadataRepo.createOrUpdateMetadata(metadata)
+                metadataRepo.createOrUpdateMetadata(
+                    PartialEpisodeMetadata(
+                        episodeId: episodeId,
+                        downloadProgress: .setValue(newProgress)
+                    ))
 
                 episodeDownloaderDelegate?.episodeDownloadProgress(
                     episodeId: episodeId, currentProgress: NSNumber(value: newProgress))

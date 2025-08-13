@@ -123,8 +123,10 @@ npx expo-doctor
 - [x] Live updates on first playing an episode after download in list
 - [x] Live updates on progress for time left on list
 - [x] Handle deletion while playing an episode
-- [ ] Decouple episode metadata from download
-- [ ] Mark as played doesn't work
+- [x] Decouple episode metadata from download
+- [x] deleting - just delete the files, keep the metadata
+- interaction with metadata (mark as played) while playing does not work - concurrent updates
+- [x] Mark as played doesn't work
 
 #### Future Erik
 

@@ -6,7 +6,7 @@ import { PURE_TOASTS } from "../components/toasts"
 import { drizzleClient, schema } from "../db/client"
 import { SharedEpisodeFields, SharedPodcastFields } from "../types/db.types"
 import { generateEpisodeId, generateRssId } from "../utils/episodes.utils"
-import { deleteEpisodeAudioFileAndMetadata } from "expo-playback"
+import { deleteEpisodeAudioFile } from "expo-playback"
 
 async function savePodcastAndEpisodes(
   podcast: SharedPodcastFields,
@@ -123,7 +123,7 @@ export function useRemovePodcastMutation() {
         .where(eq(schema.episodesTable.podcastId, Number(podcastId)))
       // Can not be in transaction since it happens on the native side
       for (const episodeId of episodeIds) {
-        await deleteEpisodeAudioFileAndMetadata(episodeId.id)
+        await deleteEpisodeAudioFile(episodeId.id)
       }
 
       await drizzleClient.transaction(async (tx) => {
@@ -152,7 +152,7 @@ export function useDeleteEpisodeMetadataAndAudioFileMutation() {
 
   return useMutation({
     mutationFn: async (episodeId: number) => {
-      await deleteEpisodeAudioFileAndMetadata(episodeId)
+      await deleteEpisodeAudioFile(episodeId)
     },
     onSuccess: (_, episodeId) => {
       PURE_TOASTS.success({ message: "Download removed!" })

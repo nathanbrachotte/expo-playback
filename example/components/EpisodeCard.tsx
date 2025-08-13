@@ -1,29 +1,27 @@
-import { Check, CheckCircle2, Minus } from "@tamagui/lucide-icons"
-import React, { ComponentProps, useEffect, useMemo, useState } from "react"
-import { getVariable, Paragraph, useTheme } from "tamagui"
-import { formatDate, formatDuration, formatRemainingTime } from "../utils/time.utils"
-import { PureXStack, PureYStack } from "./PureStack"
-import { Optional } from "../utils/types.utils"
-import RenderHtml from "react-native-render-html"
-import { useWindowDimensions } from "react-native"
-import { cleanHtmlText } from "../utils/text.utils"
-import { Ellipsis, Trash2, Copy } from "@tamagui/lucide-icons"
-import { Card, CardProps } from "tamagui"
+import { Check, Copy, Ellipsis, Minus, Trash2 } from "@tamagui/lucide-icons"
 import * as Clipboard from "expo-clipboard"
+import React, { ComponentProps, useEffect, useMemo, useState } from "react"
+import { useWindowDimensions } from "react-native"
+import RenderHtml from "react-native-render-html"
+import { Card, CardProps, getVariable, Paragraph, useTheme } from "tamagui"
 import { useDeleteEpisodeMetadataAndAudioFileMutation } from "../clients/local.mutations"
+import { cleanHtmlText } from "../utils/text.utils"
+import { formatDate, formatDuration, formatRemainingTime } from "../utils/time.utils"
+import { Optional } from "../utils/types.utils"
+import { PureXStack, PureYStack } from "./PureStack"
 
-import { CustomButtonIcon, GhostButton, MarkAsFinishedButton, PlayButtonsSection } from "./buttons"
-import { ActionSheet, ActionSheetAction } from "./ActionSheet"
-import { PureImage } from "./image"
-import { getImageFromEntities } from "../utils/image.utils"
+import { toggleIsFinished } from "expo-playback"
+import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
 import { EntityImage } from "../types/db.types"
+import { getImageFromEntities } from "../utils/image.utils"
 import {
   getEpisodeStateFromMetadata,
   getProgressPercentageFromMetadata,
   PrettyMetadata,
 } from "../utils/metadata.utils"
-import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
-import { toggleIsFinished } from "expo-playback"
+import { ActionSheet, ActionSheetAction } from "./ActionSheet"
+import { CustomButtonIcon, GhostButton, MarkAsFinishedButton, PlayButtonsSection } from "./buttons"
+import { PureImage } from "./image"
 import { PureProgressBar } from "./PureProgressBar"
 
 type BaseTitleProps = {
@@ -44,12 +42,8 @@ export function EpisodeCardTitle({
   Component: React.ComponentType<BaseTitleProps>
   componentProps?: ComponentProps<typeof Paragraph>
 }) {
-  const value = getVariable(componentProps.size)
-  const checkSize = value ? value * 0.3 : getVariable("$1")
-
   return (
     <PureXStack jc="flex-start" ai="flex-start" gap="$1">
-      {isFinished ? <Check size={checkSize} color="$green9" mt={6} /> : null}
       <Component opacity={isFinished ? 0.6 : 1} {...componentProps}>
         {title}
       </Component>
@@ -57,11 +51,17 @@ export function EpisodeCardTitle({
   )
 }
 
-export function CleanEpisodeDescription({ description }: { description: string }) {
+export function CleanEpisodeDescription({
+  description,
+  isFinished,
+}: {
+  description: string
+  isFinished: Optional<boolean>
+}) {
   const cleanedDescription = cleanHtmlText(description)
 
   return (
-    <PureYStack flex={1} mt="$2">
+    <PureYStack flex={1} mt="$2" opacity={isFinished ? 0.6 : 1}>
       <Paragraph numberOfLines={2} size="$1" lineHeight={16}>
         {cleanedDescription}
       </Paragraph>
@@ -114,7 +114,7 @@ export function DurationAndDateSection({
   const duration = metadataDuration || fallbackDuration
 
   return (
-    <PureXStack jc="flex-start" ai="center">
+    <PureXStack jc="flex-start" ai="center" opacity={isFinished ? 0.6 : 1}>
       <Paragraph size={size}>{date ? formatDate(date) : ""}</Paragraph>
       <Paragraph size={size}>
         {duration ? (
@@ -128,8 +128,7 @@ export function DurationAndDateSection({
         <PureXStack centered gap="$1">
           <Paragraph size={size}>{" • "}</Paragraph>
           <PureXStack centered gap="$1.5">
-            <Paragraph fontWeight="bold">Finished</Paragraph>
-            <CheckCircle2 size={16} color="$green9" />
+            <Paragraph size={size}>Finished</Paragraph>
           </PureXStack>
         </PureXStack>
       ) : null}
@@ -304,7 +303,7 @@ export const EpisodeCard = ({
           </PureYStack>
         </PureXStack>
         <PureYStack gap="$1.5">
-          <CleanEpisodeDescription description={episode.description} />
+          <CleanEpisodeDescription description={episode.description} isFinished={isFinished} />
           <DurationAndDateSection
             episodeId={episode.id ?? 0}
             fallbackDuration={episode.duration}

@@ -44,7 +44,7 @@ export interface EpisodeMetadataUpdatePlaybackEvent {
  */
 export interface CoreEpisodeMetadataUpdateEvent {
   episodeId: number
-  trigger: "downloadFinished" | "deleted" | null
+  trigger: "downloadFinished" | "deletedAudioFile" | null
 }
 
 declare class ExpoPlaybackModule extends NativeModule<{
@@ -65,7 +65,7 @@ declare class ExpoPlaybackModule extends NativeModule<{
   cleanup(): void
   getState(): PlayerState
   findNextUnfinishedEpisodeId(episodeId: number): number
-  deleteEpisodeAudioFileAndMetadata(episodeId: number): Promise<void>
+  deleteEpisodeAudioFile(episodeId: number): Promise<void>
   toggleIsFinished(episodeId: number): void
 }
 
