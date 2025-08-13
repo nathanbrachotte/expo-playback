@@ -1,12 +1,11 @@
-import { useQuery } from "@tanstack/react-query"
-
 import { fetchPodcastAndEpisodes, searchPodcast } from "./itunes.fetch"
 import { ToLocalEpisodeSchema, ToLocalPodcastSchema } from "./schemas"
 import { AppleEpisodeResponse } from "../types/purecast.types"
 import { BooleanFilter } from "../utils/types.utils"
+import { useTrackedQuery } from "../utils/error-tracking"
 
 export function useGetItunesPodcastQuery(id: string | null) {
-  return useQuery({
+  return useTrackedQuery({
     queryKey: ["podcast", id],
     queryFn: () => fetchPodcastAndEpisodes({ id }),
     select: (data: AppleEpisodeResponse) => {
@@ -24,7 +23,7 @@ export function useGetItunesPodcastQuery(id: string | null) {
 }
 
 export function useGetItunesPodcastAndEpisodesQuery(podcastId: string | null, limit?: number) {
-  return useQuery({
+  return useTrackedQuery({
     queryKey: ["episodes", podcastId, limit],
     queryFn: () => fetchPodcastAndEpisodes({ id: podcastId, limit }),
     select: (data: AppleEpisodeResponse) => {
@@ -63,7 +62,7 @@ export function useGetItunesEpisodeQuery({
   episodeId: string | null
   podcastId: string | null
 }) {
-  return useQuery({
+  return useTrackedQuery({
     queryKey: ["episode", episodeId],
     // TODO: Use actual query
     queryFn: () => fetchPodcastAndEpisodes({ id: podcastId }),
@@ -96,7 +95,7 @@ export function useGetItunesEpisodeQuery({
 }
 
 export function useSearchItunesPodcastsQuery(searchQuery: string | null) {
-  return useQuery({
+  return useTrackedQuery({
     queryKey: ["podcastSearch", searchQuery],
     queryFn: () => searchPodcast(searchQuery),
     enabled: !!searchQuery && searchQuery.trim().length > 2,

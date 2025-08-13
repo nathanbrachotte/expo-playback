@@ -1,4 +1,4 @@
-import { useQuery, useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
 import { desc, sql } from "drizzle-orm"
 import { useLiveQuery } from "drizzle-orm/expo-sqlite"
 import { eq } from "drizzle-orm"
@@ -11,9 +11,10 @@ import {
   addEpisodeMetadataUpdateDownloadProgressListener,
   addEpisodeMetadataUpdatePlaybackListener,
 } from "expo-playback"
+import { useTrackedQuery } from "../utils/error-tracking"
 
 export function useLocalPodcastsQuery() {
-  return useQuery({
+  return useTrackedQuery({
     queryKey: ["savedPodcasts"],
     queryFn: async () => {
       const podcasts = await drizzleClient.select().from(schema.podcastsTable)
@@ -40,7 +41,7 @@ export async function getPodcastById(id: string | null) {
 }
 
 export function useGetLocalPodcastQuery(id: string | null) {
-  return useQuery({
+  return useTrackedQuery({
     queryKey: ["savedPodcast", id],
     queryFn: () => getPodcastById(id),
     enabled: !!id,
@@ -115,7 +116,7 @@ export function useGetLocalEpisodesWithPodcastAndMetadataByPodcastIdLiveQuery(
 }
 
 export function useGetLocalEpisodesByPodcastIdQuery(podcastId: string | null) {
-  return useQuery({
+  return useTrackedQuery({
     queryKey: ["savedEpisodes", podcastId],
     queryFn: () => getEpisodesWithPodcastAndMetadataByPodcastId(podcastId),
     enabled: !!podcastId,
@@ -217,7 +218,7 @@ export function useGetLiveLocalEpisodeMetadataQuery(
     }
   }, [updateConfig.playback, updateConfig.downloadProgress, id])
 
-  const { data, refetch, ...rest } = useQuery({
+  const { data, refetch, ...rest } = useTrackedQuery({
     queryKey: ["episodeMetadata", id],
     queryFn: () => episodeMetadataByIdDbQuery(id),
     enabled: !!id,
@@ -394,7 +395,7 @@ export const getLatestEpisodeQuery = drizzleClient
   .limit(1)
 
 export const useGetLatestEpisodeQuery = () => {
-  return useQuery({
+  return useTrackedQuery({
     queryKey: ["latestEpisode"],
     queryFn: async () => {
       const result = await getLatestEpisodeQuery

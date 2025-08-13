@@ -172,6 +172,22 @@ pnpm --filter example db:generate
 - Use TanStack Query for all data fetching (queries and mutations)
 - Always prioritize using the IoC (Inversion of Control) pattern when writing components
 
+**Immutability Patterns**
+
+- **Never mutate objects directly** - always create new objects using spread operator
+- Use immutable data construction patterns with conditional object spreading
+- Prefer `const assertions` with `as const` for immutable data structures
+- Build objects conditionally using ternary operators and empty object fallbacks
+- Example pattern:
+  ```typescript
+  const baseData = { id: 1, name: "test" } as const
+  const conditionalData = condition ? { extra: "value" } : {}
+  const result = { ...baseData, ...conditionalData }
+  
+  // For hook returns, use const assertions
+  return { trackError, otherMethod } as const
+  ```
+
 ### Navigation
 
 - Use React Navigation with TypeScript for type-safe navigation

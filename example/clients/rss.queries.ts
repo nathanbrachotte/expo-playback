@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { eq, isNotNull } from "drizzle-orm"
 
 import { validateRSSEpisodes, fetchAndValidateRssFeed } from "./rss.fetch"
@@ -6,9 +6,10 @@ import type { RssFeed } from "./rss.fetch"
 import { drizzleClient } from "../db/client"
 import { episodesTable, podcastsTable } from "../db/schema"
 import { RSSFeedEpisodeFields } from "../types/db.types"
+import { useTrackedMutation, useTrackedQuery } from "../utils/error-tracking"
 
 export function useGetRssEpisodesQuery(feedUrl: string | null) {
-  return useQuery({
+  return useTrackedQuery({
     queryKey: ["rssEpisodes", feedUrl],
     queryFn: () => fetchAndValidateRssFeed(feedUrl),
     select: (data: RssFeed) => validateRSSEpisodes(data),
@@ -23,7 +24,7 @@ export function useGetRssEpisodeQuery({
   feedUrl: string | null
   episodeId: string | null
 }) {
-  return useQuery({
+  return useTrackedQuery({
     queryKey: ["rssEpisode", feedUrl, episodeId],
     queryFn: () => fetchAndValidateRssFeed(feedUrl),
     select: (data: RssFeed) => {
@@ -41,7 +42,7 @@ export function useGetRssEpisodeQuery({
 export function useFetchNewEpisodesMutation() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useTrackedMutation({
     mutationFn: fetchNewEpisodesFromAllPodcasts,
     onSuccess: () => {
       // Invalidate and refetch all episodes queries to show new episodes
@@ -58,7 +59,7 @@ export function useFetchNewEpisodesMutation() {
 export function useFetchNewEpisodesFromOnePodcastMutation() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useTrackedMutation({
     mutationFn: fetchNewEpisodesFromOnePodcast,
     onSuccess: () => {
       // Invalidate and refetch all episodes queries to show new episodes
@@ -110,7 +111,7 @@ export async function insertEpisodes(episodes: RSSFeedEpisodeFields[], podcastId
   }
 }
 
-export async function fetchNewEpisodesFromOnePodcast(podcastId: number) {
+async function fetchNewEpisodesFromOnePodcast(podcastId: number) {
   let podcast: { id: number; title: string; rssFeedUrl: string | null } | null = null
 
   try {
@@ -158,7 +159,7 @@ export async function fetchNewEpisodesFromOnePodcast(podcastId: number) {
   }
 }
 
-export async function fetchNewEpisodesFromAllPodcasts() {
+async function fetchNewEpisodesFromAllPodcasts() {
   let savedPodcasts: { id: number; title: string; rssFeedUrl: string | null }[] = []
 
   try {
