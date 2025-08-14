@@ -14,7 +14,7 @@ import { useFetchNewEpisodesFromOnePodcastMutation } from "../../clients/rss.que
 import { PLayout } from "../../components/Layout"
 import { PureXStack, PureYStack } from "../../components/PureStack"
 import { LoadingScreen } from "../../components/Sections/Loading"
-import { getEpisodeStateFromMetadata } from "../../utils/metadata.utils"
+import { getPrettyMetadata } from "../../utils/metadata.utils"
 import { EpisodeCard } from "../../components/EpisodeCard"
 
 export function LocalPodcastScreen({ id }: { id: string }) {
@@ -86,9 +86,7 @@ export function LocalEpisodesSection({ id }: { id: string }) {
     return ({ item }: { item: (typeof flashListData)[0] }) => {
       const episode = item.episode
 
-      const prettyMetadata = item.episodeMetadata
-        ? getEpisodeStateFromMetadata(item.episodeMetadata)
-        : null
+      const prettyMetadata = item.episodeMetadata ? getPrettyMetadata(item.episodeMetadata) : null
 
       if (!localPodcast) {
         return null

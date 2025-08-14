@@ -49,7 +49,7 @@ export function getIsDownloadingFromMetadata(metadata: LocalEpisodeMetadata | un
   return true
 }
 
-export function getEpisodeStateFromMetadata(
+export function getPrettyMetadata(
   metadata: LocalEpisodeMetadata | undefined | null,
 ): PrettyMetadata {
   const progressPercentage = getProgressPercentageFromMetadata(metadata ?? undefined)

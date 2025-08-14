@@ -3,13 +3,12 @@ import React, { ComponentProps, useCallback } from "react"
 import { Button, ButtonProps, getVariable, Paragraph, Spinner, styled } from "tamagui"
 
 import { PureXStack } from "./PureStack"
-import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
 import { pause, play, startBackgroundDownload, toggleIsFinished } from "expo-playback"
 import { usePlayerContext } from "../providers/PlayerProvider"
-import { getEpisodeStateFromMetadata } from "../utils/metadata.utils"
 import { useDeleteEpisodeMetadataAndAudioFileMutation } from "../clients/local.mutations"
 import { Pause } from "../assets/Pause"
 import { CircularLoader } from "./CircularLoader"
+import { useGetEpisodePrettyMetadata } from "../hooks/useGetEpisodePrettyMetadata"
 
 export function ButtonList({
   icon,
@@ -122,12 +121,12 @@ export function PlayButton({
   const iconSize = getVariable(size) * 0.5
   const { activeEpisode, isPlaying, setEpisodeIdForPlayAfterDownload } = usePlayerContext()
 
-  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId, {
-    downloadProgress: true,
-    playback: false,
-  })
-  const { isDownloaded, isDownloading, downloadProgress } = getEpisodeStateFromMetadata(
-    localEpisodeMetadata?.episodeMetadata,
+  const { isDownloaded, isDownloading, progressPercentage } = useGetEpisodePrettyMetadata(
+    episodeId,
+    {
+      downloadProgress: false,
+      playback: true,
+    },
   )
 
   const isEpisodePlaying = activeEpisode?.episode?.id === episodeId && isPlaying
@@ -161,7 +160,7 @@ export function PlayButton({
           <PlayButtonIcon
             isEpisodePlaying={isEpisodePlaying}
             isDownloading={isDownloading}
-            downloadProgress={downloadProgress}
+            downloadProgress={progressPercentage}
             iconSize={iconSize}
           />
         }
@@ -183,13 +182,10 @@ export function DownloadButton({
   const iconSize = getVariable(size) * 0.5
   const deleteMetadataMutation = useDeleteEpisodeMetadataAndAudioFileMutation()
 
-  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId, {
+  const { isDownloaded, isDownloading } = useGetEpisodePrettyMetadata(episodeId, {
     downloadProgress: true,
     playback: false,
   })
-  const { isDownloaded, isDownloading } = getEpisodeStateFromMetadata(
-    localEpisodeMetadata?.episodeMetadata,
-  )
 
   if (isDownloading) {
     return (
@@ -242,11 +238,10 @@ export function PlayButtonsSection({ episodeId }: { episodeId: number }) {
 
 export function MarkAsFinishedButton({ episodeId }: { episodeId: number }) {
   const iconSize = getVariable("$3") * 0.5
-  const { data: localEpisodeMetadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId, {
+  const { isFinished } = useGetEpisodePrettyMetadata(episodeId, {
     downloadProgress: false,
     playback: true,
   })
-  const { isFinished } = getEpisodeStateFromMetadata(localEpisodeMetadata?.episodeMetadata)
 
   return (
     <GhostButton

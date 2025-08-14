@@ -7,7 +7,7 @@ import { useAllInProgressEpisodesQuery } from "../clients/local.queries"
 import { PLayout } from "../components/Layout"
 import { ErrorScreen } from "../components/Sections/Error"
 import { LoadingScreen } from "../components/Sections/Loading"
-import { getEpisodeStateFromMetadata } from "../utils/metadata.utils"
+import { getPrettyMetadata } from "../utils/metadata.utils"
 import { SECTION_PADDING_VALUE } from "../components/Sections/PureSection"
 import { EpisodeCard } from "../components/EpisodeCard"
 
@@ -63,7 +63,7 @@ export function InProgressEpisodesScreen() {
           const episode = item.episode
           const podcast = item.podcast
           const prettyMetadata = item.episodeMetadata
-            ? getEpisodeStateFromMetadata(item.episodeMetadata)
+            ? getPrettyMetadata(item.episodeMetadata)
             : null
 
           return (

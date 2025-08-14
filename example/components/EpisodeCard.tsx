@@ -3,7 +3,7 @@ import * as Clipboard from "expo-clipboard"
 import React, { ComponentProps, useEffect, useMemo, useState } from "react"
 import { useWindowDimensions } from "react-native"
 import RenderHtml from "react-native-render-html"
-import { Card, CardProps, getVariable, Paragraph, useTheme } from "tamagui"
+import { Card, CardProps, Paragraph, useTheme } from "tamagui"
 import { useDeleteEpisodeMetadataAndAudioFileMutation } from "../clients/local.mutations"
 import { cleanHtmlText } from "../utils/text.utils"
 import { formatDate, formatDuration, formatRemainingTime } from "../utils/time.utils"
@@ -11,18 +11,14 @@ import { Optional } from "../utils/types.utils"
 import { PureXStack, PureYStack } from "./PureStack"
 
 import { toggleIsFinished } from "expo-playback"
-import { useGetLiveLocalEpisodeMetadataQuery } from "../clients/local.queries"
 import { EntityImage } from "../types/db.types"
 import { getImageFromEntities } from "../utils/image.utils"
-import {
-  getEpisodeStateFromMetadata,
-  getProgressPercentageFromMetadata,
-  PrettyMetadata,
-} from "../utils/metadata.utils"
+import { PrettyMetadata } from "../utils/metadata.utils"
 import { ActionSheet, ActionSheetAction } from "./ActionSheet"
 import { CustomButtonIcon, GhostButton, MarkAsFinishedButton, PlayButtonsSection } from "./buttons"
 import { PureImage } from "./image"
 import { PureProgressBar } from "./PureProgressBar"
+import { useGetEpisodePrettyMetadata } from "../hooks/useGetEpisodePrettyMetadata"
 
 type BaseTitleProps = {
   children: React.ReactNode
@@ -90,28 +86,15 @@ export function EpisodeDescriptionHtml({ description }: { description: string })
 }
 
 export function DurationAndDateSection({
-  episodeId,
+  prettyMetadata,
   date,
-  fallbackDuration,
   size = "$2",
 }: {
-  episodeId: number
+  prettyMetadata: PrettyMetadata
   date: Date | null
-  fallbackDuration: number | null
   size?: ComponentProps<typeof Paragraph>["size"]
 }) {
-  const { data: metadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId, {
-    playback: true,
-    downloadProgress: false,
-  })
-
-  const {
-    isFinished,
-    duration: metadataDuration,
-    progress,
-  } = getEpisodeStateFromMetadata(metadata?.episodeMetadata)
-
-  const duration = metadataDuration || fallbackDuration
+  const { isFinished, duration, progress } = prettyMetadata
 
   return (
     <PureXStack jc="flex-start" ai="center" opacity={isFinished ? 0.6 : 1}>
@@ -251,22 +234,17 @@ export const EpisodeCard = ({
   imageProps,
 }: EpisodeCardProps) => {
   const image = getImageFromEntities(episode, podcast)
-  const { data: metadata } = useGetLiveLocalEpisodeMetadataQuery(episode.id ?? 0)
+  const prettyMetadata = useGetEpisodePrettyMetadata(episode.id ?? 0, {
+    playback: true,
+    downloadProgress: false,
+  })
 
-  const [prettyMetadata, setPrettyMetadata] = useState(initialPrettyMetadata)
+  const { isFinished, isDownloaded } = prettyMetadata
 
-  useEffect(() => {
-    if (metadata == null) {
-      setPrettyMetadata(undefined)
-      return
-    }
-    setPrettyMetadata(getEpisodeStateFromMetadata(metadata?.episodeMetadata))
-  }, [metadata])
-
-  const { isFinished, isDownloaded, isInProgress, progressPercentage } = prettyMetadata || {}
-
-  if (episode.id === 1752861201491) {
-    console.log("prettyMetadata", prettyMetadata, metadata)
+  // TODO: Return skeleton?
+  if (!episode.id) {
+    console.log("episode.id is null")
+    return null
   }
 
   return (
@@ -304,11 +282,9 @@ export const EpisodeCard = ({
         </PureXStack>
         <PureYStack gap="$1.5">
           <CleanEpisodeDescription description={episode.description} isFinished={isFinished} />
-          <DurationAndDateSection
-            episodeId={episode.id ?? 0}
-            fallbackDuration={episode.duration}
-            date={episode.publishedAt}
-          />
+          {prettyMetadata ? (
+            <DurationAndDateSection prettyMetadata={prettyMetadata} date={episode.publishedAt} />
+          ) : null}
         </PureYStack>
         <Card.Footer alignItems="center" justifyContent="space-between">
           <PureXStack centered gap="$2">
@@ -320,7 +296,7 @@ export const EpisodeCard = ({
               isFinished={isFinished}
             />
           </PureXStack>
-          <EpisodeCardProgress episodeId={episode.id} initialProgress={progressPercentage} />
+          <EpisodeCardProgress episodeId={episode.id} prettyMetadata={prettyMetadata} />
 
           {episode.id ? <PlayButtonsSection episodeId={episode.id} /> : null}
         </Card.Footer>
@@ -331,27 +307,21 @@ export const EpisodeCard = ({
 
 const EpisodeCardProgress = ({
   episodeId,
-  initialProgress = 0,
+  prettyMetadata,
 }: {
   episodeId: number | undefined
-  initialProgress?: number
+  prettyMetadata: PrettyMetadata
 }) => {
-  const [progress, setProgress] = useState(initialProgress)
+  const { progressPercentage } = prettyMetadata
 
-  const { data: metadata } = useGetLiveLocalEpisodeMetadataQuery(episodeId ?? 0, {
-    playback: true,
-    downloadProgress: false,
-  })
+  // TODO: Figure out why this is needed
+  const [progress, setProgress] = useState(progressPercentage)
 
   useEffect(() => {
-    if (metadata) {
-      setProgress(getProgressPercentageFromMetadata(metadata.episodeMetadata))
-    } else {
-      setProgress(0)
-    }
-  }, [metadata])
+    setProgress(progressPercentage)
+  }, [progressPercentage])
 
-  if (progress < 1) {
+  if (progressPercentage < 1) {
     return null
   }
 

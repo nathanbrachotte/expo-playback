@@ -17,10 +17,10 @@ import { PLayout } from "../../components/Layout"
 import { PureScrollView } from "../../components/PureScrollview"
 import { PureXStack, PureYStack } from "../../components/PureStack"
 import { SECTION_PADDING_VALUE } from "../../components/Sections/PureSection"
-import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../../types/db.types"
+import { LocalEpisodeMetadata, LocalPodcast } from "../../types/db.types"
 import { EpisodeScreenRouteProp } from "../../types/navigation.types"
 import { getImageFromEntities, getImageFromEntity } from "../../utils/image.utils"
-import { getEpisodeStateFromMetadata } from "../../utils/metadata.utils"
+import { getPrettyMetadata, PrettyMetadata } from "../../utils/metadata.utils"
 
 const podcastRouteSchema = z.object({
   name: z.literal("Podcast"),
@@ -79,84 +79,12 @@ function PodcastButton({ podcast }: { podcast: LocalPodcast }) {
 
 function PlayEpisodeButton({
   episodeId,
-  episodeMetadata,
+  prettyMetadata,
 }: {
   episodeId: number
-  episodeMetadata: LocalEpisodeMetadata | null
+  prettyMetadata: PrettyMetadata | null
 }) {
-  const handlePlay = useCallback(async () => {
-    if (episodeId) {
-      return
-    }
-
-    ExpoPlaybackModule.play(episodeId)
-  }, [episodeId])
-
-  if (!episodeMetadata) {
-    return <PlayButton episodeId={episodeId} size="$5" />
-  }
-
-  return <PlayButton size="$5" episodeId={episodeId} onPress={handlePlay} />
-}
-
-function EpisodeDumbScreen({
-  episode,
-  podcast,
-  episodeMetadata,
-}: {
-  episode: LocalEpisode
-  podcast: LocalPodcast
-  episodeMetadata: LocalEpisodeMetadata | null
-}) {
-  const image = getImageFromEntities(episode, podcast, "600")
-  const prettyMetadata = episodeMetadata ? getEpisodeStateFromMetadata(episodeMetadata) : null
-
-  return (
-    <PLayout.Screen>
-      <PLayout.Container px="$3">
-        <PureYStack m="$-8" mb="$0">
-          {image ? (
-            <PureImage alignSelf="center" uri={image} width="$16" height="$16" borderRadius="$2" />
-          ) : null}
-        </PureYStack>
-        <PureYStack mt="$2">
-          <PureXStack jc="flex-start" ai="flex-start" gap="$1">
-            <H3 fontWeight="bold">{episode.title}</H3>
-          </PureXStack>
-        </PureYStack>
-        <PureXStack>
-          <DurationAndDateSection
-            duration={prettyMetadata?.duration || episode.duration}
-            date={episode.publishedAt}
-            isFinished={episodeMetadata?.isFinished}
-          />
-        </PureXStack>
-        <PureXStack mt="$2" justifyContent="space-between" ai="center">
-          {/* PureXStack - Important for layout to work */}
-          <PureXStack>
-            <PodcastButton podcast={podcast} />
-          </PureXStack>
-          <PureXStack gap="$2" centered width="30%">
-            <EpisodeActionSheet
-              episodeId={episode.id}
-              isDownloaded={prettyMetadata?.isDownloaded}
-              isFinished={prettyMetadata?.isFinished}
-            />
-            <PlayEpisodeButton episodeId={episode.id} episodeMetadata={episodeMetadata} />
-          </PureXStack>
-        </PureXStack>
-        <PureYStack mt="$2" mx="$-3" flex={1}>
-          <PureScrollView
-            scrollViewProps={{
-              contentContainerStyle: { paddingHorizontal: SECTION_PADDING_VALUE / 2 },
-            }}
-          >
-            <EpisodeDescriptionHtml description={episode.description} />
-          </PureScrollView>
-        </PureYStack>
-      </PLayout.Container>
-    </PLayout.Screen>
-  )
+  return <PlayButton size="$5" episodeId={episodeId} />
 }
 
 export function EpisodeScreen() {
@@ -190,5 +118,51 @@ export function EpisodeScreen() {
     )
   }
 
-  return <EpisodeDumbScreen episode={episode} podcast={podcast} episodeMetadata={episodeMetadata} />
+  const image = getImageFromEntities(episode, podcast, "600")
+  const prettyMetadata = episodeMetadata ? getPrettyMetadata(episodeMetadata) : null
+
+  return (
+    <PLayout.Screen>
+      <PLayout.Container px="$3">
+        <PureYStack m="$-8" mb="$0">
+          {image ? (
+            <PureImage alignSelf="center" uri={image} width="$16" height="$16" borderRadius="$2" />
+          ) : null}
+        </PureYStack>
+        <PureYStack mt="$2">
+          <PureXStack jc="flex-start" ai="flex-start" gap="$1">
+            <H3 fontWeight="bold">{episode.title}</H3>
+          </PureXStack>
+        </PureYStack>
+        <PureXStack>
+          {prettyMetadata ? (
+            <DurationAndDateSection prettyMetadata={prettyMetadata} date={episode.publishedAt} />
+          ) : null}
+        </PureXStack>
+        <PureXStack mt="$2" justifyContent="space-between" ai="center">
+          {/* PureXStack - Important for layout to work */}
+          <PureXStack>
+            <PodcastButton podcast={podcast} />
+          </PureXStack>
+          <PureXStack gap="$2" centered width="30%">
+            <EpisodeActionSheet
+              episodeId={episode.id}
+              isDownloaded={prettyMetadata?.isDownloaded}
+              isFinished={prettyMetadata?.isFinished}
+            />
+            <PlayEpisodeButton episodeId={episode.id} prettyMetadata={prettyMetadata} />
+          </PureXStack>
+        </PureXStack>
+        <PureYStack mt="$2" mx="$-3" flex={1}>
+          <PureScrollView
+            scrollViewProps={{
+              contentContainerStyle: { paddingHorizontal: SECTION_PADDING_VALUE / 2 },
+            }}
+          >
+            <EpisodeDescriptionHtml description={episode.description} />
+          </PureScrollView>
+        </PureYStack>
+      </PLayout.Container>
+    </PLayout.Screen>
+  )
 }

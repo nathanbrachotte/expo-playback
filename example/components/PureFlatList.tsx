@@ -6,7 +6,7 @@ import { Paragraph, YStack } from "tamagui"
 import { ErrorSection } from "./Sections/Error"
 import { LoadingSection } from "./Sections/Loading"
 import { SECTION_PADDING_VALUE } from "./Sections/PureSection"
-import { getEpisodeStateFromMetadata } from "../utils/metadata.utils"
+import { getPrettyMetadata } from "../utils/metadata.utils"
 import { EpisodeCard } from "./EpisodeCard"
 import { LocalEpisode, LocalEpisodeMetadata, LocalPodcast } from "../types/db.types"
 
@@ -113,15 +113,13 @@ export function PureFlatList({
       }
       indicatorStyle="white"
       renderItem={({ item }) => {
-        const prettyMetadata = item.episodeMetadata
-          ? getEpisodeStateFromMetadata(item.episodeMetadata)
-          : null
+        const prettyMetadata = item.episodeMetadata ? getPrettyMetadata(item.episodeMetadata) : null
 
         return (
           <EpisodeCard
             episode={item.episode}
             podcast={item.podcast}
-            prettyMetadata={prettyMetadata}
+            initialPrettyMetadata={prettyMetadata}
             onCardPress={() => handleEpisodePress(item.episode.id, item.podcast.id)}
           />
         )
