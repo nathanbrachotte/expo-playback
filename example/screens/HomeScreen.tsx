@@ -78,7 +78,9 @@ export function HomeScreen() {
   const hasSavedPodcasts = podcastList && podcastList?.length > 0
   const posthog = usePostHog()
   // Enable debug mode
-  posthog.debug(true)
+  if (__DEV__ && process.env.EXPO_PUBLIC_POSTHOG_DEBUG_ENABLED === "true") {
+    posthog.debug(true)
+  }
 
   // Fetch new episodes on app mount
   const handleRefetchNewEpisodes = () => {

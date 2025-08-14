@@ -29,7 +29,11 @@ app.get("/podcasts", async (c) => {
   const db = drizzle(c.env.DB_PROD)
   console.log("🚀 ~ app.get ~ db:", db)
   try {
-    const result = await db.select().from(podcastsTable).orderBy(desc(podcastsTable.createdAt)).all()
+    const result = await db
+      .select()
+      .from(podcastsTable)
+      .orderBy(desc(podcastsTable.createdAt))
+      .all()
     console.log("🚀 ~ app.get ~ result:", result)
     return c.json(result)
   } catch (error: any) {
