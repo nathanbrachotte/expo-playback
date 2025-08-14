@@ -24,7 +24,9 @@ function PureLayout({
   const route = useRoute()
   const posthog = usePostHog()
 
-  posthog.screen(route.name, {})
+  posthog.screen(route.name, {
+    ...route.params,
+  })
 
   // Use React Navigation's built-in canGoBack() method for better reliability
   const shouldShowBackButton = showBackButton === "auto" ? navigation.canGoBack() : showBackButton
