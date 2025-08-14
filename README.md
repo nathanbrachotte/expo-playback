@@ -85,7 +85,7 @@ npx expo-doctor
 - [x] Search not showing adding podcasts - Plus
 - [x] Splash screen
 - [x] Make sure localization is only asked at search and explain why
-- [ ] Logging podcast failures
+- [x] Logging podcast failures
 - [ ] In-progress page not working anymore
 - [ ] Latest episode shows "no episode" for a second
 - [ ] Fix JS dying on html renderer

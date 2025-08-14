@@ -173,6 +173,6 @@ export async function fetchAndValidateRssFeed(feedUrl: string | null): Promise<R
 
     // console.error("🚀 ~ fetchRssFeed ~ feedUrl:", feedUrl)
     // console.log("🚀 ~ fetchRssFeed ~ parsedData:", JSON.stringify(parsedData, null, 2))
-    throw new Error(`Failed to parse RSS feed: ${error}`)
+    throw new Error(`Failed to parse RSS feed: ${error}`, { cause: error })
   }
 }
